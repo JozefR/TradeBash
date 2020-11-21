@@ -1,5 +1,4 @@
-﻿using TradeBash.Core.Entities;
-using TradeBash.Core.Events;
+﻿using TradeBash.Core.Events;
 using System.Linq;
 using Xunit;
 

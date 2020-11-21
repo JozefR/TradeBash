@@ -70,7 +70,6 @@ namespace TradeBash.FunctionalTests
 
                     try
                     {
-                        // Seed the database with test data.
                         SeedData.PopulateTestData(db);
                     }
                     catch (Exception ex)
