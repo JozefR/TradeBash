@@ -14,11 +14,13 @@ namespace TradeBash.Infrastructure
             {
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
-                    options.UseSqlServer(configuration.GetConnectionString("SqlServerConnection"));
+                    options.UseSqlServer(configuration.GetConnectionString("SqlServerConnection"), 
+                        b => b.MigrationsAssembly("TradeBash.Web"));
                 }
                 else
                 {
-                    options.UseSqlServer(configuration.GetConnectionString("SqlServerDockerConnection"));
+                    options.UseSqlServer(configuration.GetConnectionString("SqlServerDockerConnection"),
+                        b => b.MigrationsAssembly("TradeBash.Web"));
                 }
             });
             
