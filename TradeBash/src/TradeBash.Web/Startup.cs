@@ -1,17 +1,11 @@
-﻿using Ardalis.ListStartupServices;
-using Autofac;
+﻿using Autofac;
 using TradeBash.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.SwaggerGen;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace TradeBash.Web
 {
@@ -35,26 +29,14 @@ namespace TradeBash.Web
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            string connectionString = Configuration.GetConnectionString("SqliteConnection");  //Configuration.GetConnectionString("DefaultConnection");
-
-            services.AddDbContext(connectionString);
-
+            services.AddDbContext(Configuration);
             services.AddControllersWithViews().AddNewtonsoftJson();
             services.AddRazorPages();
-
+            
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
                 c.EnableAnnotations();
-            });
-
-            // add list services for diagnostic purposes - see https://github.com/ardalis/AspNetCoreStartupServices
-            services.Configure<ServiceConfig>(config =>
-            {
-                config.Services = new List<ServiceDescriptor>(services);
-
-                // optional - default path to view services is /listallservices - recommended to choose your own path
-                config.Path = "/listservices";
             });
         }
 
@@ -69,7 +51,6 @@ namespace TradeBash.Web
             if (env.EnvironmentName == "Development")
             {
                 app.UseDeveloperExceptionPage();
-                app.UseShowAllServicesMiddleware();
             }
             else
             {

@@ -1,2 +1,0 @@
-exclude:
-- .*/src\TradeBash.Web\wwwroot\lib\**\*

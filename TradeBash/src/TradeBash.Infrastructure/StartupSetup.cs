@@ -1,13 +1,29 @@
-﻿using TradeBash.Infrastructure.Data;
+﻿using System.Runtime.InteropServices;
+using TradeBash.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace TradeBash.Infrastructure
 {
     public static class StartupSetup
     {
-        public static void AddDbContext(this IServiceCollection services, string connectionString) =>
+        public static IServiceCollection AddDbContext(this IServiceCollection services, IConfiguration configuration)
+        {
             services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlite(connectionString)); // will be created in web project root
+            {
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    options.UseSqlServer(configuration.GetConnectionString("SqlServerConnection"));
+                }
+                else
+                {
+                    options.UseSqlServer(configuration.GetConnectionString("SqlServerDockerConnection"));
+                }
+            });
+            
+            // options.UseSqlite(connectionString)); // will be created in web project root
+            return services;
+        }
     }
 }
