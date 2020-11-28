@@ -17,14 +17,17 @@ namespace TradeBash.Infrastructure
                     options.UseSqlServer(configuration.GetConnectionString("SqlServerConnection"), 
                         b => b.MigrationsAssembly("TradeBash.Web"));
                 }
-                else
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                 {
                     options.UseSqlServer(configuration.GetConnectionString("SqlServerDockerConnection"),
                         b => b.MigrationsAssembly("TradeBash.Web"));
                 }
+                else
+                {
+                    // will be created in web project root
+                    options.UseSqlite(configuration.GetConnectionString("SqliteConnection")); 
+                }
             });
-            
-            // options.UseSqlite(connectionString)); // will be created in web project root
             return services;
         }
     }

@@ -1,4 +1,5 @@
-﻿using Autofac;
+﻿using System;
+using Autofac;
 using TradeBash.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
+using TradeBash.Infrastructure.Services;
 
 namespace TradeBash.Web
 {
@@ -32,6 +34,8 @@ namespace TradeBash.Web
             services.AddDbContext(Configuration);
             services.AddControllersWithViews().AddNewtonsoftJson();
             services.AddRazorPages();
+
+            services.AddHttpClient<IApiClient, ApiClient>();
             
             services.AddSwaggerGen(c =>
             {
