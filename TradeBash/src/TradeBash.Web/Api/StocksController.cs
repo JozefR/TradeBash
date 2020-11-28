@@ -13,14 +13,18 @@ namespace TradeBash.Web.Api
     public class StocksController : BaseApiController
     {
         private readonly IRepository _repository;
-        private readonly IConfiguration _configuration;
         private readonly IApiClient _apiClient;
+        private readonly string IexPath;
 
-        public StocksController(IRepository repository, IConfiguration configuration, IApiClient apiClient)
+        public StocksController(
+            IRepository repository, 
+            IConfiguration configuration, 
+            IApiClient apiClient)
         {
             _repository = repository;
-            _configuration = configuration;
             _apiClient = apiClient;
+            
+            IexPath = configuration.GetConnectionString("IEXConnection");
         }
         
         // GET: api/StockItems
@@ -36,12 +40,37 @@ namespace TradeBash.Web.Api
         [HttpGet("iex/{ticker}/{history}")]
         public async Task<IActionResult> GetStock(string ticker, string history)
         {
-            var path = _configuration.GetConnectionString("IEXConnection");
-            string iexPath = String.Format(path, String.Concat(ticker), String.Concat(history));
+            string iexPath = String.Format(IexPath, String.Concat(ticker), String.Concat(history));
 
             var items = await _apiClient.GetStocksAsync(iexPath);
 
             return Ok(items);
+        }   
+        
+        [HttpPatch("iex/populate/{ticker}/{history}")]
+        public async Task<IActionResult> Complete(string ticker, string history)
+        {
+            string iexPath = String.Format(IexPath, String.Concat(ticker), String.Concat(history));
+            
+            var items = await _apiClient.GetStocksAsync(iexPath);
+
+            var data = items.Select(x => x.MapDataResponse(ticker));
+            
+            foreach (var stockResponse in data)
+            {
+                var stock = new Stock
+                {
+                    Label = stockResponse.Label,
+                    Close = stockResponse.Close,
+                    Date = stockResponse.Date,
+                    Open = stockResponse.Open,
+                    Symbol = stockResponse.Symbol
+                };
+
+                await _repository.AddAsync(stock);
+            }
+            
+            return Ok();
         }
     }
 }
