@@ -1,4 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using Ardalis.GuardClauses;
 using TradeBash.Core.Events;
 using TradeBash.Core.Interfaces;
@@ -19,7 +22,10 @@ namespace TradeBash.Core.Handlers
         // https://ardalis.com/configuring-a-local-test-email-server
         public async Task Handle(ToDoItemCompletedEvent domainEvent)
         {
-            Guard.Against.Null(domainEvent, nameof(domainEvent));
+            if (domainEvent == null)
+            {
+                throw new Exception(nameof(domainEvent));
+            }
 
             await _emailSender.SendEmailAsync("test@test.com", "test@test.com", $"{domainEvent.CompletedItem.Title} was completed.", domainEvent.CompletedItem.ToString());
         }
