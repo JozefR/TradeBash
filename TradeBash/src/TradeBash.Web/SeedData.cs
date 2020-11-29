@@ -25,25 +25,9 @@ namespace TradeBash.Web
             Description = "Make sure all the tests run and review what they are doing."
         };
 
-        public static readonly Stock Stock1 = new Stock
-        {
-            Id = 1,
-            Date = DateTime.Now,
-            Close = 100,
-            Label = "Apple",
-            Open = 96,
-            Symbol = "Appl"
-        };
+        public static readonly Stock Stock1 = Stock.From(DateTime.Now, "aapl", 100, 120, "Apple");
 
-        public static readonly Stock Stock2 = new Stock
-        {
-            Id = 2,
-            Date = DateTime.Now,
-            Close = 103,
-            Label = "Apple",
-            Open = 99,
-            Symbol = "Appl"
-        };
+        public static readonly Stock Stock2 = Stock.From(DateTime.Now, "aapl", 110, 125, "Apple");
 
         public static void Initialize(IServiceProvider serviceProvider)
         {

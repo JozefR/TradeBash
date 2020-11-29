@@ -14,5 +14,21 @@ namespace TradeBash.Core.Entities
         public double Close { get; set; }
         
         public string Label { get; set; }
+
+        private Stock() { }
+
+        public static Stock From(DateTime date, string symbol, double open, double close, string label)
+        {
+            var entity = new Stock
+            {
+                Date = date,
+                Symbol = symbol,
+                Open = open,
+                Close = close,
+                Label = label,
+            };
+
+            return entity;
+        }
     }
 }

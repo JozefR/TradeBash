@@ -58,14 +58,12 @@ namespace TradeBash.Web.Api
             
             foreach (var stockResponse in data)
             {
-                var stock = new Stock
-                {
-                    Label = stockResponse.Label,
-                    Close = stockResponse.Close,
-                    Date = stockResponse.Date,
-                    Open = stockResponse.Open,
-                    Symbol = stockResponse.Symbol
-                };
+                var stock = Stock.From(
+                    stockResponse.Date,
+                    stockResponse.Symbol,
+                    stockResponse.Open,
+                    stockResponse.Close,
+                    stockResponse.Label);
 
                 await _repository.AddAsync(stock);
             }

@@ -19,7 +19,7 @@ namespace TradeBash.Web.ApiModels
         
         public static StockDTO From(Stock item)
         {
-            return new StockDTO()
+            return new StockDTO
             {
                 Id = item.Id,
                 Date = item.Date,

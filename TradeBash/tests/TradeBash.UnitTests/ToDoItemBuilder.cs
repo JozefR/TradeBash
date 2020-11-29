@@ -2,8 +2,6 @@
 
 namespace TradeBash.UnitTests
 {
-    // Learn more about test builders:
-    // https://ardalis.com/improve-tests-with-the-builder-pattern-for-test-data
     public class ToDoItemBuilder
     {
         private ToDoItem _todo = new ToDoItem();
