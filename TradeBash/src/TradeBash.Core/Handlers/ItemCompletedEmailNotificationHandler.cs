@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
-using Ardalis.GuardClauses;
 using TradeBash.Core.Events;
 using TradeBash.Core.Interfaces;
 using TradeBash.SharedKernel.Interfaces;
