@@ -48,7 +48,7 @@ namespace TradeBash.Web.Api
         }   
         
         [HttpPatch("iex/populate/{ticker}/{history}")]
-        public async Task<IActionResult> Complete(string ticker, string history)
+        public async Task<IActionResult> PopulateDb(string ticker, string history)
         {
             string iexPath = String.Format(IexPath, String.Concat(ticker), String.Concat(history));
             

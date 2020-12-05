@@ -7,6 +7,6 @@ namespace TradeBash.SharedKernel
     {
         public int Id { get; set; }
 
-        public List<BaseDomainEvent> Events = new List<BaseDomainEvent>();
+        public readonly List<BaseDomainEvent> Events = new List<BaseDomainEvent>();
     }
 }
