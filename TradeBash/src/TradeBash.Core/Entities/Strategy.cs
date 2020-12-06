@@ -1,53 +1,70 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using TradeBash.SharedKernel;
 
 namespace TradeBash.Core.Entities
 {
     public class Strategy : BaseEntity, IAggregateRoot
     {
-        public double SimpleMovingAverage { get; set; } // Value object
+        public int SimpleMovingAverageParameter { get; set; }
 
-        public double RelativeStrengthIndex { get; set; } // Value object
+        public int RelativeStrengthIndexParameter { get; set; }
 
         public IList<Stock> StocksHistory { get; set; }
 
-        public Strategy()
+        private Strategy()
         {
             StocksHistory = new List<Stock>();
         }
 
-        public static Strategy CalculateForStock(DateTime date, string symbol, double open, double close, string label)
+        public static Strategy CalculateForStock(
+            int smaParameter,
+            int rsiParameter)
         {
-            var strategy = new Strategy();
+            var strategy = new Strategy
+            {
+                SimpleMovingAverageParameter = smaParameter,
+                RelativeStrengthIndexParameter = rsiParameter,
+            };
 
-            var stock = Stock.From(date, symbol, open, close, label);
-            strategy.StocksHistory.Add(stock);
-
-            strategy.CalculateSimpleMovingAverage();
-            strategy.CalculateRelativeStrengthIndex();
-            
             return strategy;
         }
 
-        private void CalculateSimpleMovingAverage()
+        public Stock AddStock(
+            DateTime date,
+            string symbol,
+            decimal open,
+            decimal close,
+            string label)
         {
-            if (StocksHistory.Count > 5)
-            {
-                // calculate
-            }
+            decimal? sma = CalculateSimpleMovingAverage();
+            decimal? rsi = CalculateRelativeStrengthIndex();
 
-            throw new NotImplementedException();
+            var stock = Stock.From(date, symbol, open, close, label, sma, rsi);
+            StocksHistory.Add(stock);
+
+            return stock;
         }
 
-        private void CalculateRelativeStrengthIndex()
+        private decimal? CalculateSimpleMovingAverage()
+        {
+            if (StocksHistory.Count <= 5) return null;
+
+            var prices = StocksHistory.TakeLast(SimpleMovingAverageParameter).Select(x => x.Close);
+            decimal? average = Queryable.Average(prices.AsQueryable());
+
+            return average;
+        }
+
+        private decimal? CalculateRelativeStrengthIndex()
         {
             if (StocksHistory.Count > 12)
             {
                 // calculate
             }
 
-            throw new NotImplementedException();
+            return null;
         }
     }
 }

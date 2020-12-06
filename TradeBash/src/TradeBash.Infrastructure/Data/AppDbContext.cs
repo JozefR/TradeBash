@@ -20,7 +20,8 @@ namespace TradeBash.Infrastructure.Data
         }
 
         public DbSet<ToDoItem> ToDoItems { get; set; }
-        public DbSet<Stock> Stocks { get; set; }
+
+        public DbSet<Strategy> Strategies { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

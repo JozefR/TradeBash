@@ -11,9 +11,9 @@ namespace TradeBash.Web.ApiModels
 
         public string Symbol { get; set; }
         
-        public double Open { get; set; }
+        public decimal Open { get; set; }
         
-        public double Close { get; set; }
+        public decimal Close { get; set; }
         
         public string Label { get; set; }
         

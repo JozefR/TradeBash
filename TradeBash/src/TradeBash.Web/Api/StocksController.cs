@@ -55,19 +55,21 @@ namespace TradeBash.Web.Api
             var items = await _apiClient.GetStocksAsync(iexPath);
 
             var data = items.Select(x => x.MapDataResponse(ticker));
-            
+
+            var strategy = Strategy.CalculateForStock(5, 2);
+
             foreach (var stockResponse in data)
             {
-                var stock = Stock.From(
+                strategy.AddStock(
                     stockResponse.Date,
                     stockResponse.Symbol,
                     stockResponse.Open,
                     stockResponse.Close,
                     stockResponse.Label);
-
-                await _repository.AddAsync(stock);
             }
-            
+
+            await _repository.AddAsync(strategy);
+
             return Ok();
         }
     }

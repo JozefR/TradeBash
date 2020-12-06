@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TradeBash.Infrastructure.Data;
 
 namespace TradeBash.Web.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201206173522_addStrategies")]
+    partial class addStrategies
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -26,8 +28,8 @@ namespace TradeBash.Web.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<decimal>("Close")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double>("Close")
+                        .HasColumnType("float");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
@@ -35,14 +37,14 @@ namespace TradeBash.Web.Migrations
                     b.Property<string>("Label")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("Open")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double>("Open")
+                        .HasColumnType("float");
 
-                    b.Property<decimal?>("RSI")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double?>("RSI")
+                        .HasColumnType("float");
 
-                    b.Property<decimal?>("SMA")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double?>("SMA")
+                        .HasColumnType("float");
 
                     b.Property<int>("StrategyId")
                         .HasColumnType("int");
@@ -64,11 +66,11 @@ namespace TradeBash.Web.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("RelativeStrengthIndexParameter")
-                        .HasColumnType("int");
+                    b.Property<double>("RelativeStrengthIndexParameter")
+                        .HasColumnType("float");
 
-                    b.Property<int>("SimpleMovingAverageParameter")
-                        .HasColumnType("int");
+                    b.Property<double>("SimpleMovingAverageParameter")
+                        .HasColumnType("float");
 
                     b.HasKey("Id");
 
