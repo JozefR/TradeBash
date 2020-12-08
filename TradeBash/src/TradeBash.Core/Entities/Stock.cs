@@ -9,15 +9,15 @@ namespace TradeBash.Core.Entities
         
         public string Symbol { get; set; }
         
-        public decimal Open { get; set; }
+        public double Open { get; set; }
         
-        public decimal Close { get; set; }
+        public double Close { get; set; }
         
         public string Label { get; set; }
 
-        public decimal? SMA { get; set; }
+        public double? SMA { get; set; }
 
-        public decimal? RSI { get; set; }
+        public double? RSI { get; set; }
 
         public int StrategyId { get; set; }
         public Strategy Strategy { get; set; }
@@ -27,11 +27,11 @@ namespace TradeBash.Core.Entities
         public static Stock From(
             DateTime date,
             string symbol,
-            decimal open,
-            decimal close,
+            double open,
+            double close,
             string label,
-            decimal? sma,
-            decimal? rsi)
+            double? sma,
+            double? rsi)
         {
             var entity = new Stock
             {

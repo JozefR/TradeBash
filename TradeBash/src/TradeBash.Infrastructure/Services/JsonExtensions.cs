@@ -12,8 +12,8 @@ namespace TradeBash.Infrastructure.Services
             {
                 Symbol = ticker,
                 Date = DateTime.Parse(jObject["date"].ToString()),
-                Open = Decimal.Parse(jObject["open"].ToString()),
-                Close = Decimal.Parse(jObject["close"].ToString()),
+                Open = Double.Parse(jObject["open"].ToString()),
+                Close = Double.Parse(jObject["close"].ToString()),
                 Label = jObject["label"].ToString(),
             };
         }

@@ -1,4 +1,4 @@
-﻿namespace TradeBash.SharedKernel
+﻿namespace TradeBash.SharedKernel.Interfaces
 {
     public interface IAggregateRoot
     {

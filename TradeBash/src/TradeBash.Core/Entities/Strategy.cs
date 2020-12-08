@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using TradeBash.SharedKernel;
+using TradeBash.SharedKernel.Interfaces;
 
 namespace TradeBash.Core.Entities
 {
@@ -11,7 +12,7 @@ namespace TradeBash.Core.Entities
 
         public int RelativeStrengthIndexParameter { get; set; }
 
-        public IList<Stock> StocksHistory { get; set; }
+        public IList<Stock> StocksHistory { get; }
 
         private Strategy()
         {
@@ -34,12 +35,12 @@ namespace TradeBash.Core.Entities
         public Stock AddStock(
             DateTime date,
             string symbol,
-            decimal open,
-            decimal close,
+            double open,
+            double close,
             string label)
         {
-            decimal? sma = CalculateSimpleMovingAverage();
-            decimal? rsi = CalculateRelativeStrengthIndex();
+            var sma = CalculateSimpleMovingAverage();
+            var rsi = CalculateRelativeStrengthIndex();
 
             var stock = Stock.From(date, symbol, open, close, label, sma, rsi);
             StocksHistory.Add(stock);
@@ -47,24 +48,66 @@ namespace TradeBash.Core.Entities
             return stock;
         }
 
-        private decimal? CalculateSimpleMovingAverage()
+        private double? CalculateSimpleMovingAverage()
         {
-            if (StocksHistory.Count <= 5) return null;
+            if (StocksHistory.Count < SimpleMovingAverageParameter) return null;
 
             var prices = StocksHistory.TakeLast(SimpleMovingAverageParameter).Select(x => x.Close);
-            decimal? average = Queryable.Average(prices.AsQueryable());
+            double? average = prices.AsQueryable().Average();
 
             return average;
         }
 
-        private decimal? CalculateRelativeStrengthIndex()
+        private double? CalculateRelativeStrengthIndex()
         {
-            if (StocksHistory.Count > 12)
+            if (StocksHistory.Count <= RelativeStrengthIndexParameter) return null;
+
+            var price = StocksHistory.Select(x => x.Close).ToArray();
+            var rsi = new double[price.Length];
+
+            double gain = 0.0;
+            double loss = 0.0;
+
+            rsi[0] = 0.0;
+            for (int i = 1; i <= RelativeStrengthIndexParameter; ++i)
             {
-                // calculate
+                var diff = price[i] - price[i - 1];
+                if (diff >= 0)
+                {
+                    gain += diff;
+                }
+                else
+                {
+                    loss -= diff;
+                }
             }
 
-            return null;
+            double avrg = gain / RelativeStrengthIndexParameter;
+            double avrl = loss / RelativeStrengthIndexParameter;
+            double rs = gain / loss;
+            rsi[RelativeStrengthIndexParameter] = 100 - (100 / (1 + rs));
+
+            for (int i = RelativeStrengthIndexParameter + 1; i < price.Length; ++i)
+            {
+                var diff = price[i] - price[i - 1];
+
+                if (diff >= 0)
+                {
+                    avrg = ((avrg * (RelativeStrengthIndexParameter - 1)) + diff) / RelativeStrengthIndexParameter;
+                    avrl = (avrl * (RelativeStrengthIndexParameter - 1)) / RelativeStrengthIndexParameter;
+                }
+                else
+                {
+                    avrl = ((avrl * (RelativeStrengthIndexParameter - 1)) - diff) / RelativeStrengthIndexParameter;
+                    avrg = (avrg * (RelativeStrengthIndexParameter - 1)) / RelativeStrengthIndexParameter;
+                }
+
+                rs = avrg / avrl;
+
+                rsi[i] = 100 - (100 / (1 + rs));
+            }
+
+            return rsi[StocksHistory.Count - 1];
         }
     }
 }
