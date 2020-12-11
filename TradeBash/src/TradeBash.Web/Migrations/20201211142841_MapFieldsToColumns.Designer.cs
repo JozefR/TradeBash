@@ -10,8 +10,8 @@ using TradeBash.Infrastructure.Data;
 namespace TradeBash.Web.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20201208162330_ChangeDecimalToDouble")]
-    partial class ChangeDecimalToDouble
+    [Migration("20201211142841_MapFieldsToColumns")]
+    partial class MapFieldsToColumns
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -66,10 +66,12 @@ namespace TradeBash.Web.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("RelativeStrengthIndexParameter")
+                    b.Property<int>("_relativeStrengthIndexParameter")
+                        .HasColumnName("RelativeStrengthIndex")
                         .HasColumnType("int");
 
-                    b.Property<int>("SimpleMovingAverageParameter")
+                    b.Property<int>("_simpleMovingAverageParameter")
+                        .HasColumnName("SimpleMovingAverage")
                         .HasColumnType("int");
 
                     b.HasKey("Id");

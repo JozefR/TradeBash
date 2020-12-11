@@ -14,7 +14,7 @@ namespace TradeBash.Core.Entities
         {
             IsDone = true;
 
-            Events.Add(new ToDoItemCompletedEvent(this));
+            DomainEvents.Add(new ToDoItemCompletedEvent(this));
         }
 
         public override string ToString()

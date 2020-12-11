@@ -5,19 +5,19 @@ namespace TradeBash.Core.Entities
 {
     public class Stock : BaseEntity
     {
-        public DateTime Date { get; set; }
+        public DateTime Date { get; private set; }
         
-        public string Symbol { get; set; }
+        public string Symbol { get; private set; }
         
-        public double Open { get; set; }
+        public double Open { get; private set; }
         
-        public double Close { get; set; }
+        public double Close { get; private set; }
         
-        public string Label { get; set; }
+        public string Label { get; private set; }
 
-        public double? SMA { get; set; }
+        public double? SMA { get; private set; }
 
-        public double? RSI { get; set; }
+        public double? RSI { get; private set; }
 
         public int StrategyId { get; set; }
         public Strategy Strategy { get; set; }

@@ -8,25 +8,27 @@ namespace TradeBash.Core.Entities
 {
     public class Strategy : BaseEntity, IAggregateRoot
     {
-        public int SimpleMovingAverageParameter { get; set; }
+        private int _simpleMovingAverageParameter;
 
-        public int RelativeStrengthIndexParameter { get; set; }
+        private int _relativeStrengthIndexParameter;
 
-        public IList<Stock> StocksHistory { get; }
+        private readonly List<Stock> _stocksHistory;
+
+        public IReadOnlyCollection<Stock> StocksHistory => _stocksHistory;
 
         private Strategy()
         {
-            StocksHistory = new List<Stock>();
+            _stocksHistory = new List<Stock>();
         }
 
-        public static Strategy CalculateForStock(
+        public static Strategy SetIndicatorParameters(
             int smaParameter,
             int rsiParameter)
         {
             var strategy = new Strategy
             {
-                SimpleMovingAverageParameter = smaParameter,
-                RelativeStrengthIndexParameter = rsiParameter,
+                _simpleMovingAverageParameter = smaParameter,
+                _relativeStrengthIndexParameter = rsiParameter,
             };
 
             return strategy;
@@ -43,16 +45,16 @@ namespace TradeBash.Core.Entities
             var rsi = CalculateRelativeStrengthIndex();
 
             var stock = Stock.From(date, symbol, open, close, label, sma, rsi);
-            StocksHistory.Add(stock);
+            _stocksHistory.Add(stock);
 
             return stock;
         }
 
         private double? CalculateSimpleMovingAverage()
         {
-            if (StocksHistory.Count < SimpleMovingAverageParameter) return null;
+            if (_stocksHistory.Count < _simpleMovingAverageParameter) return null;
 
-            var prices = StocksHistory.TakeLast(SimpleMovingAverageParameter).Select(x => x.Close);
+            var prices = _stocksHistory.TakeLast(_simpleMovingAverageParameter).Select(x => x.Close);
             double? average = prices.AsQueryable().Average();
 
             return average;
@@ -60,16 +62,16 @@ namespace TradeBash.Core.Entities
 
         private double? CalculateRelativeStrengthIndex()
         {
-            if (StocksHistory.Count <= RelativeStrengthIndexParameter) return null;
+            if (_stocksHistory.Count <= _relativeStrengthIndexParameter) return null;
 
-            var price = StocksHistory.Select(x => x.Close).ToArray();
+            var price = _stocksHistory.Select(x => x.Close).ToArray();
             var rsi = new double[price.Length];
 
             double gain = 0.0;
             double loss = 0.0;
 
             rsi[0] = 0.0;
-            for (int i = 1; i <= RelativeStrengthIndexParameter; ++i)
+            for (int i = 1; i <= _relativeStrengthIndexParameter; ++i)
             {
                 var diff = price[i] - price[i - 1];
                 if (diff >= 0)
@@ -82,24 +84,24 @@ namespace TradeBash.Core.Entities
                 }
             }
 
-            double avrg = gain / RelativeStrengthIndexParameter;
-            double avrl = loss / RelativeStrengthIndexParameter;
+            double avrg = gain / _relativeStrengthIndexParameter;
+            double avrl = loss / _relativeStrengthIndexParameter;
             double rs = gain / loss;
-            rsi[RelativeStrengthIndexParameter] = 100 - (100 / (1 + rs));
+            rsi[_relativeStrengthIndexParameter] = 100 - (100 / (1 + rs));
 
-            for (int i = RelativeStrengthIndexParameter + 1; i < price.Length; ++i)
+            for (int i = _relativeStrengthIndexParameter + 1; i < price.Length; ++i)
             {
                 var diff = price[i] - price[i - 1];
 
                 if (diff >= 0)
                 {
-                    avrg = ((avrg * (RelativeStrengthIndexParameter - 1)) + diff) / RelativeStrengthIndexParameter;
-                    avrl = (avrl * (RelativeStrengthIndexParameter - 1)) / RelativeStrengthIndexParameter;
+                    avrg = ((avrg * (_relativeStrengthIndexParameter - 1)) + diff) / _relativeStrengthIndexParameter;
+                    avrl = (avrl * (_relativeStrengthIndexParameter - 1)) / _relativeStrengthIndexParameter;
                 }
                 else
                 {
-                    avrl = ((avrl * (RelativeStrengthIndexParameter - 1)) - diff) / RelativeStrengthIndexParameter;
-                    avrg = (avrg * (RelativeStrengthIndexParameter - 1)) / RelativeStrengthIndexParameter;
+                    avrl = ((avrl * (_relativeStrengthIndexParameter - 1)) - diff) / _relativeStrengthIndexParameter;
+                    avrg = (avrg * (_relativeStrengthIndexParameter - 1)) / _relativeStrengthIndexParameter;
                 }
 
                 rs = avrg / avrl;
@@ -107,7 +109,7 @@ namespace TradeBash.Core.Entities
                 rsi[i] = 100 - (100 / (1 + rs));
             }
 
-            return rsi[StocksHistory.Count - 1];
+            return rsi[_stocksHistory.Count - 1];
         }
     }
 }

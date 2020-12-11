@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace TradeBash.Web.Migrations
 {
-    public partial class addStrategies : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -12,13 +12,26 @@ namespace TradeBash.Web.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    SimpleMovingAverageParameter = table.Column<double>(nullable: false),
-                    RelativeStrengthIndexParameter = table.Column<double>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1")
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Strategies", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ToDoItems",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(nullable: false),
+                    Description = table.Column<string>(nullable: true),
+                    IsDone = table.Column<bool>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ToDoItems", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -57,6 +70,9 @@ namespace TradeBash.Web.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Stock");
+
+            migrationBuilder.DropTable(
+                name: "ToDoItems");
 
             migrationBuilder.DropTable(
                 name: "Strategies");

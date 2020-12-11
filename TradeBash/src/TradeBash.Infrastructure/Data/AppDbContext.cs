@@ -40,13 +40,13 @@ namespace TradeBash.Infrastructure.Data
             // dispatch events only if save was successful
             var entitiesWithEvents = ChangeTracker.Entries<BaseEntity>()
                 .Select(e => e.Entity)
-                .Where(e => e.Events.Any())
+                .Where(e => e.DomainEvents.Any())
                 .ToArray();
 
             foreach (var entity in entitiesWithEvents)
             {
-                var events = entity.Events.ToArray();
-                entity.Events.Clear();
+                var events = entity.DomainEvents.ToArray();
+                entity.DomainEvents.Clear();
                 foreach (var domainEvent in events)
                 {
                     await _dispatcher.Dispatch(domainEvent).ConfigureAwait(false);

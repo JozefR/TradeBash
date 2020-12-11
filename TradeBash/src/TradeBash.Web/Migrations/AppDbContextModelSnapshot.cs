@@ -64,10 +64,12 @@ namespace TradeBash.Web.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("RelativeStrengthIndexParameter")
+                    b.Property<int>("_relativeStrengthIndexParameter")
+                        .HasColumnName("RelativeStrengthIndex")
                         .HasColumnType("int");
 
-                    b.Property<int>("SimpleMovingAverageParameter")
+                    b.Property<int>("_simpleMovingAverageParameter")
+                        .HasColumnName("SimpleMovingAverage")
                         .HasColumnType("int");
 
                     b.HasKey("Id");

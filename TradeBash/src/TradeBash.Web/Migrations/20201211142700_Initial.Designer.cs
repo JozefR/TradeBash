@@ -10,8 +10,8 @@ using TradeBash.Infrastructure.Data;
 namespace TradeBash.Web.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20201206173522_addStrategies")]
-    partial class addStrategies
+    [Migration("20201211142700_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -65,12 +65,6 @@ namespace TradeBash.Web.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<double>("RelativeStrengthIndexParameter")
-                        .HasColumnType("float");
-
-                    b.Property<double>("SimpleMovingAverageParameter")
-                        .HasColumnType("float");
 
                     b.HasKey("Id");
 

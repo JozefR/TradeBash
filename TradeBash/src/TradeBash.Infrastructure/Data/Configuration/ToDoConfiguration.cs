@@ -1,8 +1,8 @@
-﻿using TradeBash.Core.Entities;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using TradeBash.Core.Entities;
 
-namespace TradeBash.Infrastructure.Data.Config
+namespace TradeBash.Infrastructure.Data.Configuration
 {
     public class ToDoConfiguration : IEntityTypeConfiguration<ToDoItem>
     {
