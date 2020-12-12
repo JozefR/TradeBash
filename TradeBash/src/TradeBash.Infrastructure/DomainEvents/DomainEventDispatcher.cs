@@ -58,7 +58,7 @@ namespace TradeBash.Infrastructure.DomainEvents
 
             public override Task Handle(BaseDomainEvent domainEvent)
             {
-                return _handler.Handle((T)domainEvent);
+                return _handler.HandleAsync((T)domainEvent);
             }
         }
     }

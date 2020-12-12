@@ -20,7 +20,6 @@ namespace TradeBash.Core.Entities
         public double? RSI { get; private set; }
 
         public int StrategyId { get; set; }
-        public Strategy Strategy { get; set; }
 
         private Stock() { }
 

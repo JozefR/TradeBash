@@ -23,13 +23,13 @@ namespace TradeBash.UnitTests.Core.Handlers
         [Fact]
         public async Task ThrowsExceptionGivenNullEventArgument()
         {
-            Exception ex = await Assert.ThrowsAsync<ArgumentNullException>(() => _handler.Handle(null));
+            Exception ex = await Assert.ThrowsAsync<ArgumentNullException>(() => _handler.HandleAsync(null));
         }
 
         [Fact]
         public async Task SendsEmailGivenEventInstance()
         {
-            await _handler.Handle(new ToDoItemCompletedEvent(new ToDoItem()));
+            await _handler.HandleAsync(new ToDoItemCompletedEvent(new ToDoItem()));
 
             _emailSenderMock.Verify(sender => sender.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
         }

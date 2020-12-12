@@ -25,10 +25,6 @@ namespace TradeBash.Web
             Description = "Make sure all the tests run and review what they are doing."
         };
 
-        /*public static readonly Stock Stock1 = Stock.From(DateTime.Now, "aapl", 100, 120, "Apple");
-
-        public static readonly Stock Stock2 = Stock.From(DateTime.Now, "aapl", 110, 125, "Apple");*/
-
         public static void Initialize(IServiceProvider serviceProvider)
         {
             using (var dbContext = new AppDbContext(
@@ -46,20 +42,10 @@ namespace TradeBash.Web
             }
 
             dbContext.SaveChanges();
+
             dbContext.ToDoItems.Add(ToDoItem1);
             dbContext.ToDoItems.Add(ToDoItem2);
             dbContext.ToDoItems.Add(ToDoItem3);
-
-            dbContext.SaveChanges();
-            
-            /*foreach (var item in dbContext.Stocks)
-            {
-                dbContext.Remove(item);
-            }*/
-
-            dbContext.SaveChanges();
-            /*dbContext.Stocks.Add(Stock1);
-            dbContext.Stocks.Add(Stock2);*/
 
             dbContext.SaveChanges();
         }
