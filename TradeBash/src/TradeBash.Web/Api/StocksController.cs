@@ -56,7 +56,7 @@ namespace TradeBash.Web.Api
 
             var data = items.Select(x => x.MapDataResponse(ticker));
 
-            var strategy = Strategy.SetIndicatorParameters(5, 2);
+            var strategy = Strategy.Set("test", 5, 2);
 
             foreach (var stockResponse in data)
             {

@@ -10,7 +10,7 @@ namespace TradeBash.UnitTests.Core.Entities
         [Fact]
         public void CalculateSimpleMovingAverageForStock()
         {
-            var item = Strategy.SetIndicatorParameters(5, 14);
+            var item = Strategy.Set("test", 5, 14);
 
             item.AddStock(DateTime.Now, "symbol", 1, 1, "label");
             item.AddStock(DateTime.Now, "symbol", 1, 2, "label");

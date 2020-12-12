@@ -8,6 +8,8 @@ namespace TradeBash.Core.Entities
 {
     public class Strategy : BaseEntity, IAggregateRoot
     {
+        private string _name;
+
         private int _simpleMovingAverageParameter;
 
         private int _relativeStrengthIndexParameter;
@@ -21,12 +23,14 @@ namespace TradeBash.Core.Entities
             _stocksHistory = new List<Stock>();
         }
 
-        public static Strategy SetIndicatorParameters(
+        public static Strategy Set(
+            string name,
             int smaParameter,
             int rsiParameter)
         {
             var strategy = new Strategy
             {
+                _name = name,
                 _simpleMovingAverageParameter = smaParameter,
                 _relativeStrengthIndexParameter = rsiParameter,
             };
@@ -110,6 +114,11 @@ namespace TradeBash.Core.Entities
             }
 
             return rsi[_stocksHistory.Count - 1];
+        }
+
+        public void RunBackTest()
+        {
+            throw new NotImplementedException();
         }
     }
 }
