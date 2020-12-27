@@ -8,7 +8,7 @@ namespace TradeBash.UnitTests.Core.Entities
 {
     public class StrategyBreakouts
     {
-        [Fact]
+        [Fact(Skip = "not implemented")]
         public void CalculateBreakoutsStrategy()
         {
             var strategy = Strategy.Set("Breakouts", 5, 14);
