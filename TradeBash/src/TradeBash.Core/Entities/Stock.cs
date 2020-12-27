@@ -19,6 +19,8 @@ namespace TradeBash.Core.Entities
 
         public double? RSI { get; private set; }
 
+        public double? ProfitLoss { get; private set; }
+
         public int StrategyId { get; set; }
 
         private Stock() { }
@@ -44,6 +46,13 @@ namespace TradeBash.Core.Entities
             };
 
             return entity;
+        }
+
+        public Stock FromBackTest(double? profitLoss)
+        {
+            ProfitLoss = profitLoss;
+
+            return this;
         }
     }
 }

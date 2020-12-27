@@ -118,6 +118,13 @@ namespace TradeBash.Core.Entities
 
         public void RunBackTest()
         {
+            foreach (var stock in _stocksHistory)
+            {
+
+
+                stock.FromBackTest(200);
+            }
+
             throw new NotImplementedException();
         }
     }
