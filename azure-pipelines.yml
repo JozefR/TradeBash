@@ -4,22 +4,22 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
 trigger:
-- '*'
+- 'main'
 
 pool:
   vmImage: 'windows-latest'
 
 variables:
-  solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
+  dotnetSdkVersion: '3.1.300'
 
 steps:
-- task: NuGetToolInstaller@1
-
-- task: NuGetCommand@2
+- task: UseDotNet@2
+  displayName: 'Use .NET Core SDK $(dotnetSdkVersion)'
   inputs:
-    restoreSolution: '$(solution)'
+    packageType: sdk
+    version: $(dotnetSdkVersion)
 
 - task: DotNetCoreCLI@2
   displayName: 'Restore project dependencies'
@@ -27,14 +27,23 @@ steps:
     command: 'restore'
     projects: '**/*.csproj'
 
-- task: VSBuild@1
+- task: DotNetCoreCLI@2
+  displayName: 'Build the project - $(buildConfiguration)'
   inputs:
-    solution: '$(solution)'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    command: 'build'
+    arguments: '--no-restore --configuration $(buildConfiguration)'
+    projects: '**/*.csproj'
 
 - task: VSTest@2
   inputs:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Publish the project - $(buildConfiguration)'
+  inputs:
+    command: 'publish'
+    projects: '**/*.csproj'
+    publishWebProjects: false
+    arguments: '--no-build --configuration $(buildConfiguration)' --output $(Build.ArtifactStagingDirectory)/$(buildConfiguration)'
+    zipAfterPublish: true
