@@ -34,11 +34,13 @@ steps:
     arguments: '--no-restore --configuration $(buildConfiguration)'
     projects: '**/*.csproj'
 
-- task: VSTest@2
+- task: DotNetCoreCLI@2
+  displayName: 'Run unit tests - $(buildConfiguration)'
   inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-
+    command: 'test'
+    arguments: '--no-build --configuration $(buildConfiguration)'
+    publishTestResults: true
+    projects: '**/*.Tests.csproj'
 
 - task: DotNetCoreCLI@2
   displayName: 'Publish the project - $(buildConfiguration)'
@@ -50,6 +52,6 @@ steps:
     zipAfterPublish: true
 
 - task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact: drop'
+  displayName: 'Publish Artifact: TradeBash'
   # The condition argument specifies to run the task only when the previous task succeeds.
   condition: succeeded()
