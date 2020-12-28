@@ -10,9 +10,9 @@ namespace TradeBash.Core.Entities
     {
         private string _name;
 
-        private int _simpleMovingAverageParameter;
+        private int? _simpleMovingAverageParameter;
 
-        private int _relativeStrengthIndexParameter;
+        private int? _relativeStrengthIndexParameter;
 
         private readonly List<Stock> _stocksHistory;
 
@@ -25,8 +25,8 @@ namespace TradeBash.Core.Entities
 
         public static Strategy Set(
             string name,
-            int smaParameter,
-            int rsiParameter)
+            int? smaParameter = null,
+            int? rsiParameter = null)
         {
             var strategy = new Strategy
             {
@@ -56,9 +56,11 @@ namespace TradeBash.Core.Entities
 
         private double? CalculateSimpleMovingAverage()
         {
+            if (!_simpleMovingAverageParameter.HasValue) return null;
+
             if (_stocksHistory.Count < _simpleMovingAverageParameter) return null;
 
-            var prices = _stocksHistory.TakeLast(_simpleMovingAverageParameter).Select(x => x.Close);
+            var prices = _stocksHistory.TakeLast(_simpleMovingAverageParameter.Value).Select(x => x.Close);
             double? average = prices.AsQueryable().Average();
 
             return average;
@@ -66,6 +68,8 @@ namespace TradeBash.Core.Entities
 
         private double? CalculateRelativeStrengthIndex()
         {
+            if (!_relativeStrengthIndexParameter.HasValue) return null;
+
             if (_stocksHistory.Count <= _relativeStrengthIndexParameter) return null;
 
             var price = _stocksHistory.Select(x => x.Close).ToArray();
@@ -88,24 +92,24 @@ namespace TradeBash.Core.Entities
                 }
             }
 
-            double avrg = gain / _relativeStrengthIndexParameter;
-            double avrl = loss / _relativeStrengthIndexParameter;
+            double avrg = gain / _relativeStrengthIndexParameter.Value;
+            double avrl = loss / _relativeStrengthIndexParameter.Value;
             double rs = gain / loss;
-            rsi[_relativeStrengthIndexParameter] = 100 - (100 / (1 + rs));
+            rsi[_relativeStrengthIndexParameter.Value] = 100 - (100 / (1 + rs));
 
-            for (int i = _relativeStrengthIndexParameter + 1; i < price.Length; ++i)
+            for (int i = _relativeStrengthIndexParameter.Value + 1; i < price.Length; ++i)
             {
                 var diff = price[i] - price[i - 1];
 
                 if (diff >= 0)
                 {
-                    avrg = ((avrg * (_relativeStrengthIndexParameter - 1)) + diff) / _relativeStrengthIndexParameter;
-                    avrl = (avrl * (_relativeStrengthIndexParameter - 1)) / _relativeStrengthIndexParameter;
+                    avrg = ((avrg * (_relativeStrengthIndexParameter.Value - 1)) + diff) / _relativeStrengthIndexParameter.Value;
+                    avrl = (avrl * (_relativeStrengthIndexParameter.Value - 1)) / _relativeStrengthIndexParameter.Value;
                 }
                 else
                 {
-                    avrl = ((avrl * (_relativeStrengthIndexParameter - 1)) - diff) / _relativeStrengthIndexParameter;
-                    avrg = (avrg * (_relativeStrengthIndexParameter - 1)) / _relativeStrengthIndexParameter;
+                    avrl = ((avrl * (_relativeStrengthIndexParameter.Value - 1)) - diff) / _relativeStrengthIndexParameter.Value;
+                    avrg = (avrg * (_relativeStrengthIndexParameter.Value - 1)) / _relativeStrengthIndexParameter.Value;
                 }
 
                 rs = avrg / avrl;
@@ -120,8 +124,8 @@ namespace TradeBash.Core.Entities
         {
             foreach (var stock in _stocksHistory)
             {
-
-
+                // some strategy logic
+                stock.SetStrategySignal("Buy");
                 stock.FromBackTest(200);
             }
 

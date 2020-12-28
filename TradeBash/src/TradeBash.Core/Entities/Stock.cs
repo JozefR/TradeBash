@@ -1,4 +1,6 @@
+#nullable enable
 using System;
+using JetBrains.Annotations;
 using TradeBash.SharedKernel;
 
 namespace TradeBash.Core.Entities
@@ -18,6 +20,8 @@ namespace TradeBash.Core.Entities
         public double? SMA { get; private set; }
 
         public double? RSI { get; private set; }
+
+        public string? StrategySignal { get; private set; }
 
         public double? ProfitLoss { get; private set; }
 
@@ -53,6 +57,11 @@ namespace TradeBash.Core.Entities
             ProfitLoss = profitLoss;
 
             return this;
+        }
+
+        public void SetStrategySignal(string? signalFromStrategy)
+        {
+            StrategySignal = signalFromStrategy;
         }
     }
 }
