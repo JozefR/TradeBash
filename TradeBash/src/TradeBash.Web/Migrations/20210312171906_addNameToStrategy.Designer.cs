@@ -10,8 +10,8 @@ using TradeBash.Infrastructure.Data;
 namespace TradeBash.Web.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20201211142841_MapFieldsToColumns")]
-    partial class MapFieldsToColumns
+    [Migration("20210312171906_addNameToStrategy")]
+    partial class addNameToStrategy
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -35,9 +35,13 @@ namespace TradeBash.Web.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Label")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("Open")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("ProfitLoss")
                         .HasColumnType("float");
 
                     b.Property<double?>("RSI")
@@ -49,7 +53,11 @@ namespace TradeBash.Web.Migrations
                     b.Property<int>("StrategyId")
                         .HasColumnType("int");
 
+                    b.Property<string>("StrategySignal")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Symbol")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -66,11 +74,16 @@ namespace TradeBash.Web.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("_relativeStrengthIndexParameter")
+                    b.Property<string>("_name")
+                        .IsRequired()
+                        .HasColumnName("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("_relativeStrengthIndexParameter")
                         .HasColumnName("RelativeStrengthIndex")
                         .HasColumnType("int");
 
-                    b.Property<int>("_simpleMovingAverageParameter")
+                    b.Property<int?>("_simpleMovingAverageParameter")
                         .HasColumnName("SimpleMovingAverage")
                         .HasColumnType("int");
 
@@ -103,7 +116,7 @@ namespace TradeBash.Web.Migrations
 
             modelBuilder.Entity("TradeBash.Core.Entities.Stock", b =>
                 {
-                    b.HasOne("TradeBash.Core.Entities.Strategy", "Strategy")
+                    b.HasOne("TradeBash.Core.Entities.Strategy", null)
                         .WithMany("StocksHistory")
                         .HasForeignKey("StrategyId")
                         .OnDelete(DeleteBehavior.Cascade)

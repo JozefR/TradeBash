@@ -51,13 +51,12 @@ namespace TradeBash.Web.Api
         public async Task<IActionResult> PopulateDb(string ticker, string history)
         {
             string iexPath = String.Format(IexPath, String.Concat(ticker), String.Concat(history));
-            
+
             var items = await _apiClient.GetStocksAsync(iexPath);
 
             var data = items.Select(x => x.MapDataResponse(ticker));
 
             var strategy = Strategy.Set("test", 5, 2);
-
             foreach (var stockResponse in data)
             {
                 strategy.AddStock(

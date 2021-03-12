@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace TradeBash.Web.Migrations
 {
-    public partial class Initial : Migration
+    public partial class initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -12,7 +12,9 @@ namespace TradeBash.Web.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1")
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RelativeStrengthIndex = table.Column<int>(nullable: false),
+                    SimpleMovingAverage = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -41,12 +43,14 @@ namespace TradeBash.Web.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Date = table.Column<DateTime>(nullable: false),
-                    Symbol = table.Column<string>(nullable: true),
+                    Symbol = table.Column<string>(nullable: false),
                     Open = table.Column<double>(nullable: false),
                     Close = table.Column<double>(nullable: false),
-                    Label = table.Column<string>(nullable: true),
+                    Label = table.Column<string>(nullable: false),
                     SMA = table.Column<double>(nullable: true),
                     RSI = table.Column<double>(nullable: true),
+                    StrategySignal = table.Column<string>(nullable: true),
+                    ProfitLoss = table.Column<double>(nullable: true),
                     StrategyId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>

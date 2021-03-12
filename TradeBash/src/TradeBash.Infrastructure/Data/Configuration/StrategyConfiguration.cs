@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using TradeBash.Core.Entities;
 
@@ -16,16 +17,20 @@ namespace TradeBash.Infrastructure.Data.Configuration
             strategyBuilder.Ignore(x => x.DomainEvents);*/
 
             strategyBuilder
-                .Property<int>("_simpleMovingAverageParameter")
+                .Property<string>("_name")
                 .UsePropertyAccessMode(PropertyAccessMode.Field)
-                .HasColumnName("SimpleMovingAverage")
+                .HasColumnName("Name")
                 .IsRequired();
 
             strategyBuilder
-                .Property<int>("_relativeStrengthIndexParameter")
+                .Property<int?>("_simpleMovingAverageParameter")
                 .UsePropertyAccessMode(PropertyAccessMode.Field)
-                .HasColumnName("RelativeStrengthIndex")
-                .IsRequired();
+                .HasColumnName("SimpleMovingAverage");
+
+            strategyBuilder
+                .Property<int?>("_relativeStrengthIndexParameter")
+                .UsePropertyAccessMode(PropertyAccessMode.Field)
+                .HasColumnName("RelativeStrengthIndex");
         }
     }
 }

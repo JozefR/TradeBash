@@ -103,12 +103,14 @@ namespace TradeBash.Core.Entities
 
                 if (diff >= 0)
                 {
-                    avrg = ((avrg * (_relativeStrengthIndexParameter.Value - 1)) + diff) / _relativeStrengthIndexParameter.Value;
+                    avrg = ((avrg * (_relativeStrengthIndexParameter.Value - 1)) + diff) /
+                           _relativeStrengthIndexParameter.Value;
                     avrl = (avrl * (_relativeStrengthIndexParameter.Value - 1)) / _relativeStrengthIndexParameter.Value;
                 }
                 else
                 {
-                    avrl = ((avrl * (_relativeStrengthIndexParameter.Value - 1)) - diff) / _relativeStrengthIndexParameter.Value;
+                    avrl = ((avrl * (_relativeStrengthIndexParameter.Value - 1)) - diff) /
+                           _relativeStrengthIndexParameter.Value;
                     avrg = (avrg * (_relativeStrengthIndexParameter.Value - 1)) / _relativeStrengthIndexParameter.Value;
                 }
 
@@ -124,7 +126,7 @@ namespace TradeBash.Core.Entities
         {
             foreach (var stock in _stocksHistory)
             {
-                // some strategy logic
+                //  strategy logic
                 stock.SetStrategySignal("Buy");
                 stock.FromBackTest(200);
             }
