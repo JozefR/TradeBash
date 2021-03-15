@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using TradeBash.Core.Entities;
 using TradeBash.SharedKernel;
 using System.Reflection;
+using TradeBash.Infrastructure.DTO;
 
 namespace TradeBash.Infrastructure.Data
 {

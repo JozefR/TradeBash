@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeBash.IntegrationTests"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeBash.FunctionalTests", "TradeBash\tests\TradeBash.FunctionalTests\TradeBash.FunctionalTests.csproj", "{797A2D14-D41B-434A-8538-82DA699AD618}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeBash.DataCentre", "TradeBash.DataCentre\TradeBash.DataCentre.csproj", "{1522AC7C-8C8B-444D-AC87-461EE3651642}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{797A2D14-D41B-434A-8538-82DA699AD618}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{797A2D14-D41B-434A-8538-82DA699AD618}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{797A2D14-D41B-434A-8538-82DA699AD618}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1522AC7C-8C8B-444D-AC87-461EE3651642}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1522AC7C-8C8B-444D-AC87-461EE3651642}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1522AC7C-8C8B-444D-AC87-461EE3651642}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1522AC7C-8C8B-444D-AC87-461EE3651642}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

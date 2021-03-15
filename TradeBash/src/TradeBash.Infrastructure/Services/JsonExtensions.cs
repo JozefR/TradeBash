@@ -6,9 +6,9 @@ namespace TradeBash.Infrastructure.Services
 {
     public static class JsonExtensions
     {
-        public static StockResponse MapDataResponse(this JObject jObject, string ticker)
+        public static StockDtoResponse MapDataResponse(this JObject jObject, string ticker)
         {
-            return new StockResponse()
+            return new StockDtoResponse()
             {
                 Symbol = ticker,
                 Date = DateTime.Parse(jObject["date"].ToString()),

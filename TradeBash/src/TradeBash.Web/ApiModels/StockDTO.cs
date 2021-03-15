@@ -17,7 +17,7 @@ namespace TradeBash.Web.ApiModels
         
         public string Label { get; set; }
         
-        public static StockDTO From(Stock item)
+        public static StockDTO From(StockOrder item)
         {
             return new StockDTO
             {

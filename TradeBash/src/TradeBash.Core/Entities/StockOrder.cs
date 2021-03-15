@@ -1,11 +1,10 @@
 #nullable enable
 using System;
-using JetBrains.Annotations;
 using TradeBash.SharedKernel;
 
 namespace TradeBash.Core.Entities
 {
-    public class Stock : BaseEntity
+    public class StockOrder : BaseEntity
     {
         public DateTime Date { get; private set; }
         
@@ -27,9 +26,9 @@ namespace TradeBash.Core.Entities
 
         public int StrategyId { get; set; }
 
-        private Stock() { }
+        private StockOrder() { }
 
-        public static Stock From(
+        public static StockOrder From(
             DateTime date,
             string symbol,
             double open,
@@ -38,7 +37,7 @@ namespace TradeBash.Core.Entities
             double? sma,
             double? rsi)
         {
-            var entity = new Stock
+            var entity = new StockOrder
             {
                 Date = date,
                 Symbol = symbol,
@@ -52,7 +51,7 @@ namespace TradeBash.Core.Entities
             return entity;
         }
 
-        public Stock FromBackTest(double? profitLoss)
+        public StockOrder FromBackTest(double? profitLoss)
         {
             ProfitLoss = profitLoss;
 

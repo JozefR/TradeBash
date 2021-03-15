@@ -14,13 +14,13 @@ namespace TradeBash.Core.Entities
 
         private int? _relativeStrengthIndexParameter;
 
-        private readonly List<Stock> _stocksHistory;
+        private readonly List<StockOrder> _stocksHistory;
 
-        public IReadOnlyCollection<Stock> StocksHistory => _stocksHistory;
+        public IReadOnlyCollection<StockOrder> StocksHistory => _stocksHistory;
 
         private Strategy()
         {
-            _stocksHistory = new List<Stock>();
+            _stocksHistory = new List<StockOrder>();
         }
 
         public static Strategy Set(
@@ -38,7 +38,7 @@ namespace TradeBash.Core.Entities
             return strategy;
         }
 
-        public Stock AddStock(
+        public StockOrder AddStock(
             DateTime date,
             string symbol,
             double open,
@@ -48,7 +48,7 @@ namespace TradeBash.Core.Entities
             var sma = CalculateSimpleMovingAverage();
             var rsi = CalculateRelativeStrengthIndex();
 
-            var stock = Stock.From(date, symbol, open, close, label, sma, rsi);
+            var stock = StockOrder.From(date, symbol, open, close, label, sma, rsi);
             _stocksHistory.Add(stock);
 
             return stock;

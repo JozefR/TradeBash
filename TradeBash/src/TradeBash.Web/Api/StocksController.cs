@@ -31,7 +31,7 @@ namespace TradeBash.Web.Api
         [HttpGet]
         public async Task<IActionResult> List()
         {
-            var items = (await _repository.ListAsync<Stock>())
+            var items = (await _repository.ListAsync<StockOrder>())
                 .Select(StockDTO.From);
             
             return Ok(items);

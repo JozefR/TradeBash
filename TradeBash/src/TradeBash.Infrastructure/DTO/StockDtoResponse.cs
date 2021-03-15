@@ -1,6 +1,6 @@
 namespace TradeBash.Infrastructure.DTO
 {
-    public class StockResponse : Stock
+    public class StockDtoResponse : StockDto
     {
         
     }
