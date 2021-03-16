@@ -9,12 +9,14 @@ namespace TradeBash.Infrastructure.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<Strategy> strategyBuilder)
         {
-            /*strategyBuilder.HasKey(x => x.Id);
+            strategyBuilder.HasKey(x => x.Id);
 
             strategyBuilder.Property(x => x.Id)
                 .UseHiLo("orderseq", "ordering");
 
-            strategyBuilder.Ignore(x => x.DomainEvents);*/
+            /*
+            strategyBuilder.Ignore(x => x.DomainEvents);
+            */
 
             strategyBuilder
                 .Property<string>("_name")

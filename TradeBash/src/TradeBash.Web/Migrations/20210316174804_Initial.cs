@@ -3,18 +3,38 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace TradeBash.Web.Migrations
 {
-    public partial class initial : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.EnsureSchema(
+                name: "ordering");
+
+            migrationBuilder.CreateSequence(
+                name: "orderseq",
+                schema: "ordering",
+                incrementBy: 10);
+
+            migrationBuilder.CreateTable(
+                name: "Stocks",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false),
+                    Symbol = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Stocks", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Strategies",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    RelativeStrengthIndex = table.Column<int>(nullable: false),
-                    SimpleMovingAverage = table.Column<int>(nullable: false)
+                    Id = table.Column<int>(nullable: false),
+                    Name = table.Column<string>(nullable: false),
+                    RelativeStrengthIndex = table.Column<int>(nullable: true),
+                    SimpleMovingAverage = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -37,7 +57,30 @@ namespace TradeBash.Web.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Stock",
+                name: "StocksHistory",
+                columns: table => new
+                {
+                    StockId = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Date = table.Column<DateTime>(nullable: false),
+                    Open = table.Column<double>(nullable: false),
+                    Close = table.Column<double>(nullable: false),
+                    Label = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StocksHistory", x => new { x.StockId, x.Id });
+                    table.ForeignKey(
+                        name: "FK_StocksHistory_Stocks_StockId",
+                        column: x => x.StockId,
+                        principalTable: "Stocks",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "StockOrder",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -55,9 +98,9 @@ namespace TradeBash.Web.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Stock", x => x.Id);
+                    table.PrimaryKey("PK_StockOrder", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Stock_Strategies_StrategyId",
+                        name: "FK_StockOrder_Strategies_StrategyId",
                         column: x => x.StrategyId,
                         principalTable: "Strategies",
                         principalColumn: "Id",
@@ -65,21 +108,31 @@ namespace TradeBash.Web.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Stock_StrategyId",
-                table: "Stock",
+                name: "IX_StockOrder_StrategyId",
+                table: "StockOrder",
                 column: "StrategyId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Stock");
+                name: "StockOrder");
+
+            migrationBuilder.DropTable(
+                name: "StocksHistory");
 
             migrationBuilder.DropTable(
                 name: "ToDoItems");
 
             migrationBuilder.DropTable(
                 name: "Strategies");
+
+            migrationBuilder.DropTable(
+                name: "Stocks");
+
+            migrationBuilder.DropSequence(
+                name: "orderseq",
+                schema: "ordering");
         }
     }
 }

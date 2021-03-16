@@ -17,6 +17,7 @@ namespace TradeBash.Web.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "3.1.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
+                .HasAnnotation("Relational:Sequence:ordering.orderseq", "'orderseq', 'ordering', '1', '10', '', '', 'Int64', 'False'")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("TradeBash.Core.Entities.StockOrder", b =>
@@ -70,7 +71,9 @@ namespace TradeBash.Web.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasAnnotation("SqlServer:HiLoSequenceName", "orderseq")
+                        .HasAnnotation("SqlServer:HiLoSequenceSchema", "ordering")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.SequenceHiLo);
 
                     b.Property<string>("_name")
                         .IsRequired()
@@ -112,6 +115,23 @@ namespace TradeBash.Web.Migrations
                     b.ToTable("ToDoItems");
                 });
 
+            modelBuilder.Entity("TradeBash.Core.Entities.Warehouse.Stock", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:HiLoSequenceName", "orderseq")
+                        .HasAnnotation("SqlServer:HiLoSequenceSchema", "ordering")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.SequenceHiLo);
+
+                    b.Property<string>("Symbol")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Stocks");
+                });
+
             modelBuilder.Entity("TradeBash.Core.Entities.StockOrder", b =>
                 {
                     b.HasOne("TradeBash.Core.Entities.Strategy", null)
@@ -119,6 +139,39 @@ namespace TradeBash.Web.Migrations
                         .HasForeignKey("StrategyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("TradeBash.Core.Entities.Warehouse.Stock", b =>
+                {
+                    b.OwnsMany("TradeBash.Core.Entities.Warehouse.StockHistory", "History", b1 =>
+                        {
+                            b1.Property<int>("StockId")
+                                .HasColumnType("int");
+
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int")
+                                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                            b1.Property<double>("Close")
+                                .HasColumnType("float");
+
+                            b1.Property<DateTime>("Date")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<string>("Label")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<double>("Open")
+                                .HasColumnType("float");
+
+                            b1.HasKey("StockId", "Id");
+
+                            b1.ToTable("StocksHistory");
+
+                            b1.WithOwner()
+                                .HasForeignKey("StockId");
+                        });
                 });
 #pragma warning restore 612, 618
         }

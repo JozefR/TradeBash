@@ -16,6 +16,7 @@
   </ItemGroup>
   
   <ItemGroup>
+    <ProjectReference Include="..\..\..\TradeBash.DataCentre\TradeBash.DataCentre.csproj" />
     <ProjectReference Include="..\TradeBash.Core\TradeBash.Core.csproj" />
     <ProjectReference Include="..\TradeBash.SharedKernel\TradeBash.SharedKernel.csproj" />
   </ItemGroup>

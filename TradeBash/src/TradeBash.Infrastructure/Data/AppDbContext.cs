@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using TradeBash.Core.Entities;
 using TradeBash.SharedKernel;
 using System.Reflection;
+using TradeBash.Core.Entities.Warehouse;
 using TradeBash.Infrastructure.DTO;
 
 namespace TradeBash.Infrastructure.Data
@@ -23,6 +24,8 @@ namespace TradeBash.Infrastructure.Data
         public DbSet<ToDoItem> ToDoItems { get; set; }
 
         public DbSet<Strategy> Strategies { get; set; }
+
+        public DbSet<Stock> Stocks { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

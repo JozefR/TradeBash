@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using TradeBash.Core.Entities;
+using TradeBash.Core.Entities.Warehouse;
 using TradeBash.Infrastructure.Services;
 using TradeBash.SharedKernel.Interfaces;
 using TradeBash.Web.ApiModels;
@@ -68,6 +70,30 @@ namespace TradeBash.Web.Api
             }
 
             await _repository.AddAsync(strategy);
+
+            return Ok();
+        }
+
+        [HttpPatch("iex/populate/stocks/{ticker}/{history}")]
+        public async Task<IActionResult> PopulateStocks(string ticker, string history)
+        {
+            string iexPath = String.Format(IexPath, String.Concat(ticker), String.Concat(history));
+
+            var items = await _apiClient.GetStocksAsync(iexPath);
+
+            var data = items.Select(x => x.MapDataResponse(ticker));
+
+            var stock = Stock.From(ticker);
+            foreach (var stockResponse in data)
+            {
+                stock.AddHistory(
+                    stockResponse.Date,
+                    stockResponse.Open,
+                    stockResponse.Close,
+                    stockResponse.Label);
+            }
+
+            await _repository.AddAsync(stock);
 
             return Ok();
         }

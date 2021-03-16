@@ -24,6 +24,7 @@
     <Compile Update="Endpoints\ToDoItems\Update.NewToDoItemRequest.cs">
       <DependentUpon>Update.cs</DependentUpon>
     </Compile>
+    <Compile Remove="Migrations\AppDbContextModelSnapshot.cs" />
   </ItemGroup>
   
   <ItemGroup>
