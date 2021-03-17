@@ -2,7 +2,7 @@
 using System;
 using TradeBash.SharedKernel;
 
-namespace TradeBash.Core.Entities
+namespace TradeBash.Core.Entities.Strategy
 {
     public class StockOrder : BaseEntity
     {

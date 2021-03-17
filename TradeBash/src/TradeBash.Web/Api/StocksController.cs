@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using TradeBash.Core.Entities;
+using TradeBash.Core.Entities.Strategy;
 using TradeBash.Core.Entities.Warehouse;
 using TradeBash.Infrastructure.Services;
 using TradeBash.SharedKernel.Interfaces;

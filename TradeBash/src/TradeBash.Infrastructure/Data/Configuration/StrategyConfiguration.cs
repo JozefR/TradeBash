@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using TradeBash.Core.Entities;
+using TradeBash.Core.Entities.Strategy;
 
 namespace TradeBash.Infrastructure.Data.Configuration
 {

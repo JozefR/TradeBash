@@ -1,5 +1,6 @@
 using System;
 using TradeBash.Core.Entities;
+using TradeBash.Core.Entities.Strategy;
 
 namespace TradeBash.Web.ApiModels
 {

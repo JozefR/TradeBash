@@ -4,7 +4,7 @@ using System.Linq;
 using TradeBash.SharedKernel;
 using TradeBash.SharedKernel.Interfaces;
 
-namespace TradeBash.Core.Entities
+namespace TradeBash.Core.Entities.Strategy
 {
     public class Strategy : BaseEntity, IAggregateRoot
     {

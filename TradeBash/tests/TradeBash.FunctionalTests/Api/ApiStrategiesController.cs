@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using TradeBash.Core.Entities;
+using TradeBash.Core.Entities.Strategy;
 using TradeBash.Web;
 using Xunit;
 

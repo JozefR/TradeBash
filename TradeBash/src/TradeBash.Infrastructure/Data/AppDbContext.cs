@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using TradeBash.Core.Entities;
 using TradeBash.SharedKernel;
 using System.Reflection;
+using TradeBash.Core.Entities.Strategy;
 using TradeBash.Core.Entities.Warehouse;
 using TradeBash.Infrastructure.DTO;
 

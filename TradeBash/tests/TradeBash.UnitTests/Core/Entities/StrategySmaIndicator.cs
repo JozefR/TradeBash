@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using TradeBash.Core.Entities;
+using TradeBash.Core.Entities.Strategy;
 using Xunit;
 
 namespace TradeBash.UnitTests.Core.Entities
