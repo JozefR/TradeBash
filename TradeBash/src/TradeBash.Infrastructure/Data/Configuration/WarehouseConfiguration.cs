@@ -10,8 +10,8 @@ namespace TradeBash.Infrastructure.Data.Configuration
         {
             builder.HasKey(x => x.Id);
 
-            builder.Property(x => x.Id)
-                .UseHiLo("orderseq", "ordering");
+            /*builder.Property(x => x.Id)
+                .UseHiLo("orderseq", "ordering");*/
 
             /*
             builder.Ignore(x => x.DomainEvents);

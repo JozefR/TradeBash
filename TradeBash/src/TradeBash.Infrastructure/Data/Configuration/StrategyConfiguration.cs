@@ -12,8 +12,8 @@ namespace TradeBash.Infrastructure.Data.Configuration
         {
             strategyBuilder.HasKey(x => x.Id);
 
-            strategyBuilder.Property(x => x.Id)
-                .UseHiLo("orderseq", "ordering");
+            /*strategyBuilder.Property(x => x.Id)
+                .UseHiLo("orderseq", "ordering");*/
 
             /*
             strategyBuilder.Ignore(x => x.DomainEvents);

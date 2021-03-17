@@ -4,12 +4,13 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TradeBash.Core.Entities.Warehouse;
 
 namespace TradeBash.Infrastructure.Data
 {
     public class EfRepository : IRepository
     {
-        private readonly AppDbContext _dbContext;
+        protected readonly AppDbContext _dbContext;
 
         public EfRepository(AppDbContext dbContext)
         {

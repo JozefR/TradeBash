@@ -6,6 +6,7 @@ using TradeBash.Infrastructure.DomainEvents;
 using TradeBash.SharedKernel.Interfaces;
 using System.Collections.Generic;
 using System.Reflection;
+using TradeBash.Infrastructure.Data.Repositories;
 using Module = Autofac.Module;
 
 namespace TradeBash.Infrastructure
@@ -47,6 +48,7 @@ namespace TradeBash.Infrastructure
                 .InstancePerLifetimeScope();
             builder.RegisterType<EfRepository>().As<IRepository>()
                 .InstancePerLifetimeScope();
+            builder.RegisterType<StockRepository>().As<IStockRepository>();
 
             builder.RegisterAssemblyTypes(_assemblies.ToArray())
                 .AsClosedTypesOf(typeof(IHandle<>));

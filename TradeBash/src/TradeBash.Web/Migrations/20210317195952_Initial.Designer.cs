@@ -10,7 +10,7 @@ using TradeBash.Infrastructure.Data;
 namespace TradeBash.Web.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20210316174804_Initial")]
+    [Migration("20210317195952_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -19,10 +19,9 @@ namespace TradeBash.Web.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "3.1.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("Relational:Sequence:ordering.orderseq", "'orderseq', 'ordering', '1', '10', '', '', 'Int64', 'False'")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("TradeBash.Core.Entities.StockOrder", b =>
+            modelBuilder.Entity("TradeBash.Core.Entities.Strategy.StockOrder", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -68,14 +67,12 @@ namespace TradeBash.Web.Migrations
                     b.ToTable("StockOrder");
                 });
 
-            modelBuilder.Entity("TradeBash.Core.Entities.Strategy", b =>
+            modelBuilder.Entity("TradeBash.Core.Entities.Strategy.Strategy", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasAnnotation("SqlServer:HiLoSequenceName", "orderseq")
-                        .HasAnnotation("SqlServer:HiLoSequenceSchema", "ordering")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.SequenceHiLo);
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("_name")
                         .IsRequired()
@@ -122,9 +119,10 @@ namespace TradeBash.Web.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasAnnotation("SqlServer:HiLoSequenceName", "orderseq")
-                        .HasAnnotation("SqlServer:HiLoSequenceSchema", "ordering")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.SequenceHiLo);
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Symbol")
                         .HasColumnType("nvarchar(max)");
@@ -134,9 +132,9 @@ namespace TradeBash.Web.Migrations
                     b.ToTable("Stocks");
                 });
 
-            modelBuilder.Entity("TradeBash.Core.Entities.StockOrder", b =>
+            modelBuilder.Entity("TradeBash.Core.Entities.Strategy.StockOrder", b =>
                 {
-                    b.HasOne("TradeBash.Core.Entities.Strategy", null)
+                    b.HasOne("TradeBash.Core.Entities.Strategy.Strategy", null)
                         .WithMany("StocksHistory")
                         .HasForeignKey("StrategyId")
                         .OnDelete(DeleteBehavior.Cascade)

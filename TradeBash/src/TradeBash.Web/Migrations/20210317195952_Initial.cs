@@ -7,20 +7,14 @@ namespace TradeBash.Web.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.EnsureSchema(
-                name: "ordering");
-
-            migrationBuilder.CreateSequence(
-                name: "orderseq",
-                schema: "ordering",
-                incrementBy: 10);
-
             migrationBuilder.CreateTable(
                 name: "Stocks",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
-                    Symbol = table.Column<string>(nullable: true)
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Symbol = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -31,7 +25,8 @@ namespace TradeBash.Web.Migrations
                 name: "Strategies",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(nullable: false),
                     RelativeStrengthIndex = table.Column<int>(nullable: true),
                     SimpleMovingAverage = table.Column<int>(nullable: true)
@@ -129,10 +124,6 @@ namespace TradeBash.Web.Migrations
 
             migrationBuilder.DropTable(
                 name: "Stocks");
-
-            migrationBuilder.DropSequence(
-                name: "orderseq",
-                schema: "ordering");
         }
     }
 }

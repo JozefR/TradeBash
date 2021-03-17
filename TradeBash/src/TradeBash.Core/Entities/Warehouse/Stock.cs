@@ -8,6 +8,8 @@ namespace TradeBash.Core.Entities.Warehouse
     {
         public string Symbol { get; private set; }
 
+        public string Name { get; private set; }
+
         public IReadOnlyCollection<StockHistory> History => _history;
 
         private readonly List<StockHistory> _history;
@@ -17,11 +19,12 @@ namespace TradeBash.Core.Entities.Warehouse
             _history = new List<StockHistory>();
         }
 
-        public static Stock From(string symbol)
+        public static Stock From(string symbol, string name)
         {
             var entity = new Stock
             {
                 Symbol = symbol,
+                Name = name
             };
 
             return entity;
