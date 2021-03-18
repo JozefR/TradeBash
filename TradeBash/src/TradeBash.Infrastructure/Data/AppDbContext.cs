@@ -14,12 +14,9 @@ namespace TradeBash.Infrastructure.Data
 {
     public class AppDbContext : DbContext
     {
-        private readonly IDomainEventDispatcher _dispatcher;
-
-        public AppDbContext(DbContextOptions<AppDbContext> options, IDomainEventDispatcher dispatcher)
+        public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options)
         {
-            _dispatcher = dispatcher;
         }
 
         public DbSet<ToDoItem> ToDoItems { get; set; }
@@ -38,26 +35,6 @@ namespace TradeBash.Infrastructure.Data
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
             int result = await base.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-
-            // ignore events if no dispatcher provided
-            if (_dispatcher == null) return result;
-
-            // dispatch events only if save was successful
-            var entitiesWithEvents = ChangeTracker.Entries<BaseEntity>()
-                .Select(e => e.Entity)
-                .Where(e => e.DomainEvents.Any())
-                .ToArray();
-
-            foreach (var entity in entitiesWithEvents)
-            {
-                var events = entity.DomainEvents.ToArray();
-                entity.DomainEvents.Clear();
-                foreach (var domainEvent in events)
-                {
-                    await _dispatcher.Dispatch(domainEvent).ConfigureAwait(false);
-                }
-            }
-
             return result;
         }
 

@@ -50,8 +50,6 @@ namespace TradeBash.FunctionalTests
                 //    options.UseInternalServiceProvider(serviceProvider);
                 //});
 
-                services.AddScoped<IDomainEventDispatcher, NoOpDomainEventDispatcher>();
-
                 // Build the service provider.
                 var sp = services.BuildServiceProvider();
 

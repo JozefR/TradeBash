@@ -4,4 +4,8 @@
         <TargetFramework>netcoreapp3.1</TargetFramework>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\TradeBash\src\TradeBash.Infrastructure\TradeBash.Infrastructure.csproj" />
+    </ItemGroup>
+
 </Project>

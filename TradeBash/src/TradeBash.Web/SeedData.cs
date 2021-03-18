@@ -28,7 +28,7 @@ namespace TradeBash.Web
         public static void Initialize(IServiceProvider serviceProvider)
         {
             using (var dbContext = new AppDbContext(
-                serviceProvider.GetRequiredService<DbContextOptions<AppDbContext>>(), null))
+                serviceProvider.GetRequiredService<DbContextOptions<AppDbContext>>()))
             {
                 PopulateTestData(dbContext);
             }

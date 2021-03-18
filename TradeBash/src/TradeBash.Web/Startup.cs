@@ -1,13 +1,14 @@
-﻿using System;
-using Autofac;
-using TradeBash.Infrastructure;
+﻿using TradeBash.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
+using TradeBash.Infrastructure.Data;
+using TradeBash.Infrastructure.Data.Repositories;
 using TradeBash.Infrastructure.Services;
+using TradeBash.SharedKernel.Interfaces;
 
 namespace TradeBash.Web
 {
@@ -31,6 +32,9 @@ namespace TradeBash.Web
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            services.AddScoped<IRepository, EfRepository>();
+            services.AddScoped<IStockRepository, StockRepository>();
+
             services.AddDbContext(Configuration);
             services.AddControllersWithViews().AddNewtonsoftJson();
             services.AddRazorPages();
@@ -43,12 +47,6 @@ namespace TradeBash.Web
                 c.EnableAnnotations();
             });
         }
-
-        public void ConfigureContainer(ContainerBuilder builder)
-        {
-            builder.RegisterModule(new DefaultInfrastructureModule(_env.EnvironmentName == "Development"));
-        }
-
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
