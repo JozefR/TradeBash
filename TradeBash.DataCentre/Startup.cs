@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using TradeBash.Infrastructure;
 using TradeBash.Infrastructure.Data;
 using TradeBash.Infrastructure.Data.Repositories;
+using TradeBash.Infrastructure.Services;
 using TradeBash.SharedKernel.Interfaces;
 
 namespace TradeBash.DataCentre
@@ -25,6 +26,9 @@ namespace TradeBash.DataCentre
         {
             services.AddScoped<IRepository, EfRepository>();
             services.AddScoped<IStockRepository, StockRepository>();
+            services.AddScoped<IStocksCsvReader, StocksCsvReader>();
+
+            services.AddHttpClient<IApiClient, ApiClient>();
 
             services.AddDbContext(Configuration);
         }
