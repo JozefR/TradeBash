@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace TradeBash.Web.Migrations
 {
-    public partial class Initial : Migration
+    public partial class initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -58,10 +58,27 @@ namespace TradeBash.Web.Migrations
                     StockId = table.Column<int>(nullable: false),
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Date = table.Column<DateTime>(nullable: false),
-                    Open = table.Column<double>(nullable: false),
                     Close = table.Column<double>(nullable: false),
-                    Label = table.Column<string>(nullable: true)
+                    High = table.Column<double>(nullable: false),
+                    Low = table.Column<double>(nullable: false),
+                    Open = table.Column<double>(nullable: false),
+                    Volume = table.Column<double>(nullable: false),
+                    Date = table.Column<DateTime>(nullable: false),
+                    ChangeOverTime = table.Column<double>(nullable: false),
+                    MarketChangeOverTime = table.Column<double>(nullable: false),
+                    UOpen = table.Column<double>(nullable: false),
+                    UClose = table.Column<double>(nullable: false),
+                    UHigh = table.Column<double>(nullable: false),
+                    ULow = table.Column<double>(nullable: false),
+                    UVolume = table.Column<double>(nullable: false),
+                    FOpen = table.Column<double>(nullable: false),
+                    FClose = table.Column<double>(nullable: false),
+                    FHigh = table.Column<double>(nullable: false),
+                    FLow = table.Column<double>(nullable: false),
+                    FVolume = table.Column<double>(nullable: false),
+                    Label = table.Column<string>(nullable: true),
+                    Change = table.Column<double>(nullable: false),
+                    ChangePercent = table.Column<double>(nullable: false)
                 },
                 constraints: table =>
                 {
