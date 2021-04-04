@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,8 +8,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using TradeBash.Core.Entities.Warehouse;
 using TradeBash.Infrastructure.Data.Repositories;
+using TradeBash.Infrastructure.DTO;
 using TradeBash.Infrastructure.Services;
 
 namespace TradeBash.DataCentre
@@ -75,9 +78,9 @@ namespace TradeBash.DataCentre
                     var existingStock = await repository.GetBySymbolAsync(toUpdate.symbol);
                     if (existingStock == null)
                     {
-                        var iexPath = String.Format(_iexPath, String.Concat(toUpdate.symbol, String.Concat("1y")));
+                        var iexPath = String.Format(_iexPath, toUpdate.symbol, "1y");
                         var stocksHistory = await apiClient.GetStocksAsync(iexPath);
-                        var stocksHistorySerialized = stocksHistory.Select(x => x.MapDataResponse(toUpdate.symbol));
+                        var stocksHistorySerialized = stocksHistory.Select(x => x.MapDataResponse());
 
                         var stock = Stock.From(toUpdate.symbol, toUpdate.name);
 
@@ -87,7 +90,24 @@ namespace TradeBash.DataCentre
                                 stockResponse.Date,
                                 stockResponse.Open,
                                 stockResponse.Close,
-                                stockResponse.Label);
+                                stockResponse.Label,
+                                stockResponse.High,
+                                stockResponse.Low,
+                                stockResponse.Volume,
+                                stockResponse.ChangeOverTime,
+                                stockResponse.MarketChangeOverTime,
+                                stockResponse.UOpen,
+                                stockResponse.UClose,
+                                stockResponse.UHigh,
+                                stockResponse.ULow,
+                                stockResponse.UVolume,
+                                stockResponse.FOpen,
+                                stockResponse.FClose,
+                                stockResponse.FHigh,
+                                stockResponse.FLow,
+                                stockResponse.FVolume,
+                                stockResponse.Change,
+                                stockResponse.ChangePercent);
                         }
 
                         await repository.AddAsync(stock);

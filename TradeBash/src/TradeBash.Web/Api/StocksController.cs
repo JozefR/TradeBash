@@ -57,7 +57,7 @@ namespace TradeBash.Web.Api
 
             var items = await _apiClient.GetStocksAsync(iexPath);
 
-            var data = items.Select(x => x.MapDataResponse(ticker));
+            var data = items.Select(x => x.MapDataResponse());
 
             var strategy = Strategy.Set("test", 5, 2);
             foreach (var stockResponse in data)
@@ -99,7 +99,7 @@ namespace TradeBash.Web.Api
                 }
             }
 
-            foreach (var stockToDownload in stocksToDownload)
+            /*foreach (var stockToDownload in stocksToDownload)
             {
                 var symbol = stockToDownload.Item1;
                 var name = stockToDownload.Item2;
@@ -110,7 +110,7 @@ namespace TradeBash.Web.Api
                     var iexPath = String.Format(IexPath, String.Concat(symbol), String.Concat(history));
                     var items = await _apiClient.GetStocksAsync(iexPath);
 
-                    var data = items.Select(x => x.MapDataResponse(symbol));
+                    var data = items.Select(x => x.MapDataResponse());
 
                     var stock = Stock.From(symbol, name);
                     foreach (var stockResponse in data)
@@ -124,7 +124,7 @@ namespace TradeBash.Web.Api
 
                     await _stockRepository.AddAsync(stock);
                 }
-            }
+            }*/
 
             return Ok();
         }

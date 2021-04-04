@@ -34,9 +34,48 @@ namespace TradeBash.Core.Entities.Warehouse
             DateTime date,
             double open,
             double close,
-            string label)
+            string label,
+            double high,
+            double low,
+            double volume,
+            double changeOverTime,
+            double marketChangeOverTime,
+            double uOpen,
+            double uClose,
+            double uHigh,
+            double uLow,
+            double uVolume,
+            double fOpen,
+            double fClose,
+            double fHigh,
+            double fLow,
+            double fVolume,
+            double change,
+            double changePercent)
         {
-            var stock = StockHistory.From(date, open, close, label);
+            var stock = StockHistory.From(
+                date,
+                open,
+                close,
+                label,
+                high,
+                low,
+                volume,
+                changeOverTime,
+                marketChangeOverTime,
+                uOpen,
+                uClose,
+                uHigh,
+                uLow,
+                uVolume,
+                fOpen,
+                fClose,
+                fHigh,
+                fLow,
+                fVolume,
+                change,
+                changePercent);
+
             _history.Add(stock);
 
             return stock;

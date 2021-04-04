@@ -10,8 +10,8 @@ using TradeBash.Infrastructure.Data;
 namespace TradeBash.Web.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20210317195952_Initial")]
-    partial class Initial
+    [Migration("20210404144459_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -153,16 +153,67 @@ namespace TradeBash.Web.Migrations
                                 .HasColumnType("int")
                                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                            b1.Property<double>("Change")
+                                .HasColumnType("float");
+
+                            b1.Property<double>("ChangeOverTime")
+                                .HasColumnType("float");
+
+                            b1.Property<double>("ChangePercent")
+                                .HasColumnType("float");
+
                             b1.Property<double>("Close")
                                 .HasColumnType("float");
 
                             b1.Property<DateTime>("Date")
                                 .HasColumnType("datetime2");
 
+                            b1.Property<double>("FClose")
+                                .HasColumnType("float");
+
+                            b1.Property<double>("FHigh")
+                                .HasColumnType("float");
+
+                            b1.Property<double>("FLow")
+                                .HasColumnType("float");
+
+                            b1.Property<double>("FOpen")
+                                .HasColumnType("float");
+
+                            b1.Property<double>("FVolume")
+                                .HasColumnType("float");
+
+                            b1.Property<double>("High")
+                                .HasColumnType("float");
+
                             b1.Property<string>("Label")
                                 .HasColumnType("nvarchar(max)");
 
+                            b1.Property<double>("Low")
+                                .HasColumnType("float");
+
+                            b1.Property<double>("MarketChangeOverTime")
+                                .HasColumnType("float");
+
                             b1.Property<double>("Open")
+                                .HasColumnType("float");
+
+                            b1.Property<double>("UClose")
+                                .HasColumnType("float");
+
+                            b1.Property<double>("UHigh")
+                                .HasColumnType("float");
+
+                            b1.Property<double>("ULow")
+                                .HasColumnType("float");
+
+                            b1.Property<double>("UOpen")
+                                .HasColumnType("float");
+
+                            b1.Property<double>("UVolume")
+                                .HasColumnType("float");
+
+                            b1.Property<double>("Volume")
                                 .HasColumnType("float");
 
                             b1.HasKey("StockId", "Id");
