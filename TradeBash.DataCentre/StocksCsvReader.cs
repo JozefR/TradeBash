@@ -30,9 +30,9 @@ namespace TradeBash.DataCentre
                 while (!csvParser.EndOfData)
                 {
                     // Read current line fields, pointer moves to the next line.
-                    string[] fields = csvParser.ReadFields();
-                    string symbol = fields[0];
-                    string name = fields[1];
+                    var fields = csvParser.ReadFields();
+                    var symbol = fields[0];
+                    var name = fields[1];
                     _stocksToUpdate.Add(new (symbol, name));
                 }
             }
