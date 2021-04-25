@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TradeBash.Core.Entities.Strategy;
 using TradeBash.Core.Entities.Warehouse;
 
 namespace TradeBash.Infrastructure.Data

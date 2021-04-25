@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using TradeBash.Core.Entities.Warehouse;
 using TradeBash.SharedKernel;
@@ -15,9 +16,8 @@ namespace TradeBash.Core.Entities.Strategy
 
         private int? _relativeStrengthIndexParameter;
 
-        private readonly List<StrategyStock> _stocksHistory;
-
         public IReadOnlyCollection<StrategyStock> StocksHistory => _stocksHistory;
+        private readonly List<StrategyStock> _stocksHistory;
 
         private Strategy()
         {
@@ -58,21 +58,31 @@ namespace TradeBash.Core.Entities.Strategy
             }
         }
 
-        /*public void RunBackTest()
+
+
+        public void RunBackTest()
         {
             if (!_stocksHistory.Any())
             {
                 throw new Exception();
             }
 
-            foreach (var stock in _stocksHistory)
+            // buy if rsi < 2;
+            var index = 0;
+            var minimum = 0;
+            CalculatedStock generatedSignal;
+            foreach (var strategyStock in _stocksHistory)
             {
-                //  strategy logic
-                stock.SetStrategySignal("Buy");
-                stock.FromBackTest(200);
+                if (strategyStock.CalculatedStocksHistory.ToList()[index].RSI < minimum)
+                {
+                    generatedSignal = strategyStock.CalculatedStocksHistory.ToList()[index];
+                }
+
+
+                index++;
             }
 
             throw new NotImplementedException();
-        }*/
+        }
     }
 }
