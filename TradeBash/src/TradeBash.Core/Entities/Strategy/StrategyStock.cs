@@ -13,7 +13,10 @@ namespace TradeBash.Core.Entities.Strategy
         public string Label { get; private set; }
 
         private readonly List<CalculatedStock> _calculatedStocksHistory;
-        public IReadOnlyCollection<CalculatedStock> CalculatedStocksHistory => _calculatedStocksHistory;
+        public IReadOnlyCollection<CalculatedStock> CalculatedStocksHistory =>
+            _calculatedStocksHistory
+            .OrderBy(x => x.Date)
+            .ToList();
 
         private int? _simpleMovingAverageParameter;
         private int? _relativeStrengthIndexParameter;

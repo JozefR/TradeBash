@@ -45,6 +45,8 @@ namespace TradeBash.Web.Api
         {
             var strategy = await _strategyRepository.GetByIdAsync(3);
 
+            strategy.RunBackTest();
+
             return null;
         }
     }

@@ -38,16 +38,14 @@ namespace TradeBash.Core.Entities.Strategy
             return entity;
         }
 
-        public CalculatedStock FromBackTest(double? profitLoss)
+        public void BuyStock()
         {
-            ProfitLoss = profitLoss;
-
-            return this;
+            StrategySignal = "Buy";
         }
 
-        public void SetStrategySignal(string? signalFromStrategy)
+        public void SellStock()
         {
-            StrategySignal = signalFromStrategy;
+            StrategySignal = "Sell";
         }
     }
 }

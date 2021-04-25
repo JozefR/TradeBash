@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -58,8 +59,6 @@ namespace TradeBash.Core.Entities.Strategy
             }
         }
 
-
-
         public void RunBackTest()
         {
             if (!_stocksHistory.Any())
@@ -68,21 +67,44 @@ namespace TradeBash.Core.Entities.Strategy
             }
 
             // buy if rsi < 2;
+            // sell if sma > 10
+            CalculatedStock? generatedSignal = null;
+            var dates = _stocksHistory.FirstOrDefault()!.CalculatedStocksHistory.Select(x => x.Date).ToList();
             var index = 0;
-            var minimum = 0;
-            CalculatedStock generatedSignal;
-            foreach (var strategyStock in _stocksHistory)
+            foreach (var date in dates)
             {
-                if (strategyStock.CalculatedStocksHistory.ToList()[index].RSI < minimum)
+                foreach (var strategyStock in _stocksHistory)
                 {
-                    generatedSignal = strategyStock.CalculatedStocksHistory.ToList()[index];
+                    if (index >= strategyStock.CalculatedStocksHistory.Count) continue;
+
+                    var currentStock = strategyStock.CalculatedStocksHistory.ToList()[index];
+
+                    if (currentStock.RSI == 0) continue;
+                    if (currentStock.Date != date) continue;
+
+                    if (currentStock.RSI < _relativeStrengthIndexParameter || (generatedSignal != null && currentStock.RSI < generatedSignal.RSI))
+                    {
+                        generatedSignal = currentStock;
+                    }
+
+                    var openPosition = strategyStock.CalculatedStocksHistory.LastOrDefault(
+                        x => x.StrategySignal == "Buy" || x.StrategySignal == "Sell");
+
+                    if (openPosition == null) continue;
+
+                    if (openPosition.StrategySignal == "Buy" && currentStock.SMA > currentStock.Close)
+                    {
+                        currentStock.SellStock();
+                    }
                 }
 
+                if (generatedSignal != null)
+                {
+                    generatedSignal.BuyStock();
+                }
 
                 index++;
             }
-
-            throw new NotImplementedException();
         }
     }
 }
