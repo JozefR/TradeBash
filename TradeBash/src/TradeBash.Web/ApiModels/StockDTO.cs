@@ -18,16 +18,16 @@ namespace TradeBash.Web.ApiModels
         
         public string Label { get; set; }
         
-        public static StockDTO From(StockOrder item)
+        public static StockDTO From(StrategyStock item)
         {
             return new StockDTO
             {
-                Id = item.Id,
+                /*Id = item.Id,
                 Date = item.Date,
                 Symbol = item.Symbol,
                 Open = item.Open,
                 Close = item.Close,
-                Label = item.Label,
+                Label = item.Label,*/
             };
         }
     }

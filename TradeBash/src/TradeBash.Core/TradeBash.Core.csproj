@@ -12,4 +12,9 @@
     <ProjectReference Include="..\TradeBash.SharedKernel\TradeBash.SharedKernel.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Events" />
+    <Folder Include="Handlers" />
+  </ItemGroup>
+
 </Project>

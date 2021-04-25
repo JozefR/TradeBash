@@ -19,8 +19,6 @@ namespace TradeBash.Infrastructure.Data
         {
         }
 
-        public DbSet<ToDoItem> ToDoItems { get; set; }
-
         public DbSet<Strategy> Strategies { get; set; }
 
         public DbSet<Stock> Stocks { get; set; }

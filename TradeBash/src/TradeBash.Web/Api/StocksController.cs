@@ -34,7 +34,7 @@ namespace TradeBash.Web.Api
         [HttpGet]
         public async Task<IActionResult> List()
         {
-            var items = (await _stockRepository.ListAsync<StockOrder>())
+            var items = (await _stockRepository.ListAsync<StrategyStock>())
                 .Select(StockDTO.From);
             
             return Ok(items);
@@ -59,10 +59,10 @@ namespace TradeBash.Web.Api
 
             var data = items.Select(x => x.MapDataResponse());
 
-            var strategy = Strategy.Set("test", 5, 2);
+            /*var strategy = Strategy.From("test", 5, 2);
             foreach (var stockResponse in data)
             {
-                strategy.AddStock(
+                strategy.CalculateForStock(
                     stockResponse.Date,
                     stockResponse.Symbol,
                     stockResponse.Open,
@@ -70,7 +70,7 @@ namespace TradeBash.Web.Api
                     stockResponse.Label);
             }
 
-            await _stockRepository.AddAsync(strategy);
+            await _stockRepository.AddAsync(strategy);*/
 
             return Ok();
         }

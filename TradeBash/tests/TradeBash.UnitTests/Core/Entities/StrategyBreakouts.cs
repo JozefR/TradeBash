@@ -10,17 +10,17 @@ namespace TradeBash.UnitTests.Core.Entities
 {
     public class StrategyBreakouts
     {
-        [Fact(Skip = "not implemented")]
+        /*[Fact(Skip = "not implemented")]
         public void Price_Crossed_MovingAverage_From_Bottom_To_Up_ShouldBuy()
         {
             // arrange
-            var strategy = Strategy.Set("Breakout", 10);
-            strategy.AddStock(DateTime.Now, "symbol", 1, 1, "label");
-            strategy.AddStock(DateTime.Now, "symbol", 1, 2, "label");
-            strategy.AddStock(DateTime.Now, "symbol", 1, 3, "label");
-            strategy.AddStock(DateTime.Now, "symbol", 1, 4, "label");
-            strategy.AddStock(DateTime.Now, "symbol", 1, 5, "label");
-            strategy.AddStock(DateTime.Now, "symbol", 1, 6, "label");
+            var strategy = Strategy.From("Breakout", 10);
+            strategy.CalculateForStock(DateTime.Now, "symbol", 1, 1, "label");
+            strategy.CalculateForStock(DateTime.Now, "symbol", 1, 2, "label");
+            strategy.CalculateForStock(DateTime.Now, "symbol", 1, 3, "label");
+            strategy.CalculateForStock(DateTime.Now, "symbol", 1, 4, "label");
+            strategy.CalculateForStock(DateTime.Now, "symbol", 1, 5, "label");
+            strategy.CalculateForStock(DateTime.Now, "symbol", 1, 6, "label");
 
             // act
             strategy.RunBackTest();
@@ -33,19 +33,19 @@ namespace TradeBash.UnitTests.Core.Entities
         public void Price_Crossed_MovingAverage_From_Top_To_Bottom_ShouldSell()
         {
             // arrange
-            var strategy = Strategy.Set("Breakout", 10);
-            strategy.AddStock(DateTime.Now, "symbol", 1, 1, "label");
-            strategy.AddStock(DateTime.Now, "symbol", 1, 2, "label");
-            strategy.AddStock(DateTime.Now, "symbol", 1, 3, "label");
-            strategy.AddStock(DateTime.Now, "symbol", 1, 4, "label");
-            strategy.AddStock(DateTime.Now, "symbol", 1, 5, "label");
-            strategy.AddStock(DateTime.Now, "symbol", 1, 6, "label");
+            var strategy = Strategy.From("Breakout", 10);
+            strategy.CalculateForStock(DateTime.Now, "symbol", 1, 1, "label");
+            strategy.CalculateForStock(DateTime.Now, "symbol", 1, 2, "label");
+            strategy.CalculateForStock(DateTime.Now, "symbol", 1, 3, "label");
+            strategy.CalculateForStock(DateTime.Now, "symbol", 1, 4, "label");
+            strategy.CalculateForStock(DateTime.Now, "symbol", 1, 5, "label");
+            strategy.CalculateForStock(DateTime.Now, "symbol", 1, 6, "label");
 
             // act
             strategy.RunBackTest();
 
             // assert
             strategy.StocksHistory.Should().Contain(x => x.StrategySignal.Contains("Sell"));
-        }
+        }*/
     }
 }

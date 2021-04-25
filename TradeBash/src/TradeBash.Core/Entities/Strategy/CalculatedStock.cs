@@ -1,20 +1,15 @@
-#nullable enable
-using System;
+﻿using System;
 using TradeBash.SharedKernel;
 
 namespace TradeBash.Core.Entities.Strategy
 {
-    public class StockOrder : BaseEntity
+    public class CalculatedStock : BaseEntity
     {
         public DateTime Date { get; private set; }
-        
-        public string Symbol { get; private set; }
-        
+
         public double Open { get; private set; }
-        
+
         public double Close { get; private set; }
-        
-        public string Label { get; private set; }
 
         public double? SMA { get; private set; }
 
@@ -24,26 +19,18 @@ namespace TradeBash.Core.Entities.Strategy
 
         public double? ProfitLoss { get; private set; }
 
-        public int StrategyId { get; set; }
-
-        private StockOrder() { }
-
-        public static StockOrder From(
+        public static CalculatedStock From(
             DateTime date,
-            string symbol,
             double open,
             double close,
-            string label,
             double? sma,
             double? rsi)
         {
-            var entity = new StockOrder
+            var entity = new CalculatedStock
             {
                 Date = date,
-                Symbol = symbol,
                 Open = open,
                 Close = close,
-                Label = label,
                 SMA = sma,
                 RSI = rsi
             };
@@ -51,7 +38,7 @@ namespace TradeBash.Core.Entities.Strategy
             return entity;
         }
 
-        public StockOrder FromBackTest(double? profitLoss)
+        public CalculatedStock FromBackTest(double? profitLoss)
         {
             ProfitLoss = profitLoss;
 

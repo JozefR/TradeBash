@@ -1,6 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
+using TradeBash.Core.Entities.Strategy;
+using TradeBash.Core.Entities.Warehouse;
 using TradeBash.Infrastructure.Services;
 using TradeBash.SharedKernel.Interfaces;
 
@@ -10,23 +13,27 @@ namespace TradeBash.Web.Api
     {
         private readonly IRepository _repository;
         private readonly IApiClient _apiClient;
-        private readonly string IexPath;
 
         public StrategiesController(
             IRepository repository,
-            IConfiguration configuration,
             IApiClient apiClient)
         {
             _repository = repository;
             _apiClient = apiClient;
-
-            IexPath = configuration.GetConnectionString("IEXConnection");
         }
 
-        [HttpGet("breakouts/{ticker}/{history}")]
-        public async Task<IActionResult> CalculateBreakouts(string ticker, string history)
+        [HttpGet("breakouts")]
+        public async Task<Strategy> CalculateBreakouts(string ticker, string history)
         {
-            return null;
+            var stocks = await _repository.ListAsync<Stock>();
+
+            var strategy = Strategy.From("Test", 5, 2);
+
+            strategy.RunCalculation(stocks);
+
+            await _repository.AddAsync(strategy);
+
+            return strategy;
         }
     }
 }
