@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace TradeBash.Web.Migrations
 {
-    public partial class initial : Migration
+    public partial class InitialCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -34,21 +34,6 @@ namespace TradeBash.Web.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Strategies", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ToDoItems",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(nullable: false),
-                    Description = table.Column<string>(nullable: true),
-                    IsDone = table.Column<bool>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ToDoItems", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -92,55 +77,79 @@ namespace TradeBash.Web.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "StockOrder",
+                name: "StrategyStock",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Symbol = table.Column<string>(nullable: false),
+                    Label = table.Column<string>(nullable: false),
+                    StrategyId = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StrategyStock", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_StrategyStock_Strategies_StrategyId",
+                        column: x => x.StrategyId,
+                        principalTable: "Strategies",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CalculatedStock",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Date = table.Column<DateTime>(nullable: false),
-                    Symbol = table.Column<string>(nullable: false),
                     Open = table.Column<double>(nullable: false),
                     Close = table.Column<double>(nullable: false),
-                    Label = table.Column<string>(nullable: false),
                     SMA = table.Column<double>(nullable: true),
                     RSI = table.Column<double>(nullable: true),
                     StrategySignal = table.Column<string>(nullable: true),
                     ProfitLoss = table.Column<double>(nullable: true),
-                    StrategyId = table.Column<int>(nullable: false)
+                    StrategyStockId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_StockOrder", x => x.Id);
+                    table.PrimaryKey("PK_CalculatedStock", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_StockOrder_Strategies_StrategyId",
-                        column: x => x.StrategyId,
-                        principalTable: "Strategies",
+                        name: "FK_CalculatedStock_StrategyStock_StrategyStockId",
+                        column: x => x.StrategyStockId,
+                        principalTable: "StrategyStock",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_StockOrder_StrategyId",
-                table: "StockOrder",
+                name: "IX_CalculatedStock_StrategyStockId",
+                table: "CalculatedStock",
+                column: "StrategyStockId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StrategyStock_StrategyId",
+                table: "StrategyStock",
                 column: "StrategyId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "StockOrder");
+                name: "CalculatedStock");
 
             migrationBuilder.DropTable(
                 name: "StocksHistory");
 
             migrationBuilder.DropTable(
-                name: "ToDoItems");
-
-            migrationBuilder.DropTable(
-                name: "Strategies");
+                name: "StrategyStock");
 
             migrationBuilder.DropTable(
                 name: "Stocks");
+
+            migrationBuilder.DropTable(
+                name: "Strategies");
         }
     }
 }

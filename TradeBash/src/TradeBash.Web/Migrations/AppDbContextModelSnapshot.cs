@@ -19,7 +19,7 @@ namespace TradeBash.Web.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("TradeBash.Core.Entities.Strategy.StockOrder", b =>
+            modelBuilder.Entity("TradeBash.Core.Entities.Strategy.CalculatedStock", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -31,10 +31,6 @@ namespace TradeBash.Web.Migrations
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Label")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("Open")
                         .HasColumnType("float");
@@ -48,21 +44,17 @@ namespace TradeBash.Web.Migrations
                     b.Property<double?>("SMA")
                         .HasColumnType("float");
 
-                    b.Property<int>("StrategyId")
-                        .HasColumnType("int");
-
                     b.Property<string>("StrategySignal")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Symbol")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("StrategyStockId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("StrategyId");
+                    b.HasIndex("StrategyStockId");
 
-                    b.ToTable("StockOrder");
+                    b.ToTable("CalculatedStock");
                 });
 
             modelBuilder.Entity("TradeBash.Core.Entities.Strategy.Strategy", b =>
@@ -90,26 +82,29 @@ namespace TradeBash.Web.Migrations
                     b.ToTable("Strategies");
                 });
 
-            modelBuilder.Entity("TradeBash.Core.Entities.ToDoItem", b =>
+            modelBuilder.Entity("TradeBash.Core.Entities.Strategy.StrategyStock", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Description")
+                    b.Property<string>("Label")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsDone")
-                        .HasColumnType("bit");
+                    b.Property<int?>("StrategyId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Title")
+                    b.Property<string>("Symbol")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("ToDoItems");
+                    b.HasIndex("StrategyId");
+
+                    b.ToTable("StrategyStock");
                 });
 
             modelBuilder.Entity("TradeBash.Core.Entities.Warehouse.Stock", b =>
@@ -130,13 +125,18 @@ namespace TradeBash.Web.Migrations
                     b.ToTable("Stocks");
                 });
 
-            modelBuilder.Entity("TradeBash.Core.Entities.Strategy.StockOrder", b =>
+            modelBuilder.Entity("TradeBash.Core.Entities.Strategy.CalculatedStock", b =>
+                {
+                    b.HasOne("TradeBash.Core.Entities.Strategy.StrategyStock", null)
+                        .WithMany("CalculatedStocksHistory")
+                        .HasForeignKey("StrategyStockId");
+                });
+
+            modelBuilder.Entity("TradeBash.Core.Entities.Strategy.StrategyStock", b =>
                 {
                     b.HasOne("TradeBash.Core.Entities.Strategy.Strategy", null)
                         .WithMany("StocksHistory")
-                        .HasForeignKey("StrategyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("StrategyId");
                 });
 
             modelBuilder.Entity("TradeBash.Core.Entities.Warehouse.Stock", b =>
