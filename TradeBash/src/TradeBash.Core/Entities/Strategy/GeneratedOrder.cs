@@ -22,12 +22,14 @@ namespace TradeBash.Core.Entities.Strategy
         public int Position { get; set; }
 
         public static GeneratedOrder OpenPosition(
+            string symbol,
             double openPrice,
             DateTime openDate,
             int position)
         {
             var entity = new GeneratedOrder
             {
+                Symbol = symbol,
                 OpenPrice = openPrice,
                 OpenDate = openDate,
                 Position = position,

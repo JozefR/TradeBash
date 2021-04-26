@@ -41,11 +41,13 @@ namespace TradeBash.Web.Api
         [HttpGet("Backtest")]
         public async Task<Strategy> Backtest()
         {
-            var strategy = await _strategyRepository.GetByIdAsync(3);
+            var strategy = await _strategyRepository.GetByIdAsync(1);
 
             strategy.RunBackTest();
 
-            return null;
+            await _repository.UpdateAsync(strategy);
+
+            return strategy;
         }
     }
 }

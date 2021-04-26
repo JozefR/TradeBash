@@ -76,7 +76,7 @@ namespace TradeBash.DataCentre
 
                     if (existingStock != null) continue;
 
-                    var constructedPath = string.Format(_iexPath, symbol, "1y");
+                    var constructedPath = string.Format(_iexPath, symbol, "1m");
                     var stocksHistory = await apiClient.GetStocksAsync(constructedPath);
                     var stocksHistorySerialized = stocksHistory.Select(JsonExtensions.MapDataResponse);
 
