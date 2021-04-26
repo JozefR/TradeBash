@@ -1,7 +1,6 @@
 ﻿#nullable enable
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using TradeBash.Core.Entities.Warehouse;
 using TradeBash.SharedKernel;
@@ -20,9 +19,13 @@ namespace TradeBash.Core.Entities.Strategy
         public IReadOnlyCollection<StrategyStock> StocksHistory => _stocksHistory;
         private readonly List<StrategyStock> _stocksHistory;
 
+        public IReadOnlyCollection<GeneratedOrder> GeneratedOrders => _generatedOrders;
+        private readonly List<GeneratedOrder> _generatedOrders;
+
         private Strategy()
         {
             _stocksHistory = new List<StrategyStock>();
+            _generatedOrders = new List<GeneratedOrder>();
         }
 
         public static Strategy From(
@@ -87,8 +90,10 @@ namespace TradeBash.Core.Entities.Strategy
                         generatedSignal = currentStock;
                     }
 
-                    var openPosition = strategyStock.CalculatedStocksHistory.LastOrDefault(
-                        x => x.StrategySignal == "Buy" || x.StrategySignal == "Sell");
+                    var openPosition1 = GeneratedOrders.FirstOrDefault();
+
+                    var openPosition = strategyStock.CalculatedStocksHistory
+                        .LastOrDefault(x => x.StrategySignal == "Buy" || x.StrategySignal == "Sell");
 
                     if (openPosition == null) continue;
 
@@ -100,7 +105,7 @@ namespace TradeBash.Core.Entities.Strategy
 
                 if (generatedSignal != null)
                 {
-                    generatedSignal.BuyStock();
+                    _generatedOrders.Add(GeneratedOrder.OpenPosition(generatedSignal.Open, generatedSignal.Date, 100));
                 }
 
                 index++;

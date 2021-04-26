@@ -10,13 +10,6 @@ namespace TradeBash.Infrastructure.Data.Configuration
         {
             builder.HasKey(x => x.Id);
 
-            /*builder.Property(x => x.Id)
-                .UseHiLo("orderseq", "ordering");*/
-
-            /*
-            builder.Ignore(x => x.DomainEvents);
-            */
-
             builder.OwnsMany(o => o.History).ToTable("StocksHistory");
         }
     }

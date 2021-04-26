@@ -12,10 +12,6 @@ namespace TradeBash.Infrastructure.Data.Configuration
         {
             strategyBuilder.HasKey(x => x.Id);
 
-            /*
-            strategyBuilder.Ignore(x => x.DomainEvents);
-            */
-
             strategyBuilder
                 .Property<string>("_name")
                 .UsePropertyAccessMode(PropertyAccessMode.Field)
