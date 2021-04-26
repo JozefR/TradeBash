@@ -5,6 +5,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using Microsoft.EntityFrameworkCore;
+using TradeBash.Infrastructure;
 
 namespace TradeBash.Web
 {
@@ -12,25 +13,7 @@ namespace TradeBash.Web
     {
         public static void Main(string[] args)
         {
-            var host = CreateHostBuilder(args).Build();
-
-            using (var scope = host.Services.CreateScope())
-            {
-                var services = scope.ServiceProvider;
-
-                try
-                {
-                    var context = services.GetRequiredService<AppDbContext>();
-                    context.Database.Migrate();
-                }
-                catch (Exception ex)
-                {
-                    var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogError(ex, "An error occurred seeding the DB.");
-                }
-            }
-
-            host.Run();
+            CreateHostBuilder(args).Build().Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -43,7 +26,6 @@ namespace TradeBash.Web
                         {
                             logging.ClearProviders();
                             logging.AddConsole();
-                            // logging.AddAzureWebAppDiagnostics(); add this if deploying to Azure
                         });
                 });
     }
