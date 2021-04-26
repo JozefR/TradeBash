@@ -30,7 +30,7 @@ namespace TradeBash.DataCentre
 
             services.AddHttpClient<IApiClient, ApiClient>();
 
-            var test = this.GetType().Assembly.FullName;
+            services.AddDbContext(Configuration);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

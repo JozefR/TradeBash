@@ -16,6 +16,7 @@ namespace TradeBash.Web
     public class Startup
     {
         private readonly IWebHostEnvironment _env;
+        public IConfiguration Configuration { get; }
 
         public Startup(IConfiguration config, IWebHostEnvironment env)
         {
@@ -23,21 +24,9 @@ namespace TradeBash.Web
             _env = env;
         }
 
-        public IConfiguration Configuration { get; }
-
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<AppDbContext>(options =>
-            {
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                {
-                    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
-                }
-                else
-                {
-                    options.UseSqlServer("Server=localhost,11433; Database=TradeDashDb2;User=SA; Password=Pwd12345!");
-                }
-            });
+            services.AddDbContext(Configuration);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
