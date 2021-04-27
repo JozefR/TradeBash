@@ -12,6 +12,8 @@ namespace TradeBash.Core.Entities.Strategy
     {
         public string Name { get; private set; }
 
+        public double Budget { get; private set; }
+
         private int? _simpleMovingAverageParameter;
 
         private int? _relativeStrengthIndexParameter;
@@ -25,18 +27,21 @@ namespace TradeBash.Core.Entities.Strategy
         private Strategy()
         {
             Name = string.Empty;
+            Budget = Double.MinValue;
             _stocksHistory = new List<StrategyStock>();
             _generatedOrders = new List<GeneratedOrder>();
         }
 
         public static Strategy From(
             string name,
+            double budget,
             int? smaParameter = null,
             int? rsiParameter = null)
         {
             var strategy = new Strategy
             {
                 Name = name,
+                Budget = budget,
                 _simpleMovingAverageParameter = smaParameter,
                 _relativeStrengthIndexParameter = rsiParameter,
             };
@@ -98,17 +103,28 @@ namespace TradeBash.Core.Entities.Strategy
                     if (currentStock.SMA > currentStock.Close)
                     {
                         openPosition.ClosePosition(currentStock.Close, currentStock.Date);
+                        openPosition.CalculateProfitLoss();
                     }
                 }
 
                 if (generatedSignal != null)
                 {
-                    _generatedOrders.Add(GeneratedOrder.OpenPosition(generatedSignal.Symbol, generatedSignal.Open, generatedSignal.Date, 100));
+                    var openPositions = NumberOfCurrentOpenedPositions(generatedSignal);
+                    var generatedOrder = GeneratedOrder.OpenPosition(generatedSignal.Symbol, generatedSignal.Open, generatedSignal.Date);
+                    generatedOrder.CalculateNumberOfStockForPosition(Budget, openPositions);
+
+                    _generatedOrders.Add(generatedOrder);
+
                     generatedSignal = null;
                 }
 
                 index++;
             }
+        }
+
+        private int NumberOfCurrentOpenedPositions(CalculatedStock generatedSignal)
+        {
+            return GeneratedOrders.Count(x => x.CloseDate == null && x.Symbol == generatedSignal.Symbol);
         }
     }
 }
