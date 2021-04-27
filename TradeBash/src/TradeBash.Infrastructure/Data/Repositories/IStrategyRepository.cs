@@ -6,5 +6,6 @@ namespace TradeBash.Infrastructure.Data.Repositories
     public interface IStrategyRepository
     {
         Task<Strategy> GetByIdAsync(int id);
+        Task<Strategy> GetByNameAsync(string name);
     }
 }

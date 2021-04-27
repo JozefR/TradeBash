@@ -5,6 +5,8 @@ namespace TradeBash.Core.Entities.Strategy
 {
     public class CalculatedStock : BaseEntity
     {
+        public string Symbol { get; private set; }
+
         public DateTime Date { get; private set; }
 
         public double Open { get; private set; }
@@ -15,11 +17,8 @@ namespace TradeBash.Core.Entities.Strategy
 
         public double? RSI { get; private set; }
 
-        public string? StrategySignal { get; private set; }
-
-        public double? ProfitLoss { get; private set; }
-
         public static CalculatedStock From(
+            string symbol,
             DateTime date,
             double open,
             double close,
@@ -28,6 +27,7 @@ namespace TradeBash.Core.Entities.Strategy
         {
             var entity = new CalculatedStock
             {
+                Symbol = symbol,
                 Date = date,
                 Open = open,
                 Close = close,
@@ -36,16 +36,6 @@ namespace TradeBash.Core.Entities.Strategy
             };
 
             return entity;
-        }
-
-        public void BuyStock()
-        {
-            StrategySignal = "Buy";
-        }
-
-        public void SellStock()
-        {
-            StrategySignal = "Sell";
         }
     }
 }

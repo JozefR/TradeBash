@@ -44,6 +44,7 @@ namespace TradeBash.Core.Entities.Strategy
         }
 
         public void CalculateForStock(
+            string symbol,
             DateTime date,
             double open,
             double close)
@@ -51,7 +52,7 @@ namespace TradeBash.Core.Entities.Strategy
             var sma = CalculateSimpleMovingAverage();
             var rsi = CalculateRelativeStrengthIndex();
 
-            var stock = CalculatedStock.From(date, open, close, sma, rsi);
+            var stock = CalculatedStock.From(symbol, date, open, close, sma, rsi);
 
             _calculatedStocksHistory.Add(stock);
         }

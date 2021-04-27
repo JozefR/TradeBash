@@ -1,7 +1,5 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using TradeBash.Core.Entities;
 using TradeBash.Core.Entities.Strategy;
 
 namespace TradeBash.Infrastructure.Data.Configuration
@@ -13,7 +11,7 @@ namespace TradeBash.Infrastructure.Data.Configuration
             strategyBuilder.HasKey(x => x.Id);
 
             strategyBuilder
-                .Property<string>("_name")
+                .Property<string>("Name")
                 .UsePropertyAccessMode(PropertyAccessMode.Field)
                 .HasColumnName("Name")
                 .IsRequired();

@@ -24,13 +24,12 @@ namespace TradeBash.Web.Api
             _strategyRepository = strategyRepository;
         }
 
-        [HttpGet("calculateIndicators")]
-        public async Task<Strategy> CalculateIndicators(string ticker, string history)
+        [HttpGet("calculateIndicators/{strategyName}/{smaParameter}/{rsiParameter}")]
+        public async Task<Strategy> CalculateIndicators(string strategyName, int smaParameter, int rsiParameter)
         {
+            var strategy = Strategy.From(strategyName, smaParameter, rsiParameter);
+
             var stocks = await _repository.ListAsync<Stock>();
-
-            var strategy = Strategy.From("Test", 5, 2);
-
             strategy.RunCalculation(stocks);
 
             await _repository.AddAsync(strategy);
@@ -38,10 +37,10 @@ namespace TradeBash.Web.Api
             return strategy;
         }
 
-        [HttpGet("Backtest")]
-        public async Task<Strategy> Backtest()
+        [HttpGet("Backtest/{strategyName}")]
+        public async Task<Strategy> Backtest(string strategyName)
         {
-            var strategy = await _strategyRepository.GetByIdAsync(1);
+            var strategy = await _strategyRepository.GetByNameAsync(strategyName);
 
             strategy.RunBackTest();
 

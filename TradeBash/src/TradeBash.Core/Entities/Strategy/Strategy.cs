@@ -10,7 +10,7 @@ namespace TradeBash.Core.Entities.Strategy
 {
     public class Strategy : BaseEntity, IAggregateRoot
     {
-        private string _name;
+        public string Name { get; private set; }
 
         private int? _simpleMovingAverageParameter;
 
@@ -24,6 +24,7 @@ namespace TradeBash.Core.Entities.Strategy
 
         private Strategy()
         {
+            Name = string.Empty;
             _stocksHistory = new List<StrategyStock>();
             _generatedOrders = new List<GeneratedOrder>();
         }
@@ -35,7 +36,7 @@ namespace TradeBash.Core.Entities.Strategy
         {
             var strategy = new Strategy
             {
-                _name = name,
+                Name = name,
                 _simpleMovingAverageParameter = smaParameter,
                 _relativeStrengthIndexParameter = rsiParameter,
             };
@@ -56,7 +57,7 @@ namespace TradeBash.Core.Entities.Strategy
 
                 foreach (var stockHistory in orderedHistory)
                 {
-                    strategyStock.CalculateForStock(stockHistory.Date, stockHistory.Open, stockHistory.Close);
+                    strategyStock.CalculateForStock(stock.Symbol, stockHistory.Date, stockHistory.Open, stockHistory.Close);
                     _stocksHistory.Add(strategyStock);
                 }
             }
@@ -72,7 +73,6 @@ namespace TradeBash.Core.Entities.Strategy
             // buy if rsi < 2;
             // sell if sma > 10
             CalculatedStock? generatedSignal = null;
-            var symbol = string.Empty;
             var dates = _stocksHistory.FirstOrDefault()!.CalculatedStocksHistory.Select(x => x.Date).ToList();
             var index = 0;
             foreach (var date in dates)
@@ -89,7 +89,6 @@ namespace TradeBash.Core.Entities.Strategy
                     if (currentStock.RSI < _relativeStrengthIndexParameter || (generatedSignal != null && currentStock.RSI < generatedSignal.RSI))
                     {
                         generatedSignal = currentStock;
-                        symbol = strategyStock.Symbol;
                     }
 
                     var openPosition = GeneratedOrders.FirstOrDefault(x => x.CloseDate == null && x.Symbol == strategyStock.Symbol);
@@ -104,7 +103,7 @@ namespace TradeBash.Core.Entities.Strategy
 
                 if (generatedSignal != null)
                 {
-                    _generatedOrders.Add(GeneratedOrder.OpenPosition(symbol, generatedSignal.Open, generatedSignal.Date, 100));
+                    _generatedOrders.Add(GeneratedOrder.OpenPosition(generatedSignal.Symbol, generatedSignal.Open, generatedSignal.Date, 100));
                     generatedSignal = null;
                 }
 

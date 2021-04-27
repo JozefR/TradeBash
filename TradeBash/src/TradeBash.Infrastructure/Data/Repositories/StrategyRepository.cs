@@ -17,5 +17,13 @@ namespace TradeBash.Infrastructure.Data.Repositories
                 .ThenInclude(xx => xx.CalculatedStocksHistory)
                 .SingleOrDefaultAsync(e => e.Id == id);
         }
+
+        public Task<Strategy> GetByNameAsync(string name)
+        {
+            return _dbContext.Set<Strategy>()
+                .Include(x => x.StocksHistory)
+                .ThenInclude(xx => xx.CalculatedStocksHistory)
+                .SingleOrDefaultAsync(e => e.Name == name);
+        }
     }
 }
