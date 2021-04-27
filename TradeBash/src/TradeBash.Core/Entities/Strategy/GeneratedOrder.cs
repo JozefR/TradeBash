@@ -7,8 +7,6 @@ namespace TradeBash.Core.Entities.Strategy
     {
         public string Symbol { get; private set; }
 
-        public string Ticker { get; private set; }
-
         public double OpenPrice { get; private set; }
 
         public double? ClosePrice { get; private set; }
@@ -19,7 +17,7 @@ namespace TradeBash.Core.Entities.Strategy
 
         public double? ProfitLoss { get; private set; }
 
-        public int Position { get; set; }
+        public int Position { get; private set; }
 
         public static GeneratedOrder OpenPosition(
             string symbol,
