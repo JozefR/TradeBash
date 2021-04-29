@@ -37,7 +37,6 @@ namespace TradeBash.Infrastructure.Data
         {
             await _dbContext.Set<T>().AddAsync(entity);
             await _dbContext.SaveChangesAsync();
-
             return entity;
         }
 

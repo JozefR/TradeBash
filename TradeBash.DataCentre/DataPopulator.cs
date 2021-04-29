@@ -194,6 +194,10 @@ namespace TradeBash.DataCentre
 
         private string GetRangeForHistoricalData(TimeSpan lastDateDifference)
         {
+            if (lastDateDifference < TimeSpan.FromDays(5))
+            {
+                return "5d";
+            }
             if (lastDateDifference < TimeSpan.FromDays(30))
             {
                 return "1m";
