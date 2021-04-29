@@ -53,13 +53,13 @@ namespace TradeBash.Core.Entities.Strategy
         {
             foreach (var stock in stocks)
             {
-                var orderedHistory = stock.History.OrderBy(x => x.Date);
                 var strategyStock = StrategyStock.From(
                     stock.Symbol,
                     stock.Name,
                     _simpleMovingAverageParameter,
                     _relativeStrengthIndexParameter);
 
+                var orderedHistory = stock.History.OrderBy(x => x.Date);
                 foreach (var stockHistory in orderedHistory)
                 {
                     strategyStock.CalculateForStock(stock.Symbol, stockHistory.Date, stockHistory.Open, stockHistory.Close);
@@ -70,6 +70,8 @@ namespace TradeBash.Core.Entities.Strategy
 
         public void RunBackTest()
         {
+            _generatedOrders.Clear();
+
             if (!_stocksHistory.Any())
             {
                 throw new Exception();
@@ -110,7 +112,10 @@ namespace TradeBash.Core.Entities.Strategy
                 if (generatedSignal != null)
                 {
                     var openPositions = NumberOfCurrentOpenedPositions(generatedSignal);
-                    var generatedOrder = GeneratedOrder.OpenPosition(generatedSignal.Symbol, generatedSignal.Open, generatedSignal.Date);
+                    var generatedOrder = GeneratedOrder.OpenPosition(
+                        generatedSignal.Symbol,
+                        generatedSignal.Open,
+                        generatedSignal.Date);
                     generatedOrder.CalculateNumberOfStockForPosition(Budget, openPositions);
 
                     _generatedOrders.Add(generatedOrder);

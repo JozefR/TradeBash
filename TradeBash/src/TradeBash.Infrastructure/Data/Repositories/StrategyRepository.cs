@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using TradeBash.Core.Entities.Strategy;
 
@@ -23,7 +25,17 @@ namespace TradeBash.Infrastructure.Data.Repositories
             return _dbContext.Set<Strategy>()
                 .Include(x => x.StocksHistory)
                 .ThenInclude(xx => xx.CalculatedStocksHistory)
+                .Include(x => x.GeneratedOrders)
                 .SingleOrDefaultAsync(e => e.Name == name);
+        }
+
+        public Task<List<Strategy>> GetAllAsync()
+        {
+            return _dbContext.Set<Strategy>()
+                .Include(x => x.StocksHistory)
+                .ThenInclude(xx => xx.CalculatedStocksHistory)
+                .Include(x => x.GeneratedOrders)
+                .ToListAsync();
         }
     }
 }
