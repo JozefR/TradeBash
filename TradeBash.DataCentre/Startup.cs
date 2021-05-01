@@ -27,6 +27,7 @@ namespace TradeBash.DataCentre
             services.AddScoped<IRepository, EfRepository>();
             services.AddScoped<IStockRepository, StockRepository>();
             services.AddScoped<IStocksCsvReader, StocksCsvReader>();
+            services.AddScoped<IDataProvider, DataProvider>();
 
             services.AddHttpClient<IApiClient, ApiClient>();
 

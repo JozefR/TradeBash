@@ -18,42 +18,26 @@ namespace TradeBash.DataCentre
     {
         private readonly ILogger<DataPopulator> _logger;
         private readonly IServiceProvider _services;
-        private readonly string _iexPath;
 
-        private IApiClient _apiClient;
+        private IDataProvider _dataProvider;
         private IStockRepository _stockRepository;
         private IStocksCsvReader _stocksCsvReader;
 
         public DataPopulator(
             IServiceProvider services,
-            IConfiguration configuration,
             ILogger<DataPopulator> logger)
         {
             _services = services;
             _logger = logger;
-            _iexPath = configuration.GetConnectionString("IEXConnection");
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("Consume Scoped Service Hosted Service running");
-
-            await Start(stoppingToken);
-        }
-
-        private async Task Start(CancellationToken stoppingToken)
-        {
-            var executionCount = 0;
-
-            _logger.LogInformation("Consume Scoped Service Hosted Service is working");
+            _logger.LogInformation("Hosted Service is working");
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                executionCount++;
-
                 await DataPopulatorEngine();
-
-                _logger.LogInformation("Scoped Processing Service is working. Count: {Count}", executionCount);
 
                 await Task.Delay(10000, stoppingToken);
             }
@@ -61,7 +45,7 @@ namespace TradeBash.DataCentre
 
         public override async Task StopAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("Consume Scoped Service Hosted Service is stopping");
+            _logger.LogInformation("Hosted Service is stopping");
 
             await base.StopAsync(stoppingToken);
         }
@@ -72,7 +56,7 @@ namespace TradeBash.DataCentre
             {
                 _stocksCsvReader = scope.ServiceProvider.GetRequiredService<IStocksCsvReader>();
                 _stockRepository = scope.ServiceProvider.GetRequiredService<IStockRepository>();
-                _apiClient = scope.ServiceProvider.GetRequiredService<IApiClient>();
+                _dataProvider = scope.ServiceProvider.GetRequiredService<IDataProvider>();
 
                 var stocksToUpdate = _stocksCsvReader.LoadFile(IndexVersion.Spy100);
 
@@ -82,27 +66,19 @@ namespace TradeBash.DataCentre
 
                     if (existingStock == null)
                     {
-                        var stocksHistorySerialized = await GetSerializedStocksFromDataProviderAsync(symbol, "max");
+                        var stocksHistorySerialized = await _dataProvider.GetSerializedStocksFromDataProviderAsync(symbol, "max");
                         await AddHistoryToStockAsync(symbol, name, stocksHistorySerialized);
                     }
                     else
                     {
                         var lastDateDifference = GetDateDifferenceFromStockLastDate(existingStock);
-                        var range = GetRangeForHistoricalData(lastDateDifference);
-                        var stocksHistorySerialized = await GetSerializedStocksFromDataProviderAsync(symbol, range);
+                        var range = _dataProvider.GetRangeForHistoricalData(lastDateDifference);
+                        var stocksHistorySerialized = await _dataProvider.GetSerializedStocksFromDataProviderAsync(symbol, range);
                         RemoveExistingHistory(existingStock, stocksHistorySerialized);
                         await AddHistoryToStockAsync(existingStock, stocksHistorySerialized);
                     }
                 }
             }
-        }
-
-        private async Task<List<StockDtoResponse>> GetSerializedStocksFromDataProviderAsync(string symbol, string range)
-        {
-            var constructedPath = string.Format(_iexPath, symbol, range);
-            var stocksHistory = await _apiClient.GetStocksAsync(constructedPath);
-            var stocksHistorySerialized = stocksHistory.Select(JsonExtensions.MapDataResponse);
-            return stocksHistorySerialized.ToList();
         }
 
         private async Task AddHistoryToStockAsync(string symbol, string name, IEnumerable<StockDtoResponse> stocksHistorySerialized)
@@ -190,40 +166,6 @@ namespace TradeBash.DataCentre
 
                 stocksHistorySerialized.Remove(stock);
             }
-        }
-
-        private string GetRangeForHistoricalData(TimeSpan lastDateDifference)
-        {
-            if (lastDateDifference < TimeSpan.FromDays(5))
-            {
-                return "5d";
-            }
-            if (lastDateDifference < TimeSpan.FromDays(30))
-            {
-                return "1m";
-            }
-            if (lastDateDifference < TimeSpan.FromDays(90))
-            {
-                return "3m";
-            }
-            if (lastDateDifference < TimeSpan.FromDays(180))
-            {
-                return "6m";
-            }
-            if (lastDateDifference < TimeSpan.FromDays(360))
-            {
-                return "1y";
-            }
-            if (lastDateDifference < TimeSpan.FromDays(720))
-            {
-                return "2y";
-            }
-            if (lastDateDifference < TimeSpan.FromDays(1800))
-            {
-                return "5y";
-            }
-
-            return "max";
         }
     }
 }
