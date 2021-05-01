@@ -49,22 +49,19 @@ namespace TradeBash.Core.Entities.Strategy
             return strategy;
         }
 
-        public void RunCalculation(IEnumerable<Stock> stocks)
+        public void RunCalculationForStock(Stock stock)
         {
-            foreach (var stock in stocks)
-            {
-                var strategyStock = StrategyStock.From(
-                    stock.Symbol,
-                    stock.Name,
-                    _simpleMovingAverageParameter,
-                    _relativeStrengthIndexParameter);
+            var strategyStock = StrategyStock.From(
+                stock.Symbol,
+                stock.Name,
+                _simpleMovingAverageParameter,
+                _relativeStrengthIndexParameter);
 
-                var orderedHistory = stock.History.OrderBy(x => x.Date);
-                foreach (var stockHistory in orderedHistory)
-                {
-                    strategyStock.CalculateForStock(stock.Symbol, stockHistory.Date, stockHistory.Open, stockHistory.Close);
-                    _stocksHistory.Add(strategyStock);
-                }
+            var orderedHistory = stock.History.OrderBy(x => x.Date);
+            foreach (var stockHistory in orderedHistory)
+            {
+                strategyStock.CalculateForStock(stock.Symbol, stockHistory.Date, stockHistory.Open, stockHistory.Close);
+                _stocksHistory.Add(strategyStock);
             }
         }
 

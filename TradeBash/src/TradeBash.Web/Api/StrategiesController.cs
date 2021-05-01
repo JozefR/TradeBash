@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using TradeBash.Core.Entities.Strategy;
@@ -15,13 +16,18 @@ namespace TradeBash.Web.Api
 {
     public class StrategiesController : BaseApiController
     {
+        private readonly ILogger<StrategiesController> _logger;
         private readonly IRepository _repository;
         private readonly IStrategyRepository _strategyRepository;
 
-        public StrategiesController(IRepository repository, IStrategyRepository strategyRepository)
+        public StrategiesController(
+            IRepository repository,
+            IStrategyRepository strategyRepository,
+            ILogger<StrategiesController> logger)
         {
             _repository = repository;
             _strategyRepository = strategyRepository;
+            _logger = logger;
         }
 
         [HttpGet("calculateIndicators/{strategyName}/{budget}/{smaParameter}/{rsiParameter}")]
@@ -30,9 +36,18 @@ namespace TradeBash.Web.Api
             var strategy = Strategy.From(strategyName, budget, smaParameter, rsiParameter);
 
             var stocks = await _repository.ListAsync<Stock>();
-            strategy.RunCalculation(stocks);
+            foreach (var stock in stocks)
+            {
+                _logger.LogInformation($"Start indicators calculation for stock {stock.Name}");
+
+                strategy.RunCalculationForStock(stock);
+            }
+
+            _logger.LogInformation("Saving all indicator calculations to database");
 
             await _repository.AddAsync(strategy);
+
+            _logger.LogInformation("Saving Finished successfully");
 
             return Ok();
         }

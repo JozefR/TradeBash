@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using TradeBash.Core.Entities.Warehouse;
 using TradeBash.Infrastructure.Data.Repositories;
 using TradeBash.Infrastructure.DTO;
-using TradeBash.Infrastructure.Services;
 
 namespace TradeBash.DataCentre
 {
@@ -62,6 +60,8 @@ namespace TradeBash.DataCentre
 
                 foreach (var (symbol, name) in stocksToUpdate)
                 {
+                    _logger.LogInformation($"Populating data for {symbol}");
+
                     var existingStock = await _stockRepository.GetBySymbolAsync(symbol);
                     if (existingStock == null)
                     {
@@ -76,6 +76,8 @@ namespace TradeBash.DataCentre
                         RemoveExistingHistory(existingStock, stocks);
                         await AddHistoryToDb(existingStock, stocks);
                     }
+
+                    _logger.LogInformation($"Populating succesfull for {symbol}");
                 }
             }
         }
