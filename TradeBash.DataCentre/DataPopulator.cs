@@ -63,25 +63,24 @@ namespace TradeBash.DataCentre
                 foreach (var (symbol, name) in stocksToUpdate)
                 {
                     var existingStock = await _stockRepository.GetBySymbolAsync(symbol);
-
                     if (existingStock == null)
                     {
-                        var stocksHistorySerialized = await _dataProvider.GetSerializedStocksFromDataProviderAsync(symbol, "max");
-                        await AddHistoryToStockAsync(symbol, name, stocksHistorySerialized);
+                        var stocks = await _dataProvider.GetSerializedStocksFromDataProviderAsync(symbol, HistoryRange.Max);
+                        await AddHistoryToDb(symbol, name, stocks);
                     }
                     else
                     {
                         var lastDateDifference = GetDateDifferenceFromStockLastDate(existingStock);
-                        var range = _dataProvider.GetRangeForHistoricalData(lastDateDifference);
-                        var stocksHistorySerialized = await _dataProvider.GetSerializedStocksFromDataProviderAsync(symbol, range);
-                        RemoveExistingHistory(existingStock, stocksHistorySerialized);
-                        await AddHistoryToStockAsync(existingStock, stocksHistorySerialized);
+                        var historyRange = _dataProvider.GetRangeForHistoricalData(lastDateDifference);
+                        var stocks = await _dataProvider.GetSerializedStocksFromDataProviderAsync(symbol, historyRange);
+                        RemoveExistingHistory(existingStock, stocks);
+                        await AddHistoryToDb(existingStock, stocks);
                     }
                 }
             }
         }
 
-        private async Task AddHistoryToStockAsync(string symbol, string name, IEnumerable<StockDtoResponse> stocksHistorySerialized)
+        private async Task AddHistoryToDb(string symbol, string name, IEnumerable<StockDtoResponse> stocksHistorySerialized)
         {
             var stock = Stock.From(symbol, name);
             foreach (var stockResponse in stocksHistorySerialized)
@@ -113,7 +112,7 @@ namespace TradeBash.DataCentre
             await _stockRepository.AddAsync(stock);
         }
 
-        private async Task AddHistoryToStockAsync(Stock existingStock, IEnumerable<StockDtoResponse> stocksHistorySerialized)
+        private async Task AddHistoryToDb(Stock existingStock, IEnumerable<StockDtoResponse> stocksHistorySerialized)
         {
             foreach (var stockResponse in stocksHistorySerialized)
             {
