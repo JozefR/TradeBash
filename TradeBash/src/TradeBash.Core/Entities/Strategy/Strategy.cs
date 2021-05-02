@@ -14,9 +14,11 @@ namespace TradeBash.Core.Entities.Strategy
 
         public double Budget { get; private set; }
 
-        private int? _simpleMovingAverageParameter;
+        private int? _smaShortParameter;
 
-        private int? _relativeStrengthIndexParameter;
+        private int? _smaLongParameter;
+
+        private int? _rsaParameter;
 
         public IReadOnlyCollection<StrategyStock> StocksHistory => _stocksHistory;
         private readonly List<StrategyStock> _stocksHistory;
@@ -35,15 +37,17 @@ namespace TradeBash.Core.Entities.Strategy
         public static Strategy From(
             string name,
             double budget,
-            int? smaParameter = null,
+            int? smaShort = null,
+            int? smaLong = null,
             int? rsiParameter = null)
         {
             var strategy = new Strategy
             {
                 Name = name,
                 Budget = budget,
-                _simpleMovingAverageParameter = smaParameter,
-                _relativeStrengthIndexParameter = rsiParameter,
+                _smaShortParameter = smaShort,
+                _smaLongParameter = smaLong,
+                _rsaParameter = rsiParameter,
             };
 
             return strategy;
@@ -54,8 +58,9 @@ namespace TradeBash.Core.Entities.Strategy
             var strategyStock = StrategyStock.From(
                 stock.Symbol,
                 stock.Name,
-                _simpleMovingAverageParameter,
-                _relativeStrengthIndexParameter);
+                _smaShortParameter,
+                _smaLongParameter,
+                _rsaParameter);
 
             var orderedHistory = stock.History.OrderBy(x => x.Date);
             foreach (var stockHistory in orderedHistory)
@@ -66,50 +71,53 @@ namespace TradeBash.Core.Entities.Strategy
             _stocksHistory.Add(strategyStock);
         }
 
-        public void RunBackTestForDate(DateTime date)
+        public void RunBackTestForDate()
         {
             // buy if rsi < 2;
             // sell if sma > 10
             var index = 0;
             CalculatedStock? generatedSignal = null;
-            foreach (var strategyStock in _stocksHistory)
+            foreach (var inDate in GetHistoryInDates())
             {
-                if (index >= strategyStock.CalculatedStocksHistory.Count) continue;
-
-                var currentStock = strategyStock.CalculatedStocksHistory.ToList()[index];
-
-                if (currentStock.RSI == 0) continue;
-                if (currentStock.Date != date) continue;
-
-                if (currentStock.RSI < _relativeStrengthIndexParameter ||
-                    (generatedSignal != null && currentStock.RSI < generatedSignal.RSI))
+                foreach (var strategyStock in _stocksHistory)
                 {
-                    generatedSignal = currentStock;
+                    if (index >= strategyStock.CalculatedStocksHistory.Count) continue;
+
+                    var currentStock = strategyStock.CalculatedStocksHistory.ToList()[index];
+
+                    if (currentStock.RSI == 0) continue;
+                    if (currentStock.Date != inDate) continue;
+
+                    if (currentStock.RSI < _rsaParameter ||
+                        (generatedSignal != null && currentStock.RSI < generatedSignal.RSI))
+                    {
+                        generatedSignal = currentStock;
+                    }
+
+                    var openPosition = GeneratedOrders.FirstOrDefault(x => x.CloseDate == null && x.Symbol == strategyStock.Symbol);
+
+                    if (openPosition == null) continue;
+
+                    if (currentStock.SMAShort > currentStock.Close)
+                    {
+                        openPosition.ClosePosition(currentStock.Close, currentStock.Date);
+                        openPosition.CalculateProfitLoss();
+                    }
                 }
 
-                var openPosition = GeneratedOrders.FirstOrDefault(x => x.CloseDate == null && x.Symbol == strategyStock.Symbol);
-
-                if (openPosition == null) continue;
-
-                if (currentStock.SMA > currentStock.Close)
+                if (generatedSignal != null)
                 {
-                    openPosition.ClosePosition(currentStock.Close, currentStock.Date);
-                    openPosition.CalculateProfitLoss();
+                    var openPositions = NumberOfCurrentOpenedPositions(generatedSignal);
+                    var generatedOrder = GeneratedOrder.OpenPosition(
+                        generatedSignal.Symbol,
+                        generatedSignal.Open,
+                        generatedSignal.Date);
+                    generatedOrder.CalculateNumberOfStockForPosition(Budget, openPositions);
+
+                    _generatedOrders.Add(generatedOrder);
                 }
 
                 index++;
-            }
-
-            if (generatedSignal != null)
-            {
-                var openPositions = NumberOfCurrentOpenedPositions(generatedSignal);
-                var generatedOrder = GeneratedOrder.OpenPosition(
-                    generatedSignal.Symbol,
-                    generatedSignal.Open,
-                    generatedSignal.Date);
-                generatedOrder.CalculateNumberOfStockForPosition(Budget, openPositions);
-
-                _generatedOrders.Add(generatedOrder);
             }
         }
 

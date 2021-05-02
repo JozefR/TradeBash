@@ -18,25 +18,30 @@ namespace TradeBash.Core.Entities.Strategy
             .OrderBy(x => x.Date)
             .ToList();
 
-        private int? _simpleMovingAverageParameter;
+        private int? _smaShortParameter;
+        private int? _smaLongParameter;
         private int? _relativeStrengthIndexParameter;
 
         private StrategyStock()
         {
+            Symbol = string.Empty;
+            Label = string.Empty;
             _calculatedStocksHistory = new List<CalculatedStock>();
         }
 
         public static StrategyStock From(
             string symbol,
             string label,
-            int? simpleMovingAverageParameter,
+            int? smaShortParameter,
+            int? smaLongParameter,
             int? relativeStrengthIndexParameter)
         {
             var strategyStock = new StrategyStock
             {
                 Symbol = symbol,
                 Label = label,
-                _simpleMovingAverageParameter = simpleMovingAverageParameter,
+                _smaShortParameter = smaShortParameter,
+                _smaLongParameter = smaLongParameter,
                 _relativeStrengthIndexParameter = relativeStrengthIndexParameter
             };
 
@@ -49,22 +54,25 @@ namespace TradeBash.Core.Entities.Strategy
             double open,
             double close)
         {
-            var sma = CalculateSimpleMovingAverage();
+            var smaShort = CalculateSMA(_smaShortParameter);
+            var smaLong = CalculateSMA(_smaLongParameter);
             var rsi = CalculateRelativeStrengthIndex();
 
-            var stock = CalculatedStock.From(symbol, date, open, close, sma, rsi);
+            var stock = CalculatedStock.From(symbol, date, open, close, smaShort, smaLong, rsi);
 
             _calculatedStocksHistory.Add(stock);
         }
 
-        private double? CalculateSimpleMovingAverage()
+        private double? CalculateSMA(int? smaParameter)
         {
-            if (!_simpleMovingAverageParameter.HasValue) return null;
+            if (!smaParameter.HasValue) return null;
 
-            if (_calculatedStocksHistory.Count < _simpleMovingAverageParameter) return null;
+            if (_calculatedStocksHistory.Count < smaParameter) return null;
 
-            var prices = _calculatedStocksHistory.TakeLast(_simpleMovingAverageParameter.Value).Select(x => x.Close);
-            double? average = prices.AsQueryable().Average();
+            var average = _calculatedStocksHistory
+                .TakeLast(smaParameter.Value)
+                .Select(x => x.Close)
+                .Average();
 
             return average;
         }
