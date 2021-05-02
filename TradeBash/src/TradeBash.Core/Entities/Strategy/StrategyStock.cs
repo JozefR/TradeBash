@@ -73,7 +73,7 @@ namespace TradeBash.Core.Entities.Strategy
         {
             if (!_relativeStrengthIndexParameter.HasValue) return null;
 
-            if (_calculatedStocksHistory.Count <= _relativeStrengthIndexParameter) return null;
+            if (_calculatedStocksHistory.Count <= _relativeStrengthIndexParameter + 15) return null;
 
             var price = _calculatedStocksHistory.Select(x => x.Close).ToArray();
             var rsi = new double[price.Length];
@@ -98,6 +98,12 @@ namespace TradeBash.Core.Entities.Strategy
             double avrg = gain / _relativeStrengthIndexParameter.Value;
             double avrl = loss / _relativeStrengthIndexParameter.Value;
             double rs = gain / loss;
+
+            if (double.IsNaN(rs))
+            {
+                rs = 0;
+            }
+
             rsi[_relativeStrengthIndexParameter.Value] = 100 - (100 / (1 + rs));
 
             for (int i = _relativeStrengthIndexParameter.Value + 1; i < price.Length; ++i)
@@ -118,6 +124,11 @@ namespace TradeBash.Core.Entities.Strategy
                 }
 
                 rs = avrg / avrl;
+
+                if (double.IsNaN(rs))
+                {
+                    rs = 0;
+                }
 
                 rsi[i] = 100 - (100 / (1 + rs));
             }

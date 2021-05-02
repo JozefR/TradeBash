@@ -61,67 +61,71 @@ namespace TradeBash.Core.Entities.Strategy
             foreach (var stockHistory in orderedHistory)
             {
                 strategyStock.CalculateForStock(stock.Symbol, stockHistory.Date, stockHistory.Open, stockHistory.Close);
-                _stocksHistory.Add(strategyStock);
             }
+
+            _stocksHistory.Add(strategyStock);
         }
 
-        public void RunBackTest()
+        public void RunBackTestForDate(DateTime date)
         {
-            _generatedOrders.Clear();
-
-            if (!_stocksHistory.Any())
-            {
-                throw new Exception();
-            }
-
             // buy if rsi < 2;
             // sell if sma > 10
-            CalculatedStock? generatedSignal = null;
-            var dates = _stocksHistory.FirstOrDefault()!.CalculatedStocksHistory.Select(x => x.Date).ToList();
             var index = 0;
-            foreach (var date in dates)
+            CalculatedStock? generatedSignal = null;
+            foreach (var strategyStock in _stocksHistory)
             {
-                foreach (var strategyStock in _stocksHistory)
+                if (index >= strategyStock.CalculatedStocksHistory.Count) continue;
+
+                var currentStock = strategyStock.CalculatedStocksHistory.ToList()[index];
+
+                if (currentStock.RSI == 0) continue;
+                if (currentStock.Date != date) continue;
+
+                if (currentStock.RSI < _relativeStrengthIndexParameter ||
+                    (generatedSignal != null && currentStock.RSI < generatedSignal.RSI))
                 {
-                    if (index >= strategyStock.CalculatedStocksHistory.Count) continue;
-
-                    var currentStock = strategyStock.CalculatedStocksHistory.ToList()[index];
-
-                    if (currentStock.RSI == 0) continue;
-                    if (currentStock.Date != date) continue;
-
-                    if (currentStock.RSI < _relativeStrengthIndexParameter || (generatedSignal != null && currentStock.RSI < generatedSignal.RSI))
-                    {
-                        generatedSignal = currentStock;
-                    }
-
-                    var openPosition = GeneratedOrders.FirstOrDefault(x => x.CloseDate == null && x.Symbol == strategyStock.Symbol);
-
-                    if (openPosition == null) continue;
-
-                    if (currentStock.SMA > currentStock.Close)
-                    {
-                        openPosition.ClosePosition(currentStock.Close, currentStock.Date);
-                        openPosition.CalculateProfitLoss();
-                    }
+                    generatedSignal = currentStock;
                 }
 
-                if (generatedSignal != null)
+                var openPosition = GeneratedOrders.FirstOrDefault(x => x.CloseDate == null && x.Symbol == strategyStock.Symbol);
+
+                if (openPosition == null) continue;
+
+                if (currentStock.SMA > currentStock.Close)
                 {
-                    var openPositions = NumberOfCurrentOpenedPositions(generatedSignal);
-                    var generatedOrder = GeneratedOrder.OpenPosition(
-                        generatedSignal.Symbol,
-                        generatedSignal.Open,
-                        generatedSignal.Date);
-                    generatedOrder.CalculateNumberOfStockForPosition(Budget, openPositions);
-
-                    _generatedOrders.Add(generatedOrder);
-
-                    generatedSignal = null;
+                    openPosition.ClosePosition(currentStock.Close, currentStock.Date);
+                    openPosition.CalculateProfitLoss();
                 }
 
                 index++;
             }
+
+            if (generatedSignal != null)
+            {
+                var openPositions = NumberOfCurrentOpenedPositions(generatedSignal);
+                var generatedOrder = GeneratedOrder.OpenPosition(
+                    generatedSignal.Symbol,
+                    generatedSignal.Open,
+                    generatedSignal.Date);
+                generatedOrder.CalculateNumberOfStockForPosition(Budget, openPositions);
+
+                _generatedOrders.Add(generatedOrder);
+            }
+        }
+
+        public void RemovePreviousIndicatorCalculations()
+        {
+            _generatedOrders.Clear();
+        }
+
+        public void RemovePreviousGeneratedOrders()
+        {
+            _generatedOrders.Clear();
+        }
+
+        public List<DateTime> GetHistoryInDates()
+        {
+            return _stocksHistory.FirstOrDefault()!.CalculatedStocksHistory.Select(x => x.Date).ToList();
         }
 
         private int NumberOfCurrentOpenedPositions(CalculatedStock generatedSignal)
