@@ -20,15 +20,22 @@ namespace TradeBash.Infrastructure.Data
         }
 
         public DbSet<Strategy> Strategies { get; set; }
+        
+        public DbSet<StrategyStock> StrategyStocksHistory { get; set; }
+        
+        public DbSet<CalculatedStock> CalculatedStocks { get; set; }
+        
+        public DbSet<GeneratedOrder> GeneratedOrders { get; set; }
 
         public DbSet<Stock> Stocks { get; set; }
-
+        
+        public DbSet<StockHistory> StockHistory { get; set; }
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-
         }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())

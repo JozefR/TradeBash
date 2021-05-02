@@ -64,7 +64,11 @@ namespace TradeBash.Core.Entities.Strategy
 
             foreach (var stockHistory in stock.OrderedHistory)
             {
-                strategyStock.CalculateForStock(stock.Symbol, stockHistory.Date, stockHistory.Open, stockHistory.Close);
+                strategyStock.CalculateForStock(
+                    stock.Symbol, 
+                    stockHistory.Date, 
+                    stockHistory.Open, 
+                    stockHistory.Close);
             }
 
             _stocksHistory.Add(strategyStock);

@@ -35,7 +35,6 @@ namespace TradeBash.Web.Api
         {
             var strategy = Strategy.From(strategyName, budget, smaParameter, rsiParameter);
 
-            await _repository.AddAsync(strategy);
             var stocks = await _repository.ListAsync<Stock>();
             foreach (var stock in stocks)
             {
@@ -46,7 +45,7 @@ namespace TradeBash.Web.Api
 
             _logger.LogInformation($"Saving indicator calculations to database");
 
-            await _repository.UpdateAsync(strategy);
+            await _repository.AddAsync(strategy);
 
             _logger.LogInformation("Saving Finished successfully");
 
@@ -58,6 +57,8 @@ namespace TradeBash.Web.Api
         {
             var strategy = await _strategyRepository.GetByNameAsync(strategyName);
 
+            _logger.LogInformation($"Started backtest for strategy {strategyName}");
+            
             strategy.RunBackTestForDate();
 
             _logger.LogInformation($"Backtest for strategy {strategyName} finished");
@@ -65,6 +66,7 @@ namespace TradeBash.Web.Api
             await _repository.UpdateAsync(strategy);
 
             _logger.LogInformation($"Backtest for strategy {strategyName} saved");
+            
             return strategy.GeneratedOrders.ToList();
         }
 
