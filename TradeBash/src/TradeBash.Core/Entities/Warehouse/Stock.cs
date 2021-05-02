@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using TradeBash.SharedKernel;
 
 namespace TradeBash.Core.Entities.Warehouse
@@ -10,9 +11,9 @@ namespace TradeBash.Core.Entities.Warehouse
 
         public string Name { get; private set; }
 
-        public IReadOnlyCollection<StockHistory> History => _history;
-
         private readonly List<StockHistory> _history;
+
+        public IReadOnlyCollection<StockHistory> OrderedHistory => _history.OrderBy(x => x.Date).ToList();
 
         private Stock()
         {

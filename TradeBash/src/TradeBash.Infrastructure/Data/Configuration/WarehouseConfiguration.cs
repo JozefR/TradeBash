@@ -10,7 +10,7 @@ namespace TradeBash.Infrastructure.Data.Configuration
         {
             builder.HasKey(x => x.Id);
 
-            builder.OwnsMany(o => o.History).ToTable("StocksHistory");
+            builder.OwnsMany(o => o.OrderedHistory).ToTable("StocksHistory");
         }
     }
 }

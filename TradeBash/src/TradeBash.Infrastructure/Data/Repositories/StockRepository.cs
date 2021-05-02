@@ -12,7 +12,7 @@ namespace TradeBash.Infrastructure.Data.Repositories
         public Task<Stock> GetBySymbolAsync(string symbol)
         {
             return _dbContext.Set<Stock>()
-                .Include(x => x.History)
+                .Include(x => x.OrderedHistory)
                 .SingleOrDefaultAsync(e => e.Symbol == symbol);
         }
     }

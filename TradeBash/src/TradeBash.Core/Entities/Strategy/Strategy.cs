@@ -62,8 +62,7 @@ namespace TradeBash.Core.Entities.Strategy
                 _smaLongParameter,
                 _rsaParameter);
 
-            var orderedHistory = stock.History.OrderBy(x => x.Date);
-            foreach (var stockHistory in orderedHistory)
+            foreach (var stockHistory in stock.OrderedHistory)
             {
                 strategyStock.CalculateForStock(stock.Symbol, stockHistory.Date, stockHistory.Open, stockHistory.Close);
             }
@@ -81,9 +80,9 @@ namespace TradeBash.Core.Entities.Strategy
             {
                 foreach (var strategyStock in _stocksHistory)
                 {
-                    if (index >= strategyStock.CalculatedStocksHistory.Count) continue;
+                    if (index >= strategyStock.OrderedStocksHistory.Count) continue;
 
-                    var currentStock = strategyStock.CalculatedStocksHistory.ToList()[index];
+                    var currentStock = strategyStock.OrderedStocksHistory.ToList()[index];
 
                     if (currentStock.RSI == 0) continue;
                     if (currentStock.Date != inDate) continue;
@@ -133,7 +132,7 @@ namespace TradeBash.Core.Entities.Strategy
 
         public List<DateTime> GetHistoryInDates()
         {
-            return _stocksHistory.FirstOrDefault()!.CalculatedStocksHistory.Select(x => x.Date).ToList();
+            return _stocksHistory.FirstOrDefault()!.OrderedStocksHistory.Select(x => x.Date).ToList();
         }
 
         private int NumberOfCurrentOpenedPositions(CalculatedStock generatedSignal)

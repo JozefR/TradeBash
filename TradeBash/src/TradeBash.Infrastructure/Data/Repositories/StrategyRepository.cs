@@ -15,7 +15,7 @@ namespace TradeBash.Infrastructure.Data.Repositories
         {
             return _dbContext.Set<Strategy>()
                 .Include(x => x.StocksHistory)
-                .ThenInclude(xx => xx.CalculatedStocksHistory)
+                .ThenInclude(xx => xx.OrderedStocksHistory)
                 .SingleOrDefaultAsync(e => e.Id == id);
         }
 
@@ -23,7 +23,7 @@ namespace TradeBash.Infrastructure.Data.Repositories
         {
             return _dbContext.Set<Strategy>()
                 .Include(x => x.StocksHistory)
-                .ThenInclude(xx => xx.CalculatedStocksHistory)
+                .ThenInclude(xx => xx.OrderedStocksHistory)
                 .Include(x => x.GeneratedOrders)
                 .SingleOrDefaultAsync(e => e.Name == name);
         }
@@ -32,7 +32,7 @@ namespace TradeBash.Infrastructure.Data.Repositories
         {
             return _dbContext.Set<Strategy>()
                 .Include(x => x.StocksHistory)
-                .ThenInclude(xx => xx.CalculatedStocksHistory)
+                .ThenInclude(xx => xx.OrderedStocksHistory)
                 .Include(x => x.GeneratedOrders)
                 .ToListAsync();
         }

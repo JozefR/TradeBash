@@ -147,14 +147,14 @@ namespace TradeBash.DataCentre
 
         private TimeSpan GetDateDifferenceFromStockLastDate(Stock existingStock)
         {
-            var existingStockLastDate = existingStock.History.Max(x => x.Date);
+            var existingStockLastDate = existingStock.OrderedHistory.Max(x => x.Date);
             var lastDateDifference = DateTime.Now - existingStockLastDate;
             return lastDateDifference;
         }
 
         private void RemoveExistingHistory(Stock existingStock, List<StockDtoResponse> stocksHistorySerialized)
         {
-            var lastStock = existingStock.History.Max(x => x.Date);
+            var lastStock = existingStock.OrderedHistory.Max(x => x.Date);
 
             while (stocksHistorySerialized.Count != 0)
             {
