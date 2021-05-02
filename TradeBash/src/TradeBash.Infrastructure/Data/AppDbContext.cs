@@ -1,14 +1,9 @@
-﻿using TradeBash.SharedKernel.Interfaces;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Threading;
 using System.Threading.Tasks;
-using TradeBash.Core.Entities;
-using TradeBash.SharedKernel;
 using System.Reflection;
 using TradeBash.Core.Entities.Strategy;
 using TradeBash.Core.Entities.Warehouse;
-using TradeBash.Infrastructure.DTO;
 
 namespace TradeBash.Infrastructure.Data
 {
@@ -20,17 +15,9 @@ namespace TradeBash.Infrastructure.Data
         }
 
         public DbSet<Strategy> Strategies { get; set; }
-        
-        public DbSet<StrategyStock> StrategyStocksHistory { get; set; }
-        
-        public DbSet<CalculatedStock> CalculatedStocks { get; set; }
-        
-        public DbSet<GeneratedOrder> GeneratedOrders { get; set; }
 
         public DbSet<Stock> Stocks { get; set; }
-        
-        public DbSet<StockHistory> StockHistory { get; set; }
-        
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
