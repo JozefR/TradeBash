@@ -11,13 +11,13 @@ namespace TradeBash.Core.Entities.Warehouse
 
         public string Name { get; private set; }
 
-        private readonly List<StockHistory> _history;
+        public List<StockHistory> History { get; private set; }
 
-        public IReadOnlyCollection<StockHistory> OrderedHistory => _history.OrderBy(x => x.Date).ToList();
+        public IReadOnlyCollection<StockHistory> OrderedHistory => History.OrderBy(x => x.Date).ToList();
 
         private Stock()
         {
-            _history = new List<StockHistory>();
+            History = new List<StockHistory>();
         }
 
         public static Stock From(string symbol, string name)
@@ -77,7 +77,7 @@ namespace TradeBash.Core.Entities.Warehouse
                 change,
                 changePercent);
 
-            _history.Add(stock);
+            History.Add(stock);
 
             return stock;
         }

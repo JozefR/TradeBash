@@ -93,7 +93,7 @@ namespace TradeBash.Core.Entities.Strategy
                 _smaLongParameter,
                 _rsiParameter);
 
-            foreach (var stockHistory in stock.OrderedHistory)
+            foreach (var stockHistory in stock.History)
             {
                 strategyStock.CalculateForStock(
                     stock.Symbol, 

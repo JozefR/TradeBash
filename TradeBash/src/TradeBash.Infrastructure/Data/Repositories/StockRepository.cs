@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
 using TradeBash.Core.Entities.Warehouse;
@@ -12,7 +13,7 @@ namespace TradeBash.Infrastructure.Data.Repositories
         public Task<Stock> GetBySymbolAsync(string symbol)
         {
             return _dbContext.Set<Stock>()
-                .Include(x => x.OrderedHistory)
+                .Include(x => x.History)
                 .SingleOrDefaultAsync(e => e.Symbol == symbol);
         }
     }
