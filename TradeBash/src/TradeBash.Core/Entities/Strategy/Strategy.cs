@@ -12,13 +12,13 @@ namespace TradeBash.Core.Entities.Strategy
     {
         public string Name { get; private set; }
 
-        public double Budget { get; private set; }
+        private int? Budget { get; set; }
 
         private int? _smaShortParameter;
 
         private int? _smaLongParameter;
 
-        private int? _rsaParameter;
+        private int? _rsiParameter;
 
         public IReadOnlyCollection<StrategyStock> StocksHistory => _stocksHistory;
         private readonly List<StrategyStock> _stocksHistory;
@@ -29,25 +29,56 @@ namespace TradeBash.Core.Entities.Strategy
         private Strategy()
         {
             Name = string.Empty;
-            Budget = Double.MinValue;
+            Budget = int.MinValue;
             _stocksHistory = new List<StrategyStock>();
             _generatedOrders = new List<GeneratedOrder>();
         }
 
         public static Strategy From(
             string name,
-            double budget,
-            int? smaShort = null,
-            int? smaLong = null,
-            int? rsiParameter = null)
+            int smaShort,
+            int rsiParameter)
         {
             var strategy = new Strategy
             {
                 Name = name,
-                Budget = budget,
+                _smaShortParameter = smaShort,
+                _rsiParameter = rsiParameter,
+            };
+
+            return strategy;
+        }
+
+        public static Strategy From(
+            string name,
+            int smaShort,
+            int smaLong,
+            int rsiParameter)
+        {
+            var strategy = new Strategy
+            {
+                Name = name,
                 _smaShortParameter = smaShort,
                 _smaLongParameter = smaLong,
-                _rsaParameter = rsiParameter,
+                _rsiParameter = rsiParameter,
+            };
+
+            return strategy;
+        }
+
+        public static Strategy From(
+            string name,
+            int budget,
+            int smaShort,
+            int smaLong,
+            int rsiParameter)
+        {
+            var strategy = new Strategy
+            {
+                Name = name,
+                _smaShortParameter = smaShort,
+                _smaLongParameter = smaLong,
+                _rsiParameter = rsiParameter,
             };
 
             return strategy;
@@ -60,7 +91,7 @@ namespace TradeBash.Core.Entities.Strategy
                 stock.Name,
                 _smaShortParameter,
                 _smaLongParameter,
-                _rsaParameter);
+                _rsiParameter);
 
             foreach (var stockHistory in stock.OrderedHistory)
             {
@@ -91,7 +122,7 @@ namespace TradeBash.Core.Entities.Strategy
                     if (currentStock.RSI == 0) continue;
                     if (currentStock.Date != inDate) continue;
 
-                    if (currentStock.RSI < _rsaParameter ||
+                    if (currentStock.RSI < _rsiParameter ||
                         (generatedSignal != null && currentStock.RSI < generatedSignal.RSI))
                     {
                         generatedSignal = currentStock;
@@ -115,23 +146,13 @@ namespace TradeBash.Core.Entities.Strategy
                         generatedSignal.Symbol,
                         generatedSignal.Open,
                         generatedSignal.Date);
-                    generatedOrder.CalculateNumberOfStockForPosition(Budget, openPositions);
+                    generatedOrder.CalculateNumberOfStockForPosition(Budget.Value, openPositions);
 
                     _generatedOrders.Add(generatedOrder);
                 }
 
                 index++;
             }
-        }
-
-        public void RemovePreviousIndicatorCalculations()
-        {
-            _generatedOrders.Clear();
-        }
-
-        public void RemovePreviousGeneratedOrders()
-        {
-            _generatedOrders.Clear();
         }
 
         public List<DateTime> GetHistoryInDates()

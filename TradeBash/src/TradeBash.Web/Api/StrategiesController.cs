@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -30,26 +31,58 @@ namespace TradeBash.Web.Api
             _logger = logger;
         }
 
-        [HttpGet("calculateIndicators/{strategyName}/{budget}/{smaParameter}/{rsiParameter}")]
-        public async Task<OkResult> CalculateIndicators(string strategyName, double budget, int smaParameter, int rsiParameter)
+        [HttpGet("calculateStrategy/{sma}/{rsi}")]
+        public async Task<IActionResult> calculateStrategy(int sma, int rsi)
         {
-            var strategy = Strategy.From(strategyName, budget, smaParameter, rsiParameter);
+            var strategyName = $"SMA-{sma}-RSI-{rsi}";
+            var strategy = Strategy.From(strategyName, sma, rsi);
 
-            var stocks = await _repository.ListAsync<Stock>();
-            foreach (var stock in stocks)
+            try
             {
-                _logger.LogInformation($"Start indicators calculation for stock {stock.Name}");
+                await CalculateAsync(strategy);
 
-                strategy.RunCalculationForStock(stock);
+                return Ok();
             }
+            catch (Exception e)
+            {
+                return UnprocessableEntity(e);
+            }
+        }
 
-            _logger.LogInformation($"Saving indicator calculations to database");
+        [HttpGet("calculateStrategy/{smaShort}/{smaLong}/{rsi}")]
+        public async Task<IActionResult> calculateStrategy(int smaShort, int smaLong, int rsi)
+        {
+            var strategyName = $"SMA-{smaShort}-SMA-{smaLong}-RSI-{rsi}";
+            var strategy = Strategy.From(strategyName, smaShort, smaLong, rsi);
 
-            await _repository.AddAsync(strategy);
+            try
+            {
+                await CalculateAsync(strategy);
 
-            _logger.LogInformation("Saving Finished successfully");
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return UnprocessableEntity(e);
+            }
+        }
 
-            return Ok();
+        [HttpGet("calculateStrategy/{budget}/{smaShort}/{smaLong}/{rsi}")]
+        public async Task<IActionResult> calculateStrategy(int budget, int smaShort, int smaLong, int rsi)
+        {
+            var strategyName = $"Budget-{budget}-SMA-{smaShort}-SMA-{smaLong}-RSI-{rsi}";
+            var strategy = Strategy.From(strategyName, budget, smaShort, smaLong, rsi);
+
+            try
+            {
+                await CalculateAsync(strategy);
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return UnprocessableEntity(e);
+            }
         }
 
         [HttpGet("Backtest/{strategyName}")]
@@ -107,6 +140,23 @@ namespace TradeBash.Web.Api
 
 
             return Ok();
+        }
+
+        private async Task CalculateAsync(Strategy strategy)
+        {
+            var stocks = await _repository.ListAsync<Stock>();
+            foreach (var stock in stocks)
+            {
+                _logger.LogInformation($"Start indicators calculation for stock {stock.Name}");
+
+                strategy.RunCalculationForStock(stock);
+            }
+
+            _logger.LogInformation($"Saving indicator calculations to database");
+
+            await _repository.AddAsync(strategy);
+
+            _logger.LogInformation("Saving Finished successfully");
         }
     }
 }
