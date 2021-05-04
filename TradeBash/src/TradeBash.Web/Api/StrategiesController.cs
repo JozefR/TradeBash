@@ -145,6 +145,9 @@ namespace TradeBash.Web.Api
         private async Task CalculateAsync(Strategy strategy)
         {
             var stocks = await _repository.ListAsync<Stock>();
+
+            await _repository.AddAsync(strategy);
+
             foreach (var stock in stocks)
             {
                 _logger.LogInformation($"Start indicators calculation for stock {stock.Name}");
@@ -154,7 +157,7 @@ namespace TradeBash.Web.Api
 
             _logger.LogInformation($"Saving indicator calculations to database");
 
-            await _repository.AddAsync(strategy);
+            await _repository.UpdateAsync(strategy);
 
             _logger.LogInformation("Saving Finished successfully");
         }

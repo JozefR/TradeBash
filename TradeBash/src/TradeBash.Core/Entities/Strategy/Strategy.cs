@@ -20,8 +20,8 @@ namespace TradeBash.Core.Entities.Strategy
 
         private int? _rsiParameter;
 
-        public IReadOnlyCollection<StrategyStock> StocksHistory => _stocksHistory;
-        private readonly List<StrategyStock> _stocksHistory;
+        public IReadOnlyCollection<StrategyStock> StrategyStockHistory => _strategyStockHistory;
+        private readonly List<StrategyStock> _strategyStockHistory;
 
         public IReadOnlyCollection<GeneratedOrder> GeneratedOrders => _generatedOrders;
         private readonly List<GeneratedOrder> _generatedOrders;
@@ -30,7 +30,7 @@ namespace TradeBash.Core.Entities.Strategy
         {
             Name = string.Empty;
             Budget = int.MinValue;
-            _stocksHistory = new List<StrategyStock>();
+            _strategyStockHistory = new List<StrategyStock>();
             _generatedOrders = new List<GeneratedOrder>();
         }
 
@@ -102,7 +102,7 @@ namespace TradeBash.Core.Entities.Strategy
                     stockHistory.Close);
             }
 
-            _stocksHistory.Add(strategyStock);
+            _strategyStockHistory.Add(strategyStock);
         }
 
         public void RunBackTestForDate()
@@ -113,7 +113,7 @@ namespace TradeBash.Core.Entities.Strategy
             CalculatedStock? generatedSignal = null;
             foreach (var inDate in GetHistoryInDates())
             {
-                foreach (var strategyStock in _stocksHistory)
+                foreach (var strategyStock in _strategyStockHistory)
                 {
                     if (index >= strategyStock.OrderedStocksHistory.Count) continue;
 
@@ -157,7 +157,7 @@ namespace TradeBash.Core.Entities.Strategy
 
         public List<DateTime> GetHistoryInDates()
         {
-            return _stocksHistory.FirstOrDefault()!.OrderedStocksHistory.Select(x => x.Date).ToList();
+            return _strategyStockHistory.FirstOrDefault()!.OrderedStocksHistory.Select(x => x.Date).ToList();
         }
 
         private int NumberOfCurrentOpenedPositions(CalculatedStock generatedSignal)
