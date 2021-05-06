@@ -23,10 +23,7 @@ namespace TradeBash.Core.Entities.Strategy
             string symbol,
             DateTime date,
             double open,
-            double close,
-            double? smaShort,
-            double? smaLong,
-            double? rsi)
+            double close)
         {
             var entity = new CalculatedStock
             {
@@ -34,12 +31,16 @@ namespace TradeBash.Core.Entities.Strategy
                 Date = date,
                 Open = open,
                 Close = close,
-                SMAShort = smaShort,
-                SMALong = smaLong,
-                RSI = rsi
             };
 
             return entity;
+        }
+
+        public void SetIndicators(double? smaShort, double? smaLong, double? rsi)
+        {
+            SMAShort = smaShort;
+            SMALong = smaLong;
+            RSI = rsi;
         }
     }
 }

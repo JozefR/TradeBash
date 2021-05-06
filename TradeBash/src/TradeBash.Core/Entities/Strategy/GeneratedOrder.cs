@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using TradeBash.SharedKernel;
 
 namespace TradeBash.Core.Entities.Strategy
@@ -37,7 +36,12 @@ namespace TradeBash.Core.Entities.Strategy
             return entity;
         }
 
-        public void CalculateNumberOfStockForPosition(double budget, int openPositions)
+        public void NumberOfStocksForPosition(int position)
+        {
+            Position = position;
+        }
+
+        public void NumberOfStocksForPosition(double budget, int openPositions)
         {
             double investition = 0;
 

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TradeBash.Core.Entities.Warehouse;
 using TradeBash.SharedKernel;
 
 namespace TradeBash.Core.Entities.Strategy
@@ -51,13 +52,14 @@ namespace TradeBash.Core.Entities.Strategy
             double open,
             double close)
         {
+            var stock = CalculatedStock.From(symbol, date, open, close);
+            CalculatedStocksHistory.Add(stock);
+
             var smaShort = CalculateSMA(_smaShortParameter);
             var smaLong = CalculateSMA(_smaLongParameter);
             var rsi = CalculateRelativeStrengthIndex();
 
-            var stock = CalculatedStock.From(symbol, date, open, close, smaShort, smaLong, rsi);
-
-            CalculatedStocksHistory.Add(stock);
+            stock.SetIndicators(smaShort, smaLong, rsi);
         }
 
         private double? CalculateSMA(int? smaParameter)

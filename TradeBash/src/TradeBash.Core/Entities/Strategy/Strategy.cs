@@ -107,27 +107,26 @@ namespace TradeBash.Core.Entities.Strategy
         {
             // buy if rsi < 2;
             // sell if sma > 10
+            // fixed money management
             var index = 0;
             CalculatedStock? generatedSignal = null;
             foreach (var inDate in GetHistoryInDates())
             {
                 foreach (var strategyStock in StrategyStocksHistory)
                 {
-                    if (index >= strategyStock.CalculatedOrderedStocksHistory.Count) continue;
+                    if (StrategyGuard.IndexOutOfRange(index, strategyStock)) continue;
 
                     var currentStock = strategyStock.CalculatedStocksHistory.ToList()[index];
 
-                    if (currentStock.RSI == 0) continue;
-                    if (currentStock.Date != inDate) continue;
+                    if (StrategyGuard.RsiNotCalculated(currentStock)) continue;
+                    if (StrategyGuard.NotSameDate(currentStock, inDate)) continue;
 
-                    if (currentStock.RSI < _rsiParameter ||
-                        (generatedSignal != null && currentStock.RSI < generatedSignal.RSI))
+                    if (GenerateBuySignalForRsiIfCurrentStockLower(generatedSignal, currentStock))
                     {
                         generatedSignal = currentStock;
                     }
 
-                    var openPosition = GeneratedOrders.FirstOrDefault(x => x.CloseDate == null && x.Symbol == strategyStock.Symbol);
-
+                    var openPosition = GetCurrentNotClosedPositionFor(currentStock);
                     if (openPosition == null) continue;
 
                     if (currentStock.SMAShort > currentStock.Close)
@@ -139,12 +138,8 @@ namespace TradeBash.Core.Entities.Strategy
 
                 if (generatedSignal != null)
                 {
-                    var openPositions = NumberOfCurrentOpenedPositions(generatedSignal);
-                    var generatedOrder = GeneratedOrder.OpenPosition(
-                        generatedSignal.Symbol,
-                        generatedSignal.Open,
-                        generatedSignal.Date);
-                    generatedOrder.CalculateNumberOfStockForPosition(Budget.Value, openPositions);
+                    var generatedOrder = GeneratedOrder.OpenPosition(generatedSignal.Symbol, generatedSignal.Open, generatedSignal.Date);
+                    generatedOrder.NumberOfStocksForPosition(100);
 
                     GeneratedOrders.Add(generatedOrder);
                 }
@@ -153,7 +148,22 @@ namespace TradeBash.Core.Entities.Strategy
             }
         }
 
-        public List<DateTime> GetHistoryInDates()
+        private bool GenerateBuySignalForRsiIfCurrentStockLower(CalculatedStock? generatedSignal, CalculatedStock currentStock)
+        {
+            if (currentStock.RSI < _rsiParameter || (generatedSignal != null && currentStock.RSI < generatedSignal.RSI))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private GeneratedOrder? GetCurrentNotClosedPositionFor(CalculatedStock currentStock)
+        {
+            return GeneratedOrders.FirstOrDefault(x => x.CloseDate == null && x.Symbol == currentStock.Symbol);
+        }
+
+        private List<DateTime> GetHistoryInDates()
         {
             return StrategyStocksHistory.FirstOrDefault()!.CalculatedStocksHistory.Select(x => x.Date).ToList();
         }

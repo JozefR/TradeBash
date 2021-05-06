@@ -106,7 +106,7 @@ namespace TradeBash.Web.Api
         [HttpGet("ExportToExcel")]
         public async Task<OkResult> ExportToExcel()
         {
-            var strategies = await _strategyRepository.GetAllAsync();
+            var strategies = await _strategyRepository.GetAllGeneratedOrdersAsync();
 
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             var file = new FileInfo(@"C:\Demos\MyDemo.xlsx");

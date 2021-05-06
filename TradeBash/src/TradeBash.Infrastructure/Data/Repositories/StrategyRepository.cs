@@ -28,12 +28,11 @@ namespace TradeBash.Infrastructure.Data.Repositories
                 .SingleOrDefaultAsync(e => e.Name == name);
         }
 
-        public Task<List<Strategy>> GetAllAsync()
+        public Task<List<Strategy>> GetAllGeneratedOrdersAsync()
         {
             return _dbContext.Set<Strategy>()
-                .Include(x => x.StrategyStocksHistory)
-                .ThenInclude(xx => xx.CalculatedStocksHistory)
                 .Include(x => x.GeneratedOrders)
+                .AsNoTracking()
                 .ToListAsync();
         }
     }

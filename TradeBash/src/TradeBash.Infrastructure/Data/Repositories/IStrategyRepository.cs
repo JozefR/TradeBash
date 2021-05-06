@@ -9,6 +9,6 @@ namespace TradeBash.Infrastructure.Data.Repositories
     {
         Task<Strategy> GetByIdAsync(int id);
         Task<Strategy> GetByNameAsync(string name);
-        Task<List<Strategy>> GetAllAsync();
+        Task<List<Strategy>> GetAllGeneratedOrdersAsync();
     }
 }
