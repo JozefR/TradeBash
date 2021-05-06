@@ -116,10 +116,13 @@ namespace TradeBash.Core.Entities.Strategy
                 {
                     if (StrategyGuard.IndexOutOfRange(index, strategyStock)) continue;
 
-                    var currentStock = strategyStock.CalculatedStocksHistory.ToList()[index];
+                    var currentStock = strategyStock.CalculatedOrderedStocksHistory.ToList()[index];
 
                     if (StrategyGuard.RsiNotCalculated(currentStock)) continue;
-                    if (StrategyGuard.NotSameDate(currentStock, inDate)) continue;
+                    if (StrategyGuard.NotSameDate(currentStock, inDate))
+                    {
+                        throw new Exception();
+                    }
 
                     if (GenerateBuySignalForRsiIfCurrentStockLower(generatedSignal, currentStock))
                     {
@@ -129,7 +132,7 @@ namespace TradeBash.Core.Entities.Strategy
                     var openPosition = GetCurrentNotClosedPositionFor(currentStock);
                     if (openPosition == null) continue;
 
-                    if (currentStock.SMAShort > currentStock.Close)
+                    if (currentStock.SMAShort < currentStock.Close)
                     {
                         openPosition.ClosePosition(currentStock.Close, currentStock.Date);
                         openPosition.CalculateProfitLoss();
@@ -142,6 +145,7 @@ namespace TradeBash.Core.Entities.Strategy
                     generatedOrder.NumberOfStocksForPosition(100);
 
                     GeneratedOrders.Add(generatedOrder);
+                    generatedSignal = null;
                 }
 
                 index++;
@@ -165,7 +169,7 @@ namespace TradeBash.Core.Entities.Strategy
 
         private List<DateTime> GetHistoryInDates()
         {
-            return StrategyStocksHistory.FirstOrDefault()!.CalculatedStocksHistory.Select(x => x.Date).ToList();
+            return StrategyStocksHistory.FirstOrDefault()!.CalculatedOrderedStocksHistory.Select(x => x.Date).ToList();
         }
 
         private int NumberOfCurrentOpenedPositions(CalculatedStock generatedSignal)
