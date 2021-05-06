@@ -113,7 +113,7 @@ namespace TradeBash.Core.Entities.Strategy
             {
                 foreach (var strategyStock in StrategyStocksHistory)
                 {
-                    if (index >= strategyStock.CalculatedStocksHistory.Count) continue;
+                    if (index >= strategyStock.CalculatedOrderedStocksHistory.Count) continue;
 
                     var currentStock = strategyStock.CalculatedStocksHistory.ToList()[index];
 

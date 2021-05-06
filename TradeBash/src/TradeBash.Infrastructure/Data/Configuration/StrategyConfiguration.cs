@@ -17,14 +17,19 @@ namespace TradeBash.Infrastructure.Data.Configuration
                 .IsRequired();
 
             strategyBuilder
-                .Property<int?>("_simpleMovingAverageParameter")
+                .Property<int?>("_smaShortParameter")
                 .UsePropertyAccessMode(PropertyAccessMode.Field)
-                .HasColumnName("SimpleMovingAverage");
+                .HasColumnName("SMAShort");
 
             strategyBuilder
-                .Property<int?>("_relativeStrengthIndexParameter")
+                .Property<int?>("_smaLongParameter")
                 .UsePropertyAccessMode(PropertyAccessMode.Field)
-                .HasColumnName("RelativeStrengthIndex");
+                .HasColumnName("SMALong");
+
+            strategyBuilder
+                .Property<int?>("_rsiParameter")
+                .UsePropertyAccessMode(PropertyAccessMode.Field)
+                .HasColumnName("RSI");
 
             strategyBuilder.OwnsMany(o => o.GeneratedOrders).ToTable("GeneratedOrders");
         }
