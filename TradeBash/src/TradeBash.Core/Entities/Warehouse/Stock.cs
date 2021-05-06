@@ -11,7 +11,7 @@ namespace TradeBash.Core.Entities.Warehouse
 
         public string Name { get; private set; }
 
-        public List<StockHistory> History { get; private set; }
+        public List<StockHistory> History { get; }
 
         public IReadOnlyCollection<StockHistory> OrderedHistory => History.OrderBy(x => x.Date).ToList();
 

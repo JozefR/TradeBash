@@ -20,18 +20,16 @@ namespace TradeBash.Core.Entities.Strategy
 
         private int? _rsiParameter;
 
-        public IReadOnlyCollection<StrategyStock> StrategyStockHistory => _strategyStockHistory;
-        private readonly List<StrategyStock> _strategyStockHistory;
+        public ICollection<StrategyStock> StrategyStocksHistory { get; set; }
 
-        public IReadOnlyCollection<GeneratedOrder> GeneratedOrders => _generatedOrders;
-        private readonly List<GeneratedOrder> _generatedOrders;
+        public ICollection<GeneratedOrder> GeneratedOrders { get; set; }
 
         private Strategy()
         {
             Name = string.Empty;
             Budget = int.MinValue;
-            _strategyStockHistory = new List<StrategyStock>();
-            _generatedOrders = new List<GeneratedOrder>();
+            StrategyStocksHistory = new List<StrategyStock>();
+            GeneratedOrders = new List<GeneratedOrder>();
         }
 
         public static Strategy From(
@@ -93,7 +91,7 @@ namespace TradeBash.Core.Entities.Strategy
                 _smaLongParameter,
                 _rsiParameter);
 
-            foreach (var stockHistory in stock.History)
+            foreach (var stockHistory in stock.OrderedHistory)
             {
                 strategyStock.CalculateForStock(
                     stock.Symbol, 
@@ -102,7 +100,7 @@ namespace TradeBash.Core.Entities.Strategy
                     stockHistory.Close);
             }
 
-            _strategyStockHistory.Add(strategyStock);
+            StrategyStocksHistory.Add(strategyStock);
         }
 
         public void RunBackTestForDate()
@@ -113,11 +111,11 @@ namespace TradeBash.Core.Entities.Strategy
             CalculatedStock? generatedSignal = null;
             foreach (var inDate in GetHistoryInDates())
             {
-                foreach (var strategyStock in _strategyStockHistory)
+                foreach (var strategyStock in StrategyStocksHistory)
                 {
-                    if (index >= strategyStock.OrderedStocksHistory.Count) continue;
+                    if (index >= strategyStock.CalculatedStocksHistory.Count) continue;
 
-                    var currentStock = strategyStock.OrderedStocksHistory.ToList()[index];
+                    var currentStock = strategyStock.CalculatedStocksHistory.ToList()[index];
 
                     if (currentStock.RSI == 0) continue;
                     if (currentStock.Date != inDate) continue;
@@ -148,7 +146,7 @@ namespace TradeBash.Core.Entities.Strategy
                         generatedSignal.Date);
                     generatedOrder.CalculateNumberOfStockForPosition(Budget.Value, openPositions);
 
-                    _generatedOrders.Add(generatedOrder);
+                    GeneratedOrders.Add(generatedOrder);
                 }
 
                 index++;
@@ -157,7 +155,7 @@ namespace TradeBash.Core.Entities.Strategy
 
         public List<DateTime> GetHistoryInDates()
         {
-            return _strategyStockHistory.FirstOrDefault()!.OrderedStocksHistory.Select(x => x.Date).ToList();
+            return StrategyStocksHistory.FirstOrDefault()!.CalculatedStocksHistory.Select(x => x.Date).ToList();
         }
 
         private int NumberOfCurrentOpenedPositions(CalculatedStock generatedSignal)

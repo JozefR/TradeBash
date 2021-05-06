@@ -2,7 +2,7 @@
 
 namespace TradeBash.Infrastructure.Migrations
 {
-    public partial class StockHistoryRenaming : Migration
+    public partial class test : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

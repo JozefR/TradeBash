@@ -25,6 +25,8 @@ namespace TradeBash.Infrastructure.Data.Configuration
                 .Property<int?>("_relativeStrengthIndexParameter")
                 .UsePropertyAccessMode(PropertyAccessMode.Field)
                 .HasColumnName("RelativeStrengthIndex");
+
+            strategyBuilder.OwnsMany(o => o.GeneratedOrders).ToTable("GeneratedOrders");
         }
     }
 }

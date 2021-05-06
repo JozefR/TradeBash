@@ -19,85 +19,6 @@ namespace TradeBash.Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("TradeBash.Core.Entities.Strategy.CalculatedStock", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<double>("Close")
-                        .HasColumnType("float");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<double>("Open")
-                        .HasColumnType("float");
-
-                    b.Property<double?>("RSI")
-                        .HasColumnType("float");
-
-                    b.Property<double?>("SMALong")
-                        .HasColumnType("float");
-
-                    b.Property<double?>("SMAShort")
-                        .HasColumnType("float");
-
-                    b.Property<int?>("StrategyStockId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Symbol")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("StrategyStockId");
-
-                    b.ToTable("CalculatedStock");
-                });
-
-            modelBuilder.Entity("TradeBash.Core.Entities.Strategy.GeneratedOrder", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("BudgetInvestedPercentage")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("CloseDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<double?>("ClosePrice")
-                        .HasColumnType("float");
-
-                    b.Property<DateTime>("OpenDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<double>("OpenPrice")
-                        .HasColumnType("float");
-
-                    b.Property<int>("Position")
-                        .HasColumnType("int");
-
-                    b.Property<double?>("ProfitLoss")
-                        .HasColumnType("float");
-
-                    b.Property<int?>("StrategyId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Symbol")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("StrategyId");
-
-                    b.ToTable("GeneratedOrder");
-                });
-
             modelBuilder.Entity("TradeBash.Core.Entities.Strategy.Strategy", b =>
                 {
                     b.Property<int>("Id")
@@ -166,25 +87,95 @@ namespace TradeBash.Infrastructure.Migrations
                     b.ToTable("Stocks");
                 });
 
-            modelBuilder.Entity("TradeBash.Core.Entities.Strategy.CalculatedStock", b =>
+            modelBuilder.Entity("TradeBash.Core.Entities.Strategy.Strategy", b =>
                 {
-                    b.HasOne("TradeBash.Core.Entities.Strategy.StrategyStock", null)
-                        .WithMany("OrderedStocksHistory")
-                        .HasForeignKey("StrategyStockId");
-                });
+                    b.OwnsMany("TradeBash.Core.Entities.Strategy.GeneratedOrder", "GeneratedOrders", b1 =>
+                        {
+                            b1.Property<int>("StrategyId")
+                                .HasColumnType("int");
 
-            modelBuilder.Entity("TradeBash.Core.Entities.Strategy.GeneratedOrder", b =>
-                {
-                    b.HasOne("TradeBash.Core.Entities.Strategy.Strategy", null)
-                        .WithMany("GeneratedOrders")
-                        .HasForeignKey("StrategyId");
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int")
+                                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                            b1.Property<int>("BudgetInvestedPercentage")
+                                .HasColumnType("int");
+
+                            b1.Property<DateTime?>("CloseDate")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<double?>("ClosePrice")
+                                .HasColumnType("float");
+
+                            b1.Property<DateTime>("OpenDate")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<double>("OpenPrice")
+                                .HasColumnType("float");
+
+                            b1.Property<int>("Position")
+                                .HasColumnType("int");
+
+                            b1.Property<double?>("ProfitLoss")
+                                .HasColumnType("float");
+
+                            b1.Property<string>("Symbol")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("StrategyId", "Id");
+
+                            b1.ToTable("GeneratedOrders");
+
+                            b1.WithOwner()
+                                .HasForeignKey("StrategyId");
+                        });
                 });
 
             modelBuilder.Entity("TradeBash.Core.Entities.Strategy.StrategyStock", b =>
                 {
                     b.HasOne("TradeBash.Core.Entities.Strategy.Strategy", null)
-                        .WithMany("StrategyStockHistory")
+                        .WithMany("StrategyStocksHistory")
                         .HasForeignKey("StrategyId");
+
+                    b.OwnsMany("TradeBash.Core.Entities.Strategy.CalculatedStock", "CalculatedStocksHistory", b1 =>
+                        {
+                            b1.Property<int>("StrategyStockId")
+                                .HasColumnType("int");
+
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int")
+                                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                            b1.Property<double>("Close")
+                                .HasColumnType("float");
+
+                            b1.Property<DateTime>("Date")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<double>("Open")
+                                .HasColumnType("float");
+
+                            b1.Property<double?>("RSI")
+                                .HasColumnType("float");
+
+                            b1.Property<double?>("SMALong")
+                                .HasColumnType("float");
+
+                            b1.Property<double?>("SMAShort")
+                                .HasColumnType("float");
+
+                            b1.Property<string>("Symbol")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("StrategyStockId", "Id");
+
+                            b1.ToTable("CalculatedStocksHistory");
+
+                            b1.WithOwner()
+                                .HasForeignKey("StrategyStockId");
+                        });
                 });
 
             modelBuilder.Entity("TradeBash.Core.Entities.Warehouse.Stock", b =>

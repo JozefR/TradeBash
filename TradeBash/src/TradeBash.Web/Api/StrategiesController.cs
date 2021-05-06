@@ -153,11 +153,11 @@ namespace TradeBash.Web.Api
                 _logger.LogInformation($"Start indicators calculation for stock {stock.Name}");
 
                 strategy.RunCalculationForStock(stock);
+
+                _logger.LogInformation($"Saving indicator calculations to database");
+
+                await _repository.UpdateAsync(strategy);
             }
-
-            _logger.LogInformation($"Saving indicator calculations to database");
-
-            await _repository.UpdateAsync(strategy);
 
             _logger.LogInformation("Saving Finished successfully");
         }

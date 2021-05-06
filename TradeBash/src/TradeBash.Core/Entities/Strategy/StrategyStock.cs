@@ -12,11 +12,8 @@ namespace TradeBash.Core.Entities.Strategy
 
         public string Label { get; private set; }
 
-        private readonly List<CalculatedStock> _calculatedStocksHistory;
-        public IReadOnlyCollection<CalculatedStock> OrderedStocksHistory =>
-            _calculatedStocksHistory
-            .OrderBy(x => x.Date)
-            .ToList();
+        public List<CalculatedStock> CalculatedStocksHistory { get; set; }
+        public IReadOnlyCollection<CalculatedStock> CalculatedOrderedStocksHistory => CalculatedStocksHistory.OrderBy(x => x.Date).ToList();
 
         private int? _smaShortParameter;
         private int? _smaLongParameter;
@@ -26,7 +23,7 @@ namespace TradeBash.Core.Entities.Strategy
         {
             Symbol = string.Empty;
             Label = string.Empty;
-            _calculatedStocksHistory = new List<CalculatedStock>();
+            CalculatedStocksHistory = new List<CalculatedStock>();
         }
 
         public static StrategyStock From(
@@ -60,16 +57,16 @@ namespace TradeBash.Core.Entities.Strategy
 
             var stock = CalculatedStock.From(symbol, date, open, close, smaShort, smaLong, rsi);
 
-            _calculatedStocksHistory.Add(stock);
+            CalculatedStocksHistory.Add(stock);
         }
 
         private double? CalculateSMA(int? smaParameter)
         {
             if (!smaParameter.HasValue) return null;
 
-            if (_calculatedStocksHistory.Count < smaParameter) return null;
+            if (CalculatedStocksHistory.Count < smaParameter) return null;
 
-            var average = _calculatedStocksHistory
+            var average = CalculatedStocksHistory
                 .TakeLast(smaParameter.Value)
                 .Select(x => x.Close)
                 .Average();
@@ -81,9 +78,9 @@ namespace TradeBash.Core.Entities.Strategy
         {
             if (!_relativeStrengthIndexParameter.HasValue) return null;
 
-            if (_calculatedStocksHistory.Count <= _relativeStrengthIndexParameter + 15) return null;
+            if (CalculatedStocksHistory.Count <= _relativeStrengthIndexParameter + 15) return null;
 
-            var price = _calculatedStocksHistory.Select(x => x.Close).ToArray();
+            var price = CalculatedStocksHistory.Select(x => x.Close).ToArray();
             var rsi = new double[price.Length];
 
             double gain = 0.0;
@@ -141,7 +138,7 @@ namespace TradeBash.Core.Entities.Strategy
                 rsi[i] = 100 - (100 / (1 + rs));
             }
 
-            return rsi[_calculatedStocksHistory.Count - 1];
+            return rsi[CalculatedStocksHistory.Count - 1];
         }
     }
 }

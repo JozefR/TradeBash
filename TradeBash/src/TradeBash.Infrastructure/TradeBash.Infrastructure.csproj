@@ -21,4 +21,8 @@
     <ProjectReference Include="..\TradeBash.Core\TradeBash.Core.csproj" />
     <ProjectReference Include="..\TradeBash.SharedKernel\TradeBash.SharedKernel.csproj" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="Migrations" />
+  </ItemGroup>
 </Project>

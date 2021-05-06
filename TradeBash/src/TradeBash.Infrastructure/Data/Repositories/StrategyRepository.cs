@@ -14,16 +14,16 @@ namespace TradeBash.Infrastructure.Data.Repositories
         public Task<Strategy> GetByIdAsync(int id)
         {
             return _dbContext.Set<Strategy>()
-                .Include(x => x.StrategyStockHistory)
-                .ThenInclude(xx => xx.OrderedStocksHistory)
+                .Include(x => x.StrategyStocksHistory)
+                .ThenInclude(xx => xx.CalculatedStocksHistory)
                 .SingleOrDefaultAsync(e => e.Id == id);
         }
 
         public Task<Strategy> GetByNameAsync(string name)
         {
             return _dbContext.Set<Strategy>()
-                .Include(x => x.StrategyStockHistory)
-                .ThenInclude(xx => xx.OrderedStocksHistory)
+                .Include(x => x.StrategyStocksHistory)
+                .ThenInclude(xx => xx.CalculatedStocksHistory)
                 .Include(x => x.GeneratedOrders)
                 .SingleOrDefaultAsync(e => e.Name == name);
         }
@@ -31,8 +31,8 @@ namespace TradeBash.Infrastructure.Data.Repositories
         public Task<List<Strategy>> GetAllAsync()
         {
             return _dbContext.Set<Strategy>()
-                .Include(x => x.StrategyStockHistory)
-                .ThenInclude(xx => xx.OrderedStocksHistory)
+                .Include(x => x.StrategyStocksHistory)
+                .ThenInclude(xx => xx.CalculatedStocksHistory)
                 .Include(x => x.GeneratedOrders)
                 .ToListAsync();
         }
