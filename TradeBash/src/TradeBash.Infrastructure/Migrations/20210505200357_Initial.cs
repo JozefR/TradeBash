@@ -77,30 +77,30 @@ namespace TradeBash.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "GeneratedOrder",
+                name: "GeneratedOrders",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    StrategyId = table.Column<int>(nullable: false),
                     Symbol = table.Column<string>(nullable: true),
-                    Ticker = table.Column<string>(nullable: true),
                     OpenPrice = table.Column<double>(nullable: false),
                     ClosePrice = table.Column<double>(nullable: true),
                     OpenDate = table.Column<DateTime>(nullable: false),
                     CloseDate = table.Column<DateTime>(nullable: true),
                     ProfitLoss = table.Column<double>(nullable: true),
-                    Position = table.Column<int>(nullable: false),
-                    StrategyId = table.Column<int>(nullable: true)
+                    BudgetInvestedPercentage = table.Column<int>(nullable: false),
+                    Position = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_GeneratedOrder", x => x.Id);
+                    table.PrimaryKey("PK_GeneratedOrders", x => new { x.StrategyId, x.Id });
                     table.ForeignKey(
-                        name: "FK_GeneratedOrder_Strategies_StrategyId",
+                        name: "FK_GeneratedOrders_Strategies_StrategyId",
                         column: x => x.StrategyId,
                         principalTable: "Strategies",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -125,40 +125,30 @@ namespace TradeBash.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CalculatedStock",
+                name: "CalculatedStocksHistory",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    StrategyStockId = table.Column<int>(nullable: false),
+                    Symbol = table.Column<string>(nullable: true),
                     Date = table.Column<DateTime>(nullable: false),
                     Open = table.Column<double>(nullable: false),
                     Close = table.Column<double>(nullable: false),
-                    SMA = table.Column<double>(nullable: true),
-                    RSI = table.Column<double>(nullable: true),
-                    StrategySignal = table.Column<string>(nullable: true),
-                    ProfitLoss = table.Column<double>(nullable: true),
-                    StrategyStockId = table.Column<int>(nullable: true)
+                    SMAShort = table.Column<double>(nullable: true),
+                    SMALong = table.Column<double>(nullable: true),
+                    RSI = table.Column<double>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CalculatedStock", x => x.Id);
+                    table.PrimaryKey("PK_CalculatedStocksHistory", x => new { x.StrategyStockId, x.Id });
                     table.ForeignKey(
-                        name: "FK_CalculatedStock_StrategyStock_StrategyStockId",
+                        name: "FK_CalculatedStocksHistory_StrategyStock_StrategyStockId",
                         column: x => x.StrategyStockId,
                         principalTable: "StrategyStock",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CalculatedStock_StrategyStockId",
-                table: "CalculatedStock",
-                column: "StrategyStockId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_GeneratedOrder_StrategyId",
-                table: "GeneratedOrder",
-                column: "StrategyId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_StrategyStock_StrategyId",
@@ -169,10 +159,10 @@ namespace TradeBash.Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "CalculatedStock");
+                name: "CalculatedStocksHistory");
 
             migrationBuilder.DropTable(
-                name: "GeneratedOrder");
+                name: "GeneratedOrders");
 
             migrationBuilder.DropTable(
                 name: "StocksHistory");
