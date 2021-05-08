@@ -12,7 +12,7 @@ namespace TradeBash.Core.Entities.Strategy
     {
         public string Name { get; private set; }
 
-        private int? Budget { get; set; }
+        public int? Budget { get; set; }
 
         private int? _smaShortParameter;
 

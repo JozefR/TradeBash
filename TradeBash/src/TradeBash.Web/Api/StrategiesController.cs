@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using OfficeOpenXml;
-using OfficeOpenXml.Drawing.Chart;
 using OfficeOpenXml.Style;
 using TradeBash.Core.Entities.Strategy;
 using TradeBash.Core.Entities.Warehouse;
@@ -122,8 +120,35 @@ namespace TradeBash.Web.Api
 
                 using (var package = new ExcelPackage(file))
                 {
-                    var ws = package.Workbook.Worksheets.Add("MainReport");
+                    var strategyName = $"{strategy.Name} Report";
+                    var ws = package.Workbook.Worksheets.Add(strategyName);
 
+                    var nettProfit = strategy.GeneratedOrders.Sum(x => x.ProfitLoss);
+
+                    var initialCapital = strategy.Budget;
+                    var endingCapital = initialCapital + nettProfit;
+
+                    // Results
+                    // header
+                    ws.Cells["A1"].Value = strategyName;
+                    ws.Cells["A1:G1"].Merge = true;
+
+                    ws.Column(1).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                    ws.Row(1).Style.Font.Size = 18;
+                    // aggregates
+                    ws.Cells["A2"].Value = "Initial Capital";
+                    ws.Cells["B2"].Value = initialCapital;
+                    ws.Row(2).Style.Font.Bold = true;
+
+                    ws.Cells["A3"].Value = "Ending Capital";
+                    ws.Cells["B3"].Value = endingCapital;
+                    ws.Row(3).Style.Font.Bold = true;
+
+                    ws.Cells["A4"].Value = "Total Net Profit";
+                    ws.Cells["B4"].Value = nettProfit;
+                    ws.Row(4).Style.Font.Bold = true;
+
+                    // Data
                     var orders = strategy.GeneratedOrders.Select(x => new
                     {
                         x.Symbol,
@@ -135,41 +160,38 @@ namespace TradeBash.Web.Api
                         x.ProfitLoss
                     }).OrderBy(x => x.OpenDate);
 
-                    var range = ws.Cells["A2"].LoadFromCollection(orders, true);
+                    var range = ws.Cells["A11"].LoadFromCollection(orders, true);
                     ws.Cells[1, 4, strategies.First().GeneratedOrders.Count + 2, 5].Style.Numberformat.Format = "dd-mm-yyyy";
                     range.AutoFitColumns();
 
-                    // formats the header
-                    ws.Cells["A1"].Value = $"{strategy.Name} Report";
-                    ws.Cells["A1:C1"].Merge = true;
+                    // format datetime
+                    ws.Column(4).Style.Numberformat.Format = "dd-mm-yyyy";
+                    ws.Column(5).Style.Numberformat.Format = "dd-mm-yyyy";
 
-                    ws.Column(1).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                    ws.Row(1).Style.Font.Size = 24;
+                    // formats the header
+                    ws.Cells["A10"].Value = "Data";
+                    ws.Cells["A10:G10"].Merge = true;
+                    ws.Row(10).Style.Font.Size = 18;
 
                     /*
                     ws.Row(1).Style.Font.Color.SetColor(Color.Coral);
                     */
 
                     ws.Row(2).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                    ws.Row(2).Style.Font.Bold = true;
-                    ws.Column(3).Width = 20;
-
-                    // create chart
-                    ExcelLineChart lineChart = ws.Drawings.AddChart("lineChart", eChartType.Line) as ExcelLineChart;
-
-                    //set the title
-                    lineChart.Title.Text = "LineChart Example";
-
-                    //create the ranges for the chart
-                    var rangeProfitLoss = ws.Cells[3,7,25,3];
-
-                    lineChart.Series.Add(rangeProfitLoss);
-
-                    //size of the chart
-                    lineChart.SetSize(600, 300);
-
-                    //add the chart at cell B6
-                    lineChart.SetPosition(5, 0, 1, 0);
+                    ws.Column(1).Width = 15;
+                    ws.Column(2).Width = 15;
+                    ws.Column(3).Width = 15;
+                    ws.Column(4).Width = 15;
+                    ws.Column(5).Width = 15;
+                    ws.Column(6).Width = 15;
+                    ws.Column(7).Width = 15;
+                    ws.Column(1).AutoFit();
+                    ws.Column(2).AutoFit();
+                    ws.Column(3).AutoFit();
+                    ws.Column(4).AutoFit();
+                    ws.Column(5).AutoFit();
+                    ws.Column(6).AutoFit();
+                    ws.Column(7).AutoFit();
 
                     await package.SaveAsync();
                 }
