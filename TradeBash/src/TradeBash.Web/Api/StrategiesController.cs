@@ -102,6 +102,36 @@ namespace TradeBash.Web.Api
             return strategy.GeneratedOrders.ToList();
         }
 
+        public class DrawDown
+        {
+            public double Peak { get; set; }
+            public double Trough { get; set; }
+            public double MaxDrawDown { get; set; }
+
+            public DrawDown()
+            {
+                Peak = 0;
+                Trough = 0;
+                MaxDrawDown = 0;
+            }
+
+            public void Calculate(double newValue)
+            {
+                if (newValue > Peak)
+                {
+                    Peak = newValue;
+                    Trough = Peak;
+                }
+                else if (newValue < Trough)
+                {
+                    Trough = newValue;
+                    var tmpDrawDown = Peak - Trough;
+                    if (tmpDrawDown > MaxDrawDown)
+                        MaxDrawDown = tmpDrawDown;
+                }
+            }
+        }
+
         [HttpGet("ExportToExcel")]
         public async Task<OkResult> ExportToExcel()
         {
@@ -128,6 +158,23 @@ namespace TradeBash.Web.Api
                     var initialCapital = strategy.Budget;
                     var endingCapital = initialCapital + nettProfit;
 
+                    var numberOfTrades = strategy.GeneratedOrders.Count;
+
+                    var minDate = strategy.GeneratedOrders.Min(x => x.OpenDate);
+                    var maxDate = strategy.GeneratedOrders.Max(x => x.CloseDate);
+                    var testedHistory = $"{minDate.ToShortDateString()} - {maxDate.Value.ToShortDateString()}";
+
+                    double winnerOrders = strategy.GeneratedOrders.Count(x => x.ProfitLoss > 0);
+                    double allTrades = strategy.GeneratedOrders.Count;
+                    double winnersPercentage = (winnerOrders / allTrades) * 100;
+
+                    var drawDown = new DrawDown();
+                    var ordered = strategy.GeneratedOrders.OrderBy(x => x.CloseDate);
+                    foreach (var order in ordered)
+                    {
+                        drawDown.Calculate(order.ProfitLoss.Value);
+                    }
+
                     // Results
                     // header
                     ws.Cells["A1"].Value = strategyName;
@@ -147,6 +194,26 @@ namespace TradeBash.Web.Api
                     ws.Cells["A4"].Value = "Total Net Profit";
                     ws.Cells["B4"].Value = nettProfit;
                     ws.Row(4).Style.Font.Bold = true;
+
+                    ws.Cells["A5"].Value = "Total N. of Trade";
+                    ws.Cells["B5"].Value = numberOfTrades;
+                    ws.Row(5).Style.Font.Bold = true;
+
+                    ws.Cells["A6"].Value = "Total Tested History";
+                    ws.Cells["B6"].Value = testedHistory;
+                    ws.Row(6).Style.Font.Bold = true;
+
+                    ws.Cells["A7"].Value = "Percentage Winners";
+                    ws.Cells["B7"].Value = winnersPercentage;
+                    ws.Row(7).Style.Font.Bold = true;
+
+                    ws.Cells["A8"].Value = "Profit Factor";
+                    ws.Cells["B8"].Value = winnersPercentage;
+                    ws.Row(8).Style.Font.Bold = true;
+
+                    ws.Cells["A9"].Value = "Max. Drawdown";
+                    ws.Cells["B9"].Value = drawDown.MaxDrawDown;
+                    ws.Row(9).Style.Font.Bold = true;
 
                     // Data
                     var orders = strategy.GeneratedOrders.Select(x => new
