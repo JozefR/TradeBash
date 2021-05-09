@@ -67,7 +67,7 @@ namespace TradeBash.Web.Api
         }
 
         [HttpGet("calculateStrategy/{budget}/{smaShort}/{smaLong}/{rsi}")]
-        public async Task<IActionResult> calculateStrategy(int budget, int smaShort, int smaLong, int rsi)
+        public async Task<IActionResult> CalculateStrategy(int budget, int smaShort, int smaLong, int rsi)
         {
             var strategyName = $"Budget-{budget}-SMA-{smaShort}-SMA-{smaLong}-RSI-{rsi}";
             var strategy = Strategy.From(strategyName, budget, smaShort, smaLong, rsi);
@@ -75,7 +75,6 @@ namespace TradeBash.Web.Api
             try
             {
                 await CalculateAsync(strategy);
-
                 return Ok();
             }
             catch (Exception e)
@@ -272,12 +271,11 @@ namespace TradeBash.Web.Api
             var stocks = await _repository.ListAsync<Stock>();
 
             await _repository.AddAsync(strategy);
-
             foreach (var stock in stocks)
             {
                 _logger.LogInformation($"Start indicators calculation for stock {stock.Name}");
 
-                strategy.RunCalculationForStock(stock);
+                strategy.RunCalculationFor(stock);
 
                 _logger.LogInformation($"Saving indicator calculations to database");
 
