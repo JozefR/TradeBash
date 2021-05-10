@@ -35,6 +35,7 @@ namespace TradeBash.Web
             services.AddScoped<IRepository, EfRepository>();
             services.AddScoped<IStockRepository, StockRepository>();
             services.AddScoped<IStrategyRepository, StrategyRepository>();
+            services.AddScoped<IExcelReporting, ExcelReporting>();
 
             services.AddDbContext(Configuration);
             services.AddControllersWithViews().AddNewtonsoftJson();

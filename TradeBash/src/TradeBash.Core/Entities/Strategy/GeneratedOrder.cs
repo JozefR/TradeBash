@@ -17,6 +17,8 @@ namespace TradeBash.Core.Entities.Strategy
 
         public double? ProfitLoss { get; private set; }
 
+        public double CumulatedCapital { get; private set; }
+
         public int BudgetInvestedPercentage { get; private set; }
 
         public int Position { get; private set; }
@@ -55,19 +57,20 @@ namespace TradeBash.Core.Entities.Strategy
             Position = numberOfStocks;
         }
 
-        public void ClosePosition(
-            double closePrice,
-            DateTime closeDate)
+        public double ClosePosition(double closePrice, DateTime closeDate)
         {
             ClosePrice = closePrice;
             CloseDate = closeDate;
-        }
 
-        public void CalculateProfitLoss()
-        {
             var priceDifference = (ClosePrice - OpenPrice) * Position;
             var roundTwoDecimalPoints = Math.Round((decimal)priceDifference!, 2);
             ProfitLoss = (double)roundTwoDecimalPoints;
+            return (double) ProfitLoss;
+        }
+
+        public void SetCumulatedCapital(double budget)
+        {
+            CumulatedCapital = budget;
         }
     }
 }

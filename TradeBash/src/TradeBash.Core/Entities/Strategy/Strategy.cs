@@ -12,7 +12,9 @@ namespace TradeBash.Core.Entities.Strategy
     {
         public string Name { get; private set; }
 
-        public int? Budget { get; set; }
+        public double Budget { get; private set; }
+
+        private double cumulatedBudget;
 
         private int? _smaShortParameter;
 
@@ -27,19 +29,21 @@ namespace TradeBash.Core.Entities.Strategy
         private Strategy()
         {
             Name = string.Empty;
-            Budget = int.MinValue;
+            Budget = double.MinValue;
             StrategyStocksHistory = new List<StrategyStock>();
             GeneratedOrders = new List<GeneratedOrder>();
         }
 
         public static Strategy From(
             string name,
+            double budget,
             int smaShort,
             int rsiParameter)
         {
             var strategy = new Strategy
             {
                 Name = name,
+                Budget = budget,
                 _smaShortParameter = smaShort,
                 _rsiParameter = rsiParameter,
             };
@@ -49,6 +53,7 @@ namespace TradeBash.Core.Entities.Strategy
 
         public static Strategy From(
             string name,
+            double budget,
             int smaShort,
             int smaLong,
             int rsiParameter)
@@ -56,6 +61,7 @@ namespace TradeBash.Core.Entities.Strategy
             var strategy = new Strategy
             {
                 Name = name,
+                Budget = budget,
                 _smaShortParameter = smaShort,
                 _smaLongParameter = smaLong,
                 _rsiParameter = rsiParameter,
@@ -74,6 +80,7 @@ namespace TradeBash.Core.Entities.Strategy
             var strategy = new Strategy
             {
                 Name = name,
+                Budget = budget,
                 _smaShortParameter = smaShort,
                 _smaLongParameter = smaLong,
                 _rsiParameter = rsiParameter,
@@ -110,6 +117,7 @@ namespace TradeBash.Core.Entities.Strategy
             // fixed money management
             var index = 0;
             CalculatedStock? generatedSignal = null;
+            cumulatedBudget = Budget;
             foreach (var inDate in GetHistoryInDates())
             {
                 foreach (var strategyStock in StrategyStocksHistory)
@@ -134,8 +142,9 @@ namespace TradeBash.Core.Entities.Strategy
 
                     if (currentStock.SMAShort < currentStock.Close)
                     {
-                        openPosition.ClosePosition(currentStock.Close, currentStock.Date);
-                        openPosition.CalculateProfitLoss();
+                        var profitLoss = openPosition.ClosePosition(currentStock.Close, currentStock.Date);
+                        cumulatedBudget += profitLoss;
+                        openPosition.SetCumulatedCapital(cumulatedBudget);
                     }
                 }
 
