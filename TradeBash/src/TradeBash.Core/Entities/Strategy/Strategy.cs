@@ -23,6 +23,8 @@ namespace TradeBash.Core.Entities.Strategy
         public ICollection<StrategyStock> StrategyStocksHistory { get; set; }
         public ICollection<GeneratedOrder> GeneratedOrders { get; set; }
 
+        public IReadOnlyCollection<GeneratedOrder> OrderedGeneratedOrdersHistory => GeneratedOrders.OrderBy(x => x.CloseDate).ToList();
+
         private Strategy()
         {
             Name = string.Empty;

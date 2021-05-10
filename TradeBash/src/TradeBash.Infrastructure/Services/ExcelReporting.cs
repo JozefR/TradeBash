@@ -28,30 +28,23 @@ namespace TradeBash.Infrastructure.Services
                 var strategyName = $"{strategy.Name} Report";
                 var ws = package.Workbook.Worksheets.Add(strategyName);
 
-                var nettProfit = strategy.GeneratedOrders.Sum(x => x.ProfitLoss);
-
-                var profitTrades = strategy.GeneratedOrders.Where(x => x.ProfitLoss > 0).Sum(x => x.ProfitLoss);
-                var lossTrades = strategy.GeneratedOrders.Where(x => x.ProfitLoss < 0).Sum(x => x.ProfitLoss);
-                var profitFactor = profitTrades / lossTrades;
-
-                var endingCapital = strategy.GeneratedOrders.OrderBy(x => x.CloseDate).Last().CumulatedCapital;
+                var nettProfit = CalculateNettProfit(strategy);
+                var profitFactor = CalculateProfitFactor(strategy);
+                var endingCapital = EndingCapital(strategy);
 
                 var numberOfTrades = strategy.GeneratedOrders.Count;
 
-                var minDate = strategy.GeneratedOrders.Min(x => x.OpenDate);
-                var maxDate = strategy.GeneratedOrders.Max(x => x.CloseDate);
-                var testedHistory = $"{minDate.ToShortDateString()} - {maxDate.Value.ToShortDateString()}";
+                var testedHistory = GetTestedHistory(strategy);
 
-                double winnerOrders = strategy.GeneratedOrders.Count(x => x.ProfitLoss > 0);
-                double allTrades = strategy.GeneratedOrders.Count;
-                double winnersPercentage = (winnerOrders / allTrades) * 100;
+                double winnersPercentage = CalculatePercentageWinners(strategy);
 
                 var drawDown = new DrawDown();
-                var ordered = strategy.GeneratedOrders.OrderBy(x => x.CloseDate);
-                foreach (var order in ordered)
+                foreach (var order in strategy.OrderedGeneratedOrdersHistory)
                 {
                     drawDown.Calculate(order.CumulatedCapital);
                 }
+
+                var drawdownPer = (drawDown.MaxDrawDown / strategy.Budget) * 100;
 
                 // Results
                 // header
@@ -60,7 +53,12 @@ namespace TradeBash.Infrastructure.Services
 
                 ws.Column(1).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                 ws.Row(1).Style.Font.Size = 18;
+
                 // aggregates
+                ws.Cells["A6"].Value = "Total Tested History";
+                ws.Cells["B6"].Value = testedHistory;
+                ws.Row(6).Style.Font.Bold = true;
+
                 ws.Cells["A2"].Value = "Initial Capital";
                 ws.Cells["B2"].Value = strategy.Budget;
                 ws.Row(2).Style.Font.Bold = true;
@@ -77,21 +75,21 @@ namespace TradeBash.Infrastructure.Services
                 ws.Cells["B5"].Value = numberOfTrades;
                 ws.Row(5).Style.Font.Bold = true;
 
-                ws.Cells["A6"].Value = "Total Tested History";
-                ws.Cells["B6"].Value = testedHistory;
-                ws.Row(6).Style.Font.Bold = true;
-
                 ws.Cells["A7"].Value = "Percentage Winners";
                 ws.Cells["B7"].Value = Math.Round(winnersPercentage, 2);
                 ws.Row(7).Style.Font.Bold = true;
 
                 ws.Cells["A8"].Value = "Profit Factor";
-                ws.Cells["B8"].Value = Math.Round(profitFactor.Value, 2);
+                ws.Cells["B8"].Value = Math.Round(profitFactor, 2);
                 ws.Row(8).Style.Font.Bold = true;
 
-                ws.Cells["A9"].Value = "Max. Drawdown";
+                ws.Cells["A9"].Value = "Max. Drawdown $";
                 ws.Cells["B9"].Value = drawDown.MaxDrawDown;
                 ws.Row(9).Style.Font.Bold = true;
+
+                ws.Cells["A10"].Value = "Max. Drawdown %";
+                ws.Cells["B10"].Value = Math.Round(drawdownPer, 2);
+                ws.Row(10).Style.Font.Bold = true;
 
                 // Data
                 var orders = strategy.GeneratedOrders.Select(x => new
@@ -107,7 +105,7 @@ namespace TradeBash.Infrastructure.Services
                     x.CumulatedCapital
                 }).OrderBy(x => x.OpenDate);
 
-                var range = ws.Cells["A11"].LoadFromCollection(orders, true);
+                var range = ws.Cells["A12"].LoadFromCollection(orders, true);
                 ws.Cells[1, 4, strategy.GeneratedOrders.Count + 2, 5].Style.Numberformat.Format = "dd-mm-yyyy";
                 range.AutoFitColumns();
 
@@ -116,9 +114,9 @@ namespace TradeBash.Infrastructure.Services
                 ws.Column(5).Style.Numberformat.Format = "dd-mm-yyyy";
 
                 // formats the header
-                ws.Cells["A10"].Value = "Data";
-                ws.Cells["A10:G10"].Merge = true;
-                ws.Row(10).Style.Font.Size = 18;
+                ws.Cells["A11"].Value = "Data";
+                ws.Cells["A11:G11"].Merge = true;
+                ws.Row(11).Style.Font.Size = 18;
 
                 /*
                 ws.Row(1).Style.Font.Color.SetColor(Color.Coral);
@@ -142,6 +140,40 @@ namespace TradeBash.Infrastructure.Services
 
                 await package.SaveAsync();
             }
+        }
+
+        private double CalculatePercentageWinners(Strategy strategy)
+        {
+            double winnerOrders = strategy.GeneratedOrders.Count(x => x.ProfitLoss > 0);
+            double allTrades = strategy.GeneratedOrders.Count;
+            double winnersPercentage = (winnerOrders / allTrades) * 100;
+            return winnersPercentage;
+        }
+
+        private string GetTestedHistory(Strategy strategy)
+        {
+            var minDate = strategy.GeneratedOrders.Min(x => x.OpenDate);
+            var maxDate = strategy.GeneratedOrders.Max(x => x.CloseDate);
+            var testedHistory = $"{minDate.ToShortDateString()} - {maxDate.Value.ToShortDateString()}";
+            return testedHistory;
+        }
+
+        private double EndingCapital(Strategy strategy)
+        {
+            return strategy.OrderedGeneratedOrdersHistory.Last().CumulatedCapital;
+        }
+
+        private double CalculateNettProfit(Strategy strategy)
+        {
+            return (double)strategy.OrderedGeneratedOrdersHistory.Sum(x => x.ProfitLoss);
+        }
+
+        private double CalculateProfitFactor(Strategy strategy)
+        {
+            var profitTrades = strategy.GeneratedOrders.Where(x => x.ProfitLoss > 0).Sum(x => x.ProfitLoss);
+            var lossTrades = strategy.GeneratedOrders.Where(x => x.ProfitLoss < 0).Sum(x => x.ProfitLoss);
+            var profitFactor = profitTrades / lossTrades;
+            return (double)profitFactor;
         }
 
         public class DrawDown
