@@ -17,13 +17,10 @@ namespace TradeBash.Core.Entities.Strategy
         private double cumulatedBudget;
 
         private int? _smaShortParameter;
-
         private int? _smaLongParameter;
-
         private int? _rsiParameter;
 
         public ICollection<StrategyStock> StrategyStocksHistory { get; set; }
-
         public ICollection<GeneratedOrder> GeneratedOrders { get; set; }
 
         private Strategy()
@@ -89,7 +86,7 @@ namespace TradeBash.Core.Entities.Strategy
             return strategy;
         }
 
-        public void RunCalculationForStock(Stock stock)
+        public void RunCalculationFor(Stock stock)
         {
             var strategyStock = StrategyStock.From(
                 stock.Symbol,
@@ -114,7 +111,6 @@ namespace TradeBash.Core.Entities.Strategy
         {
             // buy if rsi < 2;
             // sell if sma > 10
-            // fixed money management
             var index = 0;
             CalculatedStock? generatedSignal = null;
             cumulatedBudget = Budget;
@@ -127,10 +123,7 @@ namespace TradeBash.Core.Entities.Strategy
                     var currentStock = strategyStock.CalculatedOrderedStocksHistory.ToList()[index];
 
                     if (StrategyGuard.RsiNotCalculated(currentStock)) continue;
-                    if (StrategyGuard.NotSameDate(currentStock, inDate))
-                    {
-                        throw new Exception();
-                    }
+                    if (StrategyGuard.NotSameDate(currentStock, inDate)) continue;
 
                     if (GenerateBuySignalForRsiIfCurrentStockLower(generatedSignal, currentStock))
                     {
@@ -150,7 +143,10 @@ namespace TradeBash.Core.Entities.Strategy
 
                 if (generatedSignal != null)
                 {
-                    var generatedOrder = GeneratedOrder.OpenPosition(generatedSignal.Symbol, generatedSignal.Open, generatedSignal.Date);
+                    var generatedOrder = GeneratedOrder.OpenPosition(
+                        generatedSignal.Symbol,
+                        generatedSignal.Open,
+                        generatedSignal.Date);
                     generatedOrder.NumberOfStocksForPosition(100);
 
                     GeneratedOrders.Add(generatedOrder);
