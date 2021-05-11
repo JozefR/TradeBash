@@ -38,22 +38,26 @@ namespace TradeBash.Core.Entities.Strategy
             return entity;
         }
 
-        public void NumberOfStocksForPosition(int position)
+        public void PercentageForStocksFixedMM(double budget, int percentage)
         {
-            Position = position;
+            BudgetInvestedPercentage = percentage;
+
+            int numberOfStocks = CalculateNumberOfStocksForOpenPrice(budget, percentage);
+
+            Position = numberOfStocks;
         }
 
         public void NumberOfStocksForPosition(double budget, int openPositions)
         {
-            double investition = 0;
+            double investment = 0;
 
             if (openPositions == 0)
             {
-                investition = budget * 0.1;
+                investment = budget * 0.1;
                 BudgetInvestedPercentage = 10;
             }
 
-            var numberOfStocks = (int)(investition / OpenPrice);
+            var numberOfStocks = (int)(investment / OpenPrice);
             Position = numberOfStocks;
         }
 
@@ -71,6 +75,14 @@ namespace TradeBash.Core.Entities.Strategy
         public void SetCumulatedCapital(double budget)
         {
             CumulatedCapital = budget;
+        }
+
+        private int CalculateNumberOfStocksForOpenPrice(double budget, int percentage)
+        {
+            double percentageDivider = (double)percentage / 100;
+            var investment = budget * percentageDivider;
+            var numberOfStocks = (int)(investment / OpenPrice);
+            return numberOfStocks;
         }
     }
 }

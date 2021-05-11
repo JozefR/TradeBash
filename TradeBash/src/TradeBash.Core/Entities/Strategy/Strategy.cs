@@ -127,7 +127,7 @@ namespace TradeBash.Core.Entities.Strategy
                     if (StrategyGuard.RsiNotCalculated(currentStock)) continue;
                     if (StrategyGuard.NotSameDate(currentStock, inDate)) continue;
 
-                    if (GenerateBuySignalForRsiIfCurrentStockLower(generatedSignal, currentStock))
+                    if (GenerateBuySignalForRsiIfCurrentStockLower(generatedSignal, currentStock, 10))
                     {
                         generatedSignal = currentStock;
                     }
@@ -149,7 +149,8 @@ namespace TradeBash.Core.Entities.Strategy
                         generatedSignal.Symbol,
                         generatedSignal.Open,
                         generatedSignal.Date);
-                    generatedOrder.NumberOfStocksForPosition(100);
+
+                    generatedOrder.PercentageForStocksFixedMM(Budget, 5);
 
                     GeneratedOrders.Add(generatedOrder);
                     generatedSignal = null;
@@ -159,9 +160,9 @@ namespace TradeBash.Core.Entities.Strategy
             }
         }
 
-        private bool GenerateBuySignalForRsiIfCurrentStockLower(CalculatedStock? generatedSignal, CalculatedStock currentStock)
+        private bool GenerateBuySignalForRsiIfCurrentStockLower(CalculatedStock? generatedSignal, CalculatedStock currentStock, int rsiThreshold)
         {
-            if (currentStock.RSI < _rsiParameter || (generatedSignal != null && currentStock.RSI < generatedSignal.RSI))
+            if (currentStock.RSI < rsiThreshold || (generatedSignal != null && currentStock.RSI < generatedSignal.RSI))
             {
                 return true;
             }

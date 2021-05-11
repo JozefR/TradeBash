@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection.Emit;
 using System.Threading.Tasks;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
@@ -96,8 +94,8 @@ namespace TradeBash.Infrastructure.Services
                 {
                     x.Symbol,
                     x.OpenPrice,
-                    x.ClosePrice,
                     x.OpenDate,
+                    x.ClosePrice,
                     x.CloseDate,
                     x.Position,
                     x.BudgetInvestedPercentage,
@@ -106,21 +104,16 @@ namespace TradeBash.Infrastructure.Services
                 }).OrderBy(x => x.OpenDate);
 
                 var range = ws.Cells["A12"].LoadFromCollection(orders, true);
-                ws.Cells[1, 4, strategy.GeneratedOrders.Count + 2, 5].Style.Numberformat.Format = "dd-mm-yyyy";
                 range.AutoFitColumns();
 
                 // format datetime
-                ws.Column(4).Style.Numberformat.Format = "dd-mm-yyyy";
+                ws.Column(3).Style.Numberformat.Format = "dd-mm-yyyy";
                 ws.Column(5).Style.Numberformat.Format = "dd-mm-yyyy";
 
                 // formats the header
                 ws.Cells["A11"].Value = "Data";
                 ws.Cells["A11:G11"].Merge = true;
                 ws.Row(11).Style.Font.Size = 18;
-
-                /*
-                ws.Row(1).Style.Font.Color.SetColor(Color.Coral);
-                */
 
                 ws.Row(2).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                 ws.Column(1).Width = 15;
