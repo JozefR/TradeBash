@@ -90,7 +90,7 @@ namespace TradeBash.Web.Api
             var strategy = await _strategyRepository.GetByNameAsync(strategyName);
 
             _logger.LogInformation($"Started backtest for strategy {strategyName}");
-            
+
             strategy.RunBackTestForDate();
 
             _logger.LogInformation($"Backtest for strategy {strategyName} finished");

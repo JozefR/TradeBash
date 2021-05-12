@@ -5,11 +5,19 @@ using System.Threading.Tasks;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using TradeBash.Core.Entities.Strategy;
+using TradeBash.Core.Report;
 
 namespace TradeBash.Infrastructure.Services
 {
     public class ExcelReporting : IExcelReporting
     {
+        private readonly IDrawdown _drawdown;
+
+        public ExcelReporting(IDrawdown drawdown)
+        {
+            _drawdown = drawdown;
+        }
+
         public async Task GenerateAsync(Strategy strategy)
         {
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
@@ -23,26 +31,17 @@ namespace TradeBash.Infrastructure.Services
 
             using (var package = new ExcelPackage(file))
             {
+                var nettProfit = StrategyAggregates.GetNettProfit(strategy);
+                var profitFactor = StrategyAggregates.GetProfitFactor(strategy);
+                var endingCapital = StrategyAggregates.GetEndingCapital(strategy);
+                var numberOfTrades = StrategyAggregates.GetNumberOfTrades(strategy);
+                var testedHistory = StrategyAggregates.GetTestedHistory(strategy);
+                var winnersPercentage = StrategyAggregates.GetPercentageWinners(strategy);
+
+                _drawdown.Calculate(strategy);
+
                 var strategyName = $"{strategy.Name} Report";
                 var ws = package.Workbook.Worksheets.Add(strategyName);
-
-                var nettProfit = CalculateNettProfit(strategy);
-                var profitFactor = CalculateProfitFactor(strategy);
-                var endingCapital = EndingCapital(strategy);
-
-                var numberOfTrades = strategy.GeneratedOrders.Count;
-
-                var testedHistory = GetTestedHistory(strategy);
-
-                double winnersPercentage = CalculatePercentageWinners(strategy);
-
-                var drawDown = new DrawDown();
-                foreach (var order in strategy.OrderedGeneratedOrdersHistory)
-                {
-                    drawDown.Calculate(order.CumulatedCapital);
-                }
-
-                var drawdownPer = (drawDown.MaxDrawDown / strategy.Budget) * 100;
 
                 // Results
                 // header
@@ -58,15 +57,15 @@ namespace TradeBash.Infrastructure.Services
                 ws.Row(6).Style.Font.Bold = true;
 
                 ws.Cells["A2"].Value = "Initial Capital";
-                ws.Cells["B2"].Value = strategy.Budget;
+                ws.Cells["B2"].Value = Math.Round(strategy.Budget);
                 ws.Row(2).Style.Font.Bold = true;
 
                 ws.Cells["A3"].Value = "Ending Capital";
-                ws.Cells["B3"].Value = endingCapital;
+                ws.Cells["B3"].Value = Math.Round(endingCapital);
                 ws.Row(3).Style.Font.Bold = true;
 
                 ws.Cells["A4"].Value = "Total Net Profit";
-                ws.Cells["B4"].Value = nettProfit;
+                ws.Cells["B4"].Value = Math.Round(nettProfit);
                 ws.Row(4).Style.Font.Bold = true;
 
                 ws.Cells["A5"].Value = "Total N. of Trades";
@@ -74,7 +73,7 @@ namespace TradeBash.Infrastructure.Services
                 ws.Row(5).Style.Font.Bold = true;
 
                 ws.Cells["A7"].Value = "Percentage Winners";
-                ws.Cells["B7"].Value = Math.Round(winnersPercentage, 2);
+                ws.Cells["B7"].Value = Math.Round(winnersPercentage) + " %";
                 ws.Row(7).Style.Font.Bold = true;
 
                 ws.Cells["A8"].Value = "Profit Factor";
@@ -82,11 +81,11 @@ namespace TradeBash.Infrastructure.Services
                 ws.Row(8).Style.Font.Bold = true;
 
                 ws.Cells["A9"].Value = "Max. Drawdown $";
-                ws.Cells["B9"].Value = drawDown.MaxDrawDown;
+                ws.Cells["B9"].Value = Math.Round(_drawdown.GetMaxDrawdown());
                 ws.Row(9).Style.Font.Bold = true;
 
                 ws.Cells["A10"].Value = "Max. Drawdown %";
-                ws.Cells["B10"].Value = Math.Round(drawdownPer, 2);
+                ws.Cells["B10"].Value = Math.Round(_drawdown.GetMaxDrawdownPercentage()) + " %";
                 ws.Row(10).Style.Font.Bold = true;
 
                 // Data
@@ -132,70 +131,6 @@ namespace TradeBash.Infrastructure.Services
                 ws.Column(7).AutoFit();
 
                 await package.SaveAsync();
-            }
-        }
-
-        private double CalculatePercentageWinners(Strategy strategy)
-        {
-            double winnerOrders = strategy.GeneratedOrders.Count(x => x.ProfitLoss > 0);
-            double allTrades = strategy.GeneratedOrders.Count;
-            double winnersPercentage = (winnerOrders / allTrades) * 100;
-            return winnersPercentage;
-        }
-
-        private string GetTestedHistory(Strategy strategy)
-        {
-            var minDate = strategy.GeneratedOrders.Min(x => x.OpenDate);
-            var maxDate = strategy.GeneratedOrders.Max(x => x.CloseDate);
-            var testedHistory = $"{minDate.ToShortDateString()} - {maxDate.Value.ToShortDateString()}";
-            return testedHistory;
-        }
-
-        private double EndingCapital(Strategy strategy)
-        {
-            return strategy.OrderedGeneratedOrdersHistory.Last().CumulatedCapital;
-        }
-
-        private double CalculateNettProfit(Strategy strategy)
-        {
-            return (double)strategy.OrderedGeneratedOrdersHistory.Sum(x => x.ProfitLoss);
-        }
-
-        private double CalculateProfitFactor(Strategy strategy)
-        {
-            var profitTrades = strategy.GeneratedOrders.Where(x => x.ProfitLoss > 0).Sum(x => x.ProfitLoss);
-            var lossTrades = strategy.GeneratedOrders.Where(x => x.ProfitLoss < 0).Sum(x => x.ProfitLoss);
-            var profitFactor = profitTrades / lossTrades;
-            return (double)profitFactor;
-        }
-
-        public class DrawDown
-        {
-            public double Peak { get; set; }
-            public double Trough { get; set; }
-            public double MaxDrawDown { get; set; }
-
-            public DrawDown()
-            {
-                Peak = 0;
-                Trough = 0;
-                MaxDrawDown = 0;
-            }
-
-            public void Calculate(double newValue)
-            {
-                if (newValue > Peak)
-                {
-                    Peak = newValue;
-                    Trough = Peak;
-                }
-                else if (newValue < Trough)
-                {
-                    Trough = newValue;
-                    var tmpDrawDown = Peak - Trough;
-                    if (tmpDrawDown > MaxDrawDown)
-                        MaxDrawDown = tmpDrawDown;
-                }
             }
         }
     }

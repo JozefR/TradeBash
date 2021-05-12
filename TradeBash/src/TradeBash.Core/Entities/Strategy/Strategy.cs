@@ -122,10 +122,14 @@ namespace TradeBash.Core.Entities.Strategy
                 {
                     if (StrategyGuard.IndexOutOfRange(index, strategyStock)) continue;
 
-                    var currentStock = strategyStock.CalculatedOrderedStocksHistory.ToList()[index];
+                    var currentStock = strategyStock.CalculatedOrderedStocksHistory.FirstOrDefault(x => x.Date == inDate);
 
+                    if (currentStock == null) continue;
                     if (StrategyGuard.RsiNotCalculated(currentStock)) continue;
-                    if (StrategyGuard.NotSameDate(currentStock, inDate)) continue;
+                    if (StrategyGuard.NotSameDate(currentStock, inDate))
+                    {
+                        throw new Exception();
+                    };
 
                     if (GenerateBuySignalForRsiIfCurrentStockLower(generatedSignal, currentStock, 10))
                     {
@@ -156,6 +160,7 @@ namespace TradeBash.Core.Entities.Strategy
                     generatedSignal = null;
                 }
 
+                Console.WriteLine($"calculating for date: {inDate}");
                 index++;
             }
         }
