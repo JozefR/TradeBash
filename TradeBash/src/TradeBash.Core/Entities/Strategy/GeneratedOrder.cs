@@ -19,6 +19,8 @@ namespace TradeBash.Core.Entities.Strategy
 
         public double CumulatedCapital { get; private set; }
 
+        public double DrawdownPercentage { get; private set; }
+
         public int BudgetInvestedPercentage { get; private set; }
 
         public int Position { get; private set; }
@@ -75,6 +77,11 @@ namespace TradeBash.Core.Entities.Strategy
         public void SetCumulatedCapital(double budget)
         {
             CumulatedCapital = budget;
+        }
+
+        public void SetMaxDrawdown(double drawdown, double strategyBudget)
+        {
+            DrawdownPercentage = -Math.Round((drawdown / strategyBudget) * 100);
         }
 
         private int CalculateNumberOfStocksForOpenPrice(double budget, int percentage)

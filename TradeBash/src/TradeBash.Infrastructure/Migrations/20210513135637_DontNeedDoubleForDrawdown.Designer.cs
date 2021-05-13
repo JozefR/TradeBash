@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TradeBash.Infrastructure.Data;
 
 namespace TradeBash.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210513135637_DontNeedDoubleForDrawdown")]
+    partial class DontNeedDoubleForDrawdown
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -118,8 +120,8 @@ namespace TradeBash.Infrastructure.Migrations
                             b1.Property<double>("CumulatedCapital")
                                 .HasColumnType("float");
 
-                            b1.Property<double>("DrawdownPercentage")
-                                .HasColumnType("float");
+                            b1.Property<int>("DrawdownPercentage")
+                                .HasColumnType("int");
 
                             b1.Property<DateTime>("OpenDate")
                                 .HasColumnType("datetime2");

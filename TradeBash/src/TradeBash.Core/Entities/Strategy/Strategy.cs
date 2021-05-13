@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TradeBash.Core.Entities.Warehouse;
+using TradeBash.Core.Services;
 using TradeBash.SharedKernel;
 using TradeBash.SharedKernel.Interfaces;
 
@@ -13,6 +14,8 @@ namespace TradeBash.Core.Entities.Strategy
         public string Name { get; private set; }
 
         public double Budget { get; private set; }
+
+        private Drawdown _drawdown;
 
         private double cumulatedBudget;
 
@@ -31,6 +34,7 @@ namespace TradeBash.Core.Entities.Strategy
             Budget = double.MinValue;
             StrategyStocksHistory = new List<StrategyStock>();
             GeneratedOrders = new List<GeneratedOrder>();
+            _drawdown = new Drawdown();
         }
 
         public static Strategy From(
@@ -128,7 +132,7 @@ namespace TradeBash.Core.Entities.Strategy
 
                     foreach (var openPosition in openPositions)
                     {
-                        ClosePisitionForSma(openPosition, currentStock);
+                        ClosePositionForSma(openPosition, currentStock);
                     }
 
                     if (GenerateBuySignalForRsiIfCurrentStockLower(generatedSignal, currentStock, 10))
@@ -148,13 +152,15 @@ namespace TradeBash.Core.Entities.Strategy
             }
         }
 
-        private void ClosePisitionForSma(GeneratedOrder openPosition, CalculatedStock currentStock)
+        private void ClosePositionForSma(GeneratedOrder openPosition, CalculatedStock currentStock)
         {
             if (currentStock.SMAShort < currentStock.Close)
             {
                 var profitLoss = openPosition.ClosePosition(currentStock.Close, currentStock.Date);
                 cumulatedBudget += profitLoss;
+                _drawdown.Calculate(cumulatedBudget);
                 openPosition.SetCumulatedCapital(cumulatedBudget);
+                openPosition.SetMaxDrawdown(_drawdown.TmpDrawDown, Budget);
             }
         }
 

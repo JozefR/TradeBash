@@ -73,11 +73,11 @@ namespace TradeBash.Infrastructure.Services
                 ws.Row(5).Style.Font.Bold = true;
 
                 ws.Cells["A7"].Value = "Percentage Winners";
-                ws.Cells["B7"].Value = Math.Round(winnersPercentage) + " %";
+                ws.Cells["B7"].Value = Math.Round(winnersPercentage) + "%";
                 ws.Row(7).Style.Font.Bold = true;
 
                 ws.Cells["A8"].Value = "Profit Factor";
-                ws.Cells["B8"].Value = Math.Round(profitFactor.Value, 2);
+                ws.Cells["B8"].Value = Math.Abs(Math.Round(profitFactor.Value, 2));
                 ws.Row(8).Style.Font.Bold = true;
 
                 ws.Cells["A9"].Value = "Max. Drawdown $";
@@ -85,7 +85,7 @@ namespace TradeBash.Infrastructure.Services
                 ws.Row(9).Style.Font.Bold = true;
 
                 ws.Cells["A10"].Value = "Max. Drawdown %";
-                ws.Cells["B10"].Value = Math.Round(_drawdown.GetMaxDrawdownPercentage()) + " %";
+                ws.Cells["B10"].Value = Math.Round(_drawdown.GetMaxDrawdownPercentage()) + "%";
                 ws.Row(10).Style.Font.Bold = true;
 
                 // Data
@@ -99,8 +99,9 @@ namespace TradeBash.Infrastructure.Services
                     x.Position,
                     x.BudgetInvestedPercentage,
                     x.ProfitLoss,
-                    x.CumulatedCapital
-                }).OrderBy(x => x.OpenDate);
+                    x.CumulatedCapital,
+                    x.DrawdownPercentage,
+                }).Where(x => x.CloseDate != null);
 
                 var range = ws.Cells["A12"].LoadFromCollection(orders, true);
                 range.AutoFitColumns();
