@@ -65,7 +65,7 @@ namespace TradeBash.Infrastructure.Services
                 ws.Row(3).Style.Font.Bold = true;
 
                 ws.Cells["A4"].Value = "Total Net Profit";
-                ws.Cells["B4"].Value = Math.Round(nettProfit);
+                ws.Cells["B4"].Value = Math.Round(nettProfit.Value);
                 ws.Row(4).Style.Font.Bold = true;
 
                 ws.Cells["A5"].Value = "Total N. of Trades";
@@ -77,7 +77,7 @@ namespace TradeBash.Infrastructure.Services
                 ws.Row(7).Style.Font.Bold = true;
 
                 ws.Cells["A8"].Value = "Profit Factor";
-                ws.Cells["B8"].Value = Math.Round(profitFactor, 2);
+                ws.Cells["B8"].Value = Math.Round(profitFactor.Value, 2);
                 ws.Row(8).Style.Font.Bold = true;
 
                 ws.Cells["A9"].Value = "Max. Drawdown $";

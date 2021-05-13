@@ -131,19 +131,22 @@ namespace TradeBash.Core.Entities.Strategy
                         throw new Exception();
                     };
 
+                    var openPositions = GetCurrentNotClosedPositionsFor(currentStock);
+                    if (!openPositions.Any()) continue;
+
+                    foreach (var openPosition in openPositions)
+                    {
+                        if (currentStock.SMAShort < currentStock.Close)
+                        {
+                            var profitLoss = openPosition.ClosePosition(currentStock.Close, currentStock.Date);
+                            cumulatedBudget += profitLoss;
+                            openPosition.SetCumulatedCapital(cumulatedBudget);
+                        }
+                    }
+
                     if (GenerateBuySignalForRsiIfCurrentStockLower(generatedSignal, currentStock, 10))
                     {
                         generatedSignal = currentStock;
-                    }
-
-                    var openPosition = GetCurrentNotClosedPositionFor(currentStock);
-                    if (openPosition == null) continue;
-
-                    if (currentStock.SMAShort < currentStock.Close)
-                    {
-                        var profitLoss = openPosition.ClosePosition(currentStock.Close, currentStock.Date);
-                        cumulatedBudget += profitLoss;
-                        openPosition.SetCumulatedCapital(cumulatedBudget);
                     }
                 }
 
@@ -175,9 +178,9 @@ namespace TradeBash.Core.Entities.Strategy
             return false;
         }
 
-        private GeneratedOrder? GetCurrentNotClosedPositionFor(CalculatedStock currentStock)
+        private IEnumerable<GeneratedOrder> GetCurrentNotClosedPositionsFor(CalculatedStock currentStock)
         {
-            return GeneratedOrders.FirstOrDefault(x => x.CloseDate == null && x.Symbol == currentStock.Symbol);
+            return GeneratedOrders.Where(x => x.CloseDate == null && x.Symbol == currentStock.Symbol);
         }
 
         private List<DateTime> GetHistoryInDates()

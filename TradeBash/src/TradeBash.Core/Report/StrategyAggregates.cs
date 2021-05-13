@@ -21,22 +21,22 @@ namespace TradeBash.Core.Report
             return testedHistory;
         }
 
+        public static double? GetProfitFactor(Strategy strategy)
+        {
+            var profitTrades = strategy.GeneratedOrders.Where(x => x.ProfitLoss > 0).Sum(x => x.ProfitLoss);
+            var lossTrades = strategy.GeneratedOrders.Where(x => x.ProfitLoss < 0).Sum(x => x.ProfitLoss);
+            var profitFactor = profitTrades / lossTrades;
+            return profitFactor;
+        }
+
         public static double GetEndingCapital(Strategy strategy)
         {
             return strategy.OrderedGeneratedOrdersHistory.Last().CumulatedCapital;
         }
 
-        public static double GetNettProfit(Strategy strategy)
+        public static double? GetNettProfit(Strategy strategy)
         {
-            return (double)strategy.OrderedGeneratedOrdersHistory.Sum(x => x.ProfitLoss);
-        }
-
-        public static double GetProfitFactor(Strategy strategy)
-        {
-            var profitTrades = strategy.GeneratedOrders.Where(x => x.ProfitLoss > 0).Sum(x => x.ProfitLoss);
-            var lossTrades = strategy.GeneratedOrders.Where(x => x.ProfitLoss < 0).Sum(x => x.ProfitLoss);
-            var profitFactor = profitTrades / lossTrades;
-            return (double)profitFactor;
+            return strategy.OrderedGeneratedOrdersHistory.Sum(x => x.ProfitLoss);
         }
 
         public static int GetNumberOfTrades(Strategy strategy)
