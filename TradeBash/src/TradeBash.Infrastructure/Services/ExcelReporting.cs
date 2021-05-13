@@ -89,7 +89,7 @@ namespace TradeBash.Infrastructure.Services
                 ws.Row(10).Style.Font.Bold = true;
 
                 // Data
-                var orders = strategy.GeneratedOrders.Select(x => new
+                var orders = strategy.OrderedGeneratedOrdersHistory.Select(x => new
                 {
                     x.Symbol,
                     x.OpenPrice,

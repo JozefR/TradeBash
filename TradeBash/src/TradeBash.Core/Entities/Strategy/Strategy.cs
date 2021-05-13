@@ -113,35 +113,22 @@ namespace TradeBash.Core.Entities.Strategy
         {
             // buy if rsi < 2;
             // sell if sma > 10
-            var index = 0;
             CalculatedStock? generatedSignal = null;
             cumulatedBudget = Budget;
             foreach (var inDate in GetHistoryInDates())
             {
                 foreach (var strategyStock in StrategyStocksHistory)
                 {
-                    if (StrategyGuard.IndexOutOfRange(index, strategyStock)) continue;
-
                     var currentStock = strategyStock.CalculatedOrderedStocksHistory.FirstOrDefault(x => x.Date == inDate);
 
                     if (currentStock == null) continue;
                     if (StrategyGuard.RsiNotCalculated(currentStock)) continue;
-                    if (StrategyGuard.NotSameDate(currentStock, inDate))
-                    {
-                        throw new Exception();
-                    };
 
                     var openPositions = GetCurrentNotClosedPositionsFor(currentStock);
-                    if (!openPositions.Any()) continue;
 
                     foreach (var openPosition in openPositions)
                     {
-                        if (currentStock.SMAShort < currentStock.Close)
-                        {
-                            var profitLoss = openPosition.ClosePosition(currentStock.Close, currentStock.Date);
-                            cumulatedBudget += profitLoss;
-                            openPosition.SetCumulatedCapital(cumulatedBudget);
-                        }
+                        ClosePisitionForSma(openPosition, currentStock);
                     }
 
                     if (GenerateBuySignalForRsiIfCurrentStockLower(generatedSignal, currentStock, 10))
@@ -152,20 +139,33 @@ namespace TradeBash.Core.Entities.Strategy
 
                 if (generatedSignal != null)
                 {
-                    var generatedOrder = GeneratedOrder.OpenPosition(
-                        generatedSignal.Symbol,
-                        generatedSignal.Open,
-                        generatedSignal.Date);
+                    OpenPositionAndGenerateOrder(generatedSignal);
 
-                    generatedOrder.PercentageForStocksFixedMM(Budget, 5);
-
-                    GeneratedOrders.Add(generatedOrder);
                     generatedSignal = null;
                 }
 
                 Console.WriteLine($"calculating for date: {inDate}");
-                index++;
             }
+        }
+
+        private void ClosePisitionForSma(GeneratedOrder openPosition, CalculatedStock currentStock)
+        {
+            if (currentStock.SMAShort < currentStock.Close)
+            {
+                var profitLoss = openPosition.ClosePosition(currentStock.Close, currentStock.Date);
+                cumulatedBudget += profitLoss;
+                openPosition.SetCumulatedCapital(cumulatedBudget);
+            }
+        }
+
+        private void OpenPositionAndGenerateOrder(CalculatedStock generatedSignal)
+        {
+            var generatedOrder = GeneratedOrder.OpenPosition(
+                generatedSignal.Symbol,
+                generatedSignal.Open,
+                generatedSignal.Date);
+            generatedOrder.PercentageForStocksFixedMM(Budget, 5);
+            GeneratedOrders.Add(generatedOrder);
         }
 
         private bool GenerateBuySignalForRsiIfCurrentStockLower(CalculatedStock? generatedSignal, CalculatedStock currentStock, int rsiThreshold)
