@@ -34,5 +34,15 @@ namespace TradeBash.Core.Entities
 
             return false;
         }
+
+        public static bool LongSmaIsGreaterThenPrice(CalculatedStock calculatedStock)
+        {
+            if (calculatedStock.SMALong > calculatedStock.Close)
+            {
+                return true;
+            }
+
+            return false;
+        }
     }
 }

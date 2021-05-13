@@ -113,7 +113,7 @@ namespace TradeBash.Core.Entities.Strategy
             StrategyStocksHistory.Add(strategyStock);
         }
 
-        public void RunBackTestForDate()
+        public void RunShortSmaRsi()
         {
             // buy if rsi < 2;
             // sell if sma > 10
@@ -126,6 +126,46 @@ namespace TradeBash.Core.Entities.Strategy
                     var currentStock = strategyStock.CalculatedOrderedStocksHistory.FirstOrDefault(x => x.Date == inDate);
 
                     if (currentStock == null) continue;
+                    if (StrategyGuard.RsiNotCalculated(currentStock)) continue;
+
+                    var openPositions = GetCurrentNotClosedPositionsFor(currentStock);
+
+                    foreach (var openPosition in openPositions)
+                    {
+                        ClosePositionForSma(openPosition, currentStock);
+                    }
+
+                    if (GenerateBuySignalForRsiIfCurrentStockLower(generatedSignal, currentStock, 10))
+                    {
+                        generatedSignal = currentStock;
+                    }
+                }
+
+                if (generatedSignal != null)
+                {
+                    OpenPositionAndGenerateOrder(generatedSignal);
+
+                    generatedSignal = null;
+                }
+
+                Console.WriteLine($"calculating for date: {inDate}");
+            }
+        }
+
+        public void RunShortSmaLongSmaRsi()
+        {
+            // buy if rsi < 2;
+            // sell if sma > 10
+            CalculatedStock? generatedSignal = null;
+            cumulatedBudget = Budget;
+            foreach (var inDate in GetHistoryInDates())
+            {
+                foreach (var strategyStock in StrategyStocksHistory)
+                {
+                    var currentStock = strategyStock.CalculatedOrderedStocksHistory.FirstOrDefault(x => x.Date == inDate);
+
+                    if (currentStock == null) continue;
+                    if (StrategyGuard.LongSmaIsGreaterThenPrice(currentStock)) continue;
                     if (StrategyGuard.RsiNotCalculated(currentStock)) continue;
 
                     var openPositions = GetCurrentNotClosedPositionsFor(currentStock);

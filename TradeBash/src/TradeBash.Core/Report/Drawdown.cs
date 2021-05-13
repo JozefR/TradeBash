@@ -19,11 +19,15 @@ namespace TradeBash.Core.Report
 
         public void Calculate(Strategy strategy)
         {
+            Peak = 0;
+            Trough = 0;
+            MaxDrawDown = 0;
             StrategyBudget = strategy.Budget;
 
             foreach (var order in strategy.OrderedGeneratedOrdersHistory)
             {
                 var cumulatedCapital = order.CumulatedCapital;
+                if (cumulatedCapital == 0) continue;
                 if (cumulatedCapital > Peak)
                 {
                     Peak = cumulatedCapital;

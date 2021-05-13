@@ -84,14 +84,27 @@ namespace TradeBash.Web.Api
             }
         }
 
-        [HttpGet("Backtest/{strategyName}")]
-        public async Task<List<GeneratedOrder>> Backtest(string strategyName)
+        public enum StrategyType
+        {
+            ShortSmaRsi,
+            ShortSmaLongSmaRsi
+        }
+
+        [HttpGet("Backtest/shortSmaRsi/{strategyType}/{strategyName}")]
+        public async Task<List<GeneratedOrder>> Backtest(StrategyType strategyType, string strategyName)
         {
             var strategy = await _strategyRepository.GetByNameAsync(strategyName);
 
             _logger.LogInformation($"Started backtest for strategy {strategyName}");
 
-            strategy.RunBackTestForDate();
+            if (strategyType == StrategyType.ShortSmaRsi)
+            {
+                strategy.RunShortSmaRsi();
+            }
+            if (strategyType == StrategyType.ShortSmaLongSmaRsi)
+            {
+                strategy.RunShortSmaLongSmaRsi();
+            }
 
             _logger.LogInformation($"Backtest for strategy {strategyName} finished");
 

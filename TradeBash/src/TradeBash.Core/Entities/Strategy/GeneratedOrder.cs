@@ -81,7 +81,7 @@ namespace TradeBash.Core.Entities.Strategy
 
         public void SetMaxDrawdown(double drawdown, double strategyBudget)
         {
-            DrawdownPercentage = -Math.Round((drawdown / strategyBudget) * 100);
+            DrawdownPercentage = -Math.Round((drawdown / strategyBudget) * 100, 2);
         }
 
         private int CalculateNumberOfStocksForOpenPrice(double budget, int percentage)
