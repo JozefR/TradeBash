@@ -21,6 +21,8 @@ namespace TradeBash.Core.Entities.Strategy
 
         public double DrawdownPercentage { get; private set; }
 
+        public double DrawdownFromLowPricePercentage { get; private set; }
+
         public int BudgetInvestedPercentage { get; private set; }
 
         public int Position { get; private set; }

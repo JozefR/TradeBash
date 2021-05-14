@@ -1,17 +1,10 @@
-﻿using System.Runtime.InteropServices;
-using TradeBash.Infrastructure;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TradeBash.Infrastructure.Data;
-using TradeBash.Infrastructure.Data.Repositories;
-using TradeBash.Infrastructure.Services;
-using TradeBash.SharedKernel.Interfaces;
 
-namespace TradeBash.Web
+namespace TradeBash.Infrastructure
 {
     public class Startup
     {

@@ -128,6 +128,49 @@ namespace TradeBash.Web.Api
             return Ok();
         }
 
+        [HttpGet("InMemoryBacktestWithExport/{strategyType}/{budget}/{smaShort}/{smaLong}/{rsi}")]
+        public async Task<IActionResult> InMemoryBacktestWithExport(StrategyType strategyType, int budget, int smaShort, int smaLong, int rsi)
+        {
+            try
+            {
+                var strategyName = $"Budget-{budget}-SMAShort-{smaShort}-SMALong-{smaLong}-RSI-{rsi}";
+                var strategy = Strategy.From(strategyName, budget, smaShort, smaLong, rsi);
+
+                var stocks = await _repository.ListAsync<Stock>();
+                foreach (var stock in stocks)
+                {
+                    _logger.LogInformation($"Start indicators calculation for stock {stock.Name}");
+
+                    strategy.RunCalculationFor(stock);
+
+                    _logger.LogInformation($"calculation for stock {stock.Name} finished");
+                }
+
+                _logger.LogInformation($"Started in memory backtest for strategy {strategyName}");
+
+                if (strategyType == StrategyType.ShortSmaRsi)
+                {
+                    strategy.RunShortSmaRsi();
+                }
+                if (strategyType == StrategyType.ShortSmaLongSmaRsi)
+                {
+                    strategy.RunShortSmaLongSmaRsi();
+                }
+
+                _logger.LogInformation($"Started export to excel for strategy {strategyName}");
+
+                await _excelReporting.GenerateAsync(strategy);
+
+                _logger.LogInformation($"Excel report finished");
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return UnprocessableEntity(e);
+            }
+        }
+
         private async Task CalculateAsync(Strategy strategy)
         {
             var stocks = await _repository.ListAsync<Stock>();

@@ -50,9 +50,10 @@ namespace TradeBash.Core.Entities.Strategy
             string symbol,
             DateTime date,
             double open,
-            double close)
+            double close,
+            double low)
         {
-            var stock = CalculatedStock.From(symbol, date, open, close);
+            var stock = CalculatedStock.From(symbol, date, open, close, low);
             CalculatedStocksHistory.Add(stock);
 
             var smaShort = CalculateSMA(_smaShortParameter);

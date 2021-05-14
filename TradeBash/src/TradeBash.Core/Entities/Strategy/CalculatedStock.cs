@@ -13,6 +13,8 @@ namespace TradeBash.Core.Entities.Strategy
 
         public double Close { get; private set; }
 
+        public double Low { get; private set; }
+
         public double? SMAShort { get; private set; }
 
         public double? SMALong { get; private set; }
@@ -23,7 +25,8 @@ namespace TradeBash.Core.Entities.Strategy
             string symbol,
             DateTime date,
             double open,
-            double close)
+            double close,
+            double low)
         {
             var entity = new CalculatedStock
             {
@@ -31,6 +34,7 @@ namespace TradeBash.Core.Entities.Strategy
                 Date = date,
                 Open = open,
                 Close = close,
+                Low = low
             };
 
             return entity;

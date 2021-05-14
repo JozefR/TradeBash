@@ -19,6 +19,8 @@ namespace TradeBash.Core.Entities.Strategy
 
         private double cumulatedBudget;
 
+        private double cumulatedBudgetFromLowPride;
+
         private int? _smaShortParameter;
         private int? _smaLongParameter;
         private int? _rsiParameter;
@@ -48,25 +50,6 @@ namespace TradeBash.Core.Entities.Strategy
                 Name = name,
                 Budget = budget,
                 _smaShortParameter = smaShort,
-                _rsiParameter = rsiParameter,
-            };
-
-            return strategy;
-        }
-
-        public static Strategy From(
-            string name,
-            double budget,
-            int smaShort,
-            int smaLong,
-            int rsiParameter)
-        {
-            var strategy = new Strategy
-            {
-                Name = name,
-                Budget = budget,
-                _smaShortParameter = smaShort,
-                _smaLongParameter = smaLong,
                 _rsiParameter = rsiParameter,
             };
 
@@ -107,7 +90,8 @@ namespace TradeBash.Core.Entities.Strategy
                     stock.Symbol, 
                     stockHistory.Date, 
                     stockHistory.Open, 
-                    stockHistory.Close);
+                    stockHistory.Close,
+                    stockHistory.Low);
             }
 
             StrategyStocksHistory.Add(strategyStock);
@@ -119,6 +103,7 @@ namespace TradeBash.Core.Entities.Strategy
             // sell if sma > 10
             CalculatedStock? generatedSignal = null;
             cumulatedBudget = Budget;
+            cumulatedBudgetFromLowPride = Budget;
             foreach (var inDate in GetHistoryInDates())
             {
                 foreach (var strategyStock in StrategyStocksHistory)
@@ -148,7 +133,7 @@ namespace TradeBash.Core.Entities.Strategy
                     generatedSignal = null;
                 }
 
-                Console.WriteLine($"calculating for date: {inDate}");
+                Console.WriteLine($"Generate orders for date: {inDate}");
             }
         }
 
@@ -158,6 +143,7 @@ namespace TradeBash.Core.Entities.Strategy
             // sell if sma > 10
             CalculatedStock? generatedSignal = null;
             cumulatedBudget = Budget;
+            cumulatedBudgetFromLowPride = Budget;
             foreach (var inDate in GetHistoryInDates())
             {
                 foreach (var strategyStock in StrategyStocksHistory)
@@ -172,6 +158,7 @@ namespace TradeBash.Core.Entities.Strategy
 
                     foreach (var openPosition in openPositions)
                     {
+                        CalculateMaxDrawdownFromLowPrice(openPosition, currentStock);
                         ClosePositionForSma(openPosition, currentStock);
                     }
 
@@ -188,8 +175,13 @@ namespace TradeBash.Core.Entities.Strategy
                     generatedSignal = null;
                 }
 
-                Console.WriteLine($"calculating for date: {inDate}");
+                Console.WriteLine($"Generate orders for date: {inDate}");
             }
+        }
+
+        private void CalculateMaxDrawdownFromLowPrice(GeneratedOrder openPosition, CalculatedStock currentStock)
+        {
+            // todo: calculate max drawdown from low
         }
 
         private void ClosePositionForSma(GeneratedOrder openPosition, CalculatedStock currentStock)
