@@ -1,4 +1,5 @@
-﻿using TradeBash.Core.Entities.Strategy;
+﻿using System.Linq;
+using TradeBash.Core.Entities.Strategy;
 
 namespace TradeBash.Core.Report
 {
@@ -8,7 +9,7 @@ namespace TradeBash.Core.Report
         public double Trough { get; set; }
         public double MaxDrawDown { get; set; }
 
-        private double StrategyBudget;
+        public double MaxDrawDownPercentage { get; set; }
 
         public Drawdown()
         {
@@ -22,8 +23,8 @@ namespace TradeBash.Core.Report
             Peak = 0;
             Trough = 0;
             MaxDrawDown = 0;
-            StrategyBudget = strategy.Budget;
 
+            int i = 0;
             foreach (var order in strategy.OrderedGeneratedOrdersHistory)
             {
                 var cumulatedCapital = order.CumulatedCapital;
@@ -38,8 +39,13 @@ namespace TradeBash.Core.Report
                     Trough = cumulatedCapital;
                     var tmpDrawDown = Peak - Trough;
                     if (tmpDrawDown > MaxDrawDown)
+                    {
                         MaxDrawDown = tmpDrawDown;
+                        MaxDrawDownPercentage = (MaxDrawDown / strategy.OrderedGeneratedOrdersHistory.Take(i).Max(x => x.CumulatedCapital)) * 100;
+                    }
                 }
+
+                i++;
             }
         }
 
@@ -50,7 +56,7 @@ namespace TradeBash.Core.Report
 
         public double GetMaxDrawdownPercentage()
         {
-            return (MaxDrawDown / StrategyBudget) * 100;
+            return MaxDrawDownPercentage;
         }
     }
 }

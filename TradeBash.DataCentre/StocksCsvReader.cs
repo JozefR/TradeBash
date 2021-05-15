@@ -50,5 +50,6 @@ namespace TradeBash.DataCentre
     {
         Spy100,
         Spy500,
+        SPY
     }
 }

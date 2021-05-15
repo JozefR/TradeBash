@@ -18,7 +18,9 @@ namespace TradeBash.Core.Entities.Strategy
         public Drawdown _drawdown;
 
         private double cumulatedBudgetClosePrice;
-        private double cumulatedBudgetIntraDayLowPrice;
+
+        private DateTime? _buyDate;
+        private DateTime? _sellDate;
 
         private int? _smaShortParameter;
         private int? _smaLongParameter;
@@ -26,7 +28,9 @@ namespace TradeBash.Core.Entities.Strategy
 
         public ICollection<StrategyStock> StrategyStocksHistory { get; set; }
         public ICollection<GeneratedOrder> GeneratedOrders { get; set; }
-        public IReadOnlyCollection<GeneratedOrder> OrderedGeneratedOrdersHistory => GeneratedOrders.OrderBy(x => x.CloseDate).ToList();
+
+        public IReadOnlyCollection<GeneratedOrder> OrderedGeneratedOrdersHistory =>
+            GeneratedOrders.OrderBy(x => x.CloseDate).ToList();
 
         private Strategy()
         {
@@ -35,6 +39,23 @@ namespace TradeBash.Core.Entities.Strategy
             StrategyStocksHistory = new List<StrategyStock>();
             GeneratedOrders = new List<GeneratedOrder>();
             _drawdown = new Drawdown();
+        }
+
+        public static Strategy FromIndex(
+            string name,
+            double budget,
+            DateTime buyDate,
+            DateTime sellDate)
+        {
+            var strategy = new Strategy
+            {
+                Name = name,
+                Budget = budget,
+                _buyDate = buyDate,
+                _sellDate = sellDate
+            };
+
+            return strategy;
         }
 
         public static Strategy From(
@@ -85,14 +106,42 @@ namespace TradeBash.Core.Entities.Strategy
             foreach (var stockHistory in stock.OrderedHistory)
             {
                 strategyStock.CalculateForStock(
-                    stock.Symbol, 
-                    stockHistory.Date, 
-                    stockHistory.Open, 
+                    stock.Symbol,
+                    stockHistory.Date,
+                    stockHistory.Open,
                     stockHistory.Close,
                     stockHistory.Low);
             }
 
             StrategyStocksHistory.Add(strategyStock);
+        }
+
+        public void RunSimpleBuySellForDate()
+        {
+            CalculatedStock? generatedSignal = null;
+            cumulatedBudgetClosePrice = Budget;
+            foreach (var inDate in GetHistoryInDates())
+            {
+                foreach (var stock in StrategyStocksHistory)
+                {
+                    var currentStock = GetCurrentStockForDate(stock, inDate);
+                    if (currentStock == null) continue;
+
+                    if (currentStock.Date == _buyDate)
+                    {
+                        OpenPositionAndGenerateOrder(currentStock, 100);
+                    }
+
+                    if (inDate == _sellDate)
+                    {
+                        var openPosition = GetCurrentNotClosedPositionsFor(currentStock.Symbol);
+                        if (openPosition != null)
+                        {
+                            ClosePosition(openPosition, currentStock);
+                        }
+                    }
+                }
+            }
         }
 
         public void RunShortSmaRsi()
@@ -101,7 +150,6 @@ namespace TradeBash.Core.Entities.Strategy
             // sell if sma > 10
             CalculatedStock? generatedSignal = null;
             cumulatedBudgetClosePrice = Budget;
-            cumulatedBudgetIntraDayLowPrice = Budget;
             foreach (var inDate in GetHistoryInDates())
             {
                 foreach (var stock in StrategyStocksHistory)
@@ -125,7 +173,7 @@ namespace TradeBash.Core.Entities.Strategy
 
                 if (generatedSignal != null)
                 {
-                    OpenPositionAndGenerateOrder(generatedSignal);
+                    OpenPositionAndGenerateOrder(generatedSignal, 5);
 
                     generatedSignal = null;
                 }
@@ -140,7 +188,6 @@ namespace TradeBash.Core.Entities.Strategy
             // sell if sma > 10
             CalculatedStock? generatedSignal = null;
             cumulatedBudgetClosePrice = Budget;
-            cumulatedBudgetIntraDayLowPrice = Budget;
             foreach (var inDate in GetHistoryInDates())
             {
                 foreach (var stock in StrategyStocksHistory)
@@ -167,7 +214,7 @@ namespace TradeBash.Core.Entities.Strategy
 
                 if (generatedSignal != null)
                 {
-                    OpenPositionAndGenerateOrder(generatedSignal);
+                    OpenPositionAndGenerateOrder(generatedSignal, 5);
 
                     generatedSignal = null;
                 }
@@ -188,7 +235,16 @@ namespace TradeBash.Core.Entities.Strategy
             }
         }
 
-        private void OpenPositionAndGenerateOrder(CalculatedStock generatedSignal)
+        private void ClosePosition(GeneratedOrder openPosition, CalculatedStock currentStock)
+        {
+            var profitLoss = openPosition.ClosePosition(currentStock.Close, currentStock.Date);
+            cumulatedBudgetClosePrice += profitLoss;
+            _drawdown.Calculate(cumulatedBudgetClosePrice);
+            openPosition.SetCumulatedCapitalForClose(cumulatedBudgetClosePrice);
+            openPosition.SetMaxDrawdownForClosePrice(_drawdown.TmpDrawDown, Budget);
+        }
+
+        private void OpenPositionAndGenerateOrder(CalculatedStock generatedSignal, int budgetPercentage)
         {
             // check if the position i want to open has some already opened position
             // if has calculate average open price
@@ -209,12 +265,13 @@ namespace TradeBash.Core.Entities.Strategy
                     generatedSignal.Symbol,
                     generatedSignal.Open,
                     generatedSignal.Date);
-                generatedOrder.PercentageForStocksFixedMM(Budget, 5);
+                generatedOrder.PercentageForStocksFixedMM(Budget, budgetPercentage);
                 GeneratedOrders.Add(generatedOrder);
             }
         }
 
-        private bool GenerateBuySignalForRsiIfCurrentStockLower(CalculatedStock? generatedSignal, CalculatedStock currentStock, int rsiThreshold)
+        private bool GenerateBuySignalForRsiIfCurrentStockLower(CalculatedStock? generatedSignal,
+            CalculatedStock currentStock, int rsiThreshold)
         {
             if (currentStock.RSI < rsiThreshold || (generatedSignal != null && currentStock.RSI < generatedSignal.RSI))
             {

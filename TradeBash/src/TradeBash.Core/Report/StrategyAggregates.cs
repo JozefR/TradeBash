@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using TradeBash.Core.Entities.Strategy;
 
 namespace TradeBash.Core.Report
@@ -42,6 +43,16 @@ namespace TradeBash.Core.Report
         public static int GetNumberOfTrades(Strategy strategy)
         {
             return strategy.GeneratedOrders.Count;
+        }
+
+        public static string GetStartDate(Strategy strategy)
+        {
+            return strategy.GeneratedOrders.Min(x => x.OpenDate).ToShortDateString();
+        }
+
+        public static string GetEndDate(Strategy strategy)
+        {
+            return strategy.GeneratedOrders.Where(x => x.CloseDate != null).Max(x => x.CloseDate)?.ToShortDateString();
         }
     }
 }
