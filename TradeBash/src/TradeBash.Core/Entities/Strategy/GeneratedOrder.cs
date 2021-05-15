@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using TradeBash.SharedKernel;
 
 namespace TradeBash.Core.Entities.Strategy
@@ -27,6 +28,8 @@ namespace TradeBash.Core.Entities.Strategy
 
         public int Position { get; private set; }
 
+        public string AdditionallyBoughtPositions { get; private set; }
+
         public static GeneratedOrder OpenPosition(
             string symbol,
             double openPrice,
@@ -42,13 +45,19 @@ namespace TradeBash.Core.Entities.Strategy
             return entity;
         }
 
+        public void UpdatePosition(double averageOpenPrice, DateTime generatedSignalDate)
+        {
+            OpenPrice = averageOpenPrice;
+            AdditionallyBoughtPositions += generatedSignalDate.ToShortDateString() + ", ";
+        }
+
         public void PercentageForStocksFixedMM(double budget, int percentage)
         {
-            BudgetInvestedPercentage = percentage;
+            BudgetInvestedPercentage += percentage;
 
             int numberOfStocks = CalculateNumberOfStocksForOpenPrice(budget, percentage);
 
-            Position = numberOfStocks;
+            Position += numberOfStocks;
         }
 
         public void NumberOfStocksForPosition(double budget, int openPositions)
@@ -76,14 +85,27 @@ namespace TradeBash.Core.Entities.Strategy
             return (double) ProfitLoss;
         }
 
-        public void SetCumulatedCapital(double budget)
+        public double CalculateIntradayProfitLoss(double lowPrice)
+        {
+            var priceDifference = (lowPrice - OpenPrice) * Position;
+            var roundTwoDecimalPoints = Math.Round((decimal)priceDifference!, 2);
+            ProfitLoss = (double)roundTwoDecimalPoints;
+            return (double) ProfitLoss;
+        }
+
+        public void SetCumulatedCapitalForClose(double budget)
         {
             CumulatedCapital = budget;
         }
 
-        public void SetMaxDrawdown(double drawdown, double strategyBudget)
+        public void SetMaxDrawdownForClosePrice(double drawdown, double strategyBudget)
         {
             DrawdownPercentage = -Math.Round((drawdown / strategyBudget) * 100, 2);
+        }
+
+        public void SetMaxDrawdownForLowPrice(double drawdownIntraDay, double strategyBudget)
+        {
+            DrawdownFromLowPricePercentage = -Math.Round((drawdownIntraDay / strategyBudget) * 100, 2);
         }
 
         private int CalculateNumberOfStocksForOpenPrice(double budget, int percentage)

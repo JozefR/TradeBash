@@ -98,11 +98,6 @@ namespace TradeBash.Infrastructure.Services
                 ws.Row(10).Style.Font.Size = 13;
                 ws.Row(10).Height = 15;
 
-                ws.Cells["A11"].Value = "Max. IntraDay Drawdown %";
-                ws.Cells["B11"].Value = Math.Round(strategy._intradayDrawdown.MaxDrawDown) + "%";
-                ws.Row(11).Style.Font.Size = 13;
-                ws.Row(11).Height = 15;
-
                 // Data
                 var orders = strategy.OrderedGeneratedOrdersHistory.Select(x => new
                 {
@@ -115,10 +110,9 @@ namespace TradeBash.Infrastructure.Services
                     x.BudgetInvestedPercentage,
                     x.ProfitLoss,
                     x.CumulatedCapital,
-                    x.DrawdownPercentage,
                 }).Where(x => x.CloseDate != null);
 
-                var range = ws.Cells["A14"].LoadFromCollection(orders, true);
+                var range = ws.Cells["A25"].LoadFromCollection(orders, true);
                 range.AutoFitColumns();
 
                 // format datetime
@@ -126,9 +120,9 @@ namespace TradeBash.Infrastructure.Services
                 ws.Column(5).Style.Numberformat.Format = "dd-mm-yyyy";
 
                 // formats the header
-                ws.Cells["A13"].Value = "Data";
-                ws.Cells["A13:G13"].Merge = true;
-                ws.Row(13).Style.Font.Size = 18;
+                ws.Cells["A24"].Value = "Data";
+                ws.Cells["A24:G24"].Merge = true;
+                ws.Row(24).Style.Font.Size = 18;
 
                 ws.Row(2).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                 ws.Column(1).Width = 15;

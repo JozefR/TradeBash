@@ -27,7 +27,17 @@ namespace TradeBash.Core.Entities
 
         public static bool RsiNotCalculated(CalculatedStock calculatedStock)
         {
-            if (calculatedStock.RSI == 0)
+            if (calculatedStock.RSI == 0 || calculatedStock.RSI == null)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public static bool LongSmaIsNotCalculated(CalculatedStock calculatedStock)
+        {
+            if (calculatedStock.SMALong == 0 || calculatedStock.SMALong == null)
             {
                 return true;
             }

@@ -15,11 +15,10 @@ namespace TradeBash.Core.Entities.Strategy
 
         public double Budget { get; private set; }
 
-        private Drawdown _drawdown;
+        public Drawdown _drawdown;
 
-        private double cumulatedBudget;
-
-        private double cumulatedBudgetFromLowPride;
+        private double cumulatedBudgetClosePrice;
+        private double cumulatedBudgetIntraDayLowPrice;
 
         private int? _smaShortParameter;
         private int? _smaLongParameter;
@@ -27,7 +26,6 @@ namespace TradeBash.Core.Entities.Strategy
 
         public ICollection<StrategyStock> StrategyStocksHistory { get; set; }
         public ICollection<GeneratedOrder> GeneratedOrders { get; set; }
-
         public IReadOnlyCollection<GeneratedOrder> OrderedGeneratedOrdersHistory => GeneratedOrders.OrderBy(x => x.CloseDate).ToList();
 
         private Strategy()
@@ -102,23 +100,22 @@ namespace TradeBash.Core.Entities.Strategy
             // buy if rsi < 2;
             // sell if sma > 10
             CalculatedStock? generatedSignal = null;
-            cumulatedBudget = Budget;
-            cumulatedBudgetFromLowPride = Budget;
+            cumulatedBudgetClosePrice = Budget;
+            cumulatedBudgetIntraDayLowPrice = Budget;
             foreach (var inDate in GetHistoryInDates())
             {
-                foreach (var strategyStock in StrategyStocksHistory)
+                foreach (var stock in StrategyStocksHistory)
                 {
-                    var currentStock = strategyStock.CalculatedOrderedStocksHistory.FirstOrDefault(x => x.Date == inDate);
-
+                    var currentStock = GetCurrentStockForDate(stock, inDate);
                     if (currentStock == null) continue;
-                    if (StrategyGuard.RsiNotCalculated(currentStock)) continue;
 
-                    var openPositions = GetCurrentNotClosedPositionsFor(currentStock);
-
-                    foreach (var openPosition in openPositions)
+                    var openPosition = GetCurrentNotClosedPositionsFor(currentStock.Symbol);
+                    if (openPosition != null)
                     {
                         ClosePositionForSma(openPosition, currentStock);
                     }
+
+                    if (StrategyGuard.RsiNotCalculated(currentStock)) continue;
 
                     if (GenerateBuySignalForRsiIfCurrentStockLower(generatedSignal, currentStock, 10))
                     {
@@ -142,25 +139,25 @@ namespace TradeBash.Core.Entities.Strategy
             // buy if rsi < 2;
             // sell if sma > 10
             CalculatedStock? generatedSignal = null;
-            cumulatedBudget = Budget;
-            cumulatedBudgetFromLowPride = Budget;
+            cumulatedBudgetClosePrice = Budget;
+            cumulatedBudgetIntraDayLowPrice = Budget;
             foreach (var inDate in GetHistoryInDates())
             {
-                foreach (var strategyStock in StrategyStocksHistory)
+                foreach (var stock in StrategyStocksHistory)
                 {
-                    var currentStock = strategyStock.CalculatedOrderedStocksHistory.FirstOrDefault(x => x.Date == inDate);
+                    var currentStock = GetCurrentStockForDate(stock, inDate);
 
                     if (currentStock == null) continue;
-                    if (StrategyGuard.LongSmaIsGreaterThenPrice(currentStock)) continue;
-                    if (StrategyGuard.RsiNotCalculated(currentStock)) continue;
 
-                    var openPositions = GetCurrentNotClosedPositionsFor(currentStock);
-
-                    foreach (var openPosition in openPositions)
+                    var openPosition = GetCurrentNotClosedPositionsFor(currentStock.Symbol);
+                    if (openPosition != null)
                     {
-                        CalculateMaxDrawdownFromLowPrice(openPosition, currentStock);
                         ClosePositionForSma(openPosition, currentStock);
                     }
+
+                    if (StrategyGuard.LongSmaIsNotCalculated(currentStock)) continue;
+                    if (StrategyGuard.LongSmaIsGreaterThenPrice(currentStock)) continue;
+                    if (StrategyGuard.RsiNotCalculated(currentStock)) continue;
 
                     if (GenerateBuySignalForRsiIfCurrentStockLower(generatedSignal, currentStock, 10))
                     {
@@ -179,31 +176,42 @@ namespace TradeBash.Core.Entities.Strategy
             }
         }
 
-        private void CalculateMaxDrawdownFromLowPrice(GeneratedOrder openPosition, CalculatedStock currentStock)
-        {
-            // todo: calculate max drawdown from low
-        }
-
         private void ClosePositionForSma(GeneratedOrder openPosition, CalculatedStock currentStock)
         {
             if (currentStock.SMAShort < currentStock.Close)
             {
                 var profitLoss = openPosition.ClosePosition(currentStock.Close, currentStock.Date);
-                cumulatedBudget += profitLoss;
-                _drawdown.Calculate(cumulatedBudget);
-                openPosition.SetCumulatedCapital(cumulatedBudget);
-                openPosition.SetMaxDrawdown(_drawdown.TmpDrawDown, Budget);
+                cumulatedBudgetClosePrice += profitLoss;
+                _drawdown.Calculate(cumulatedBudgetClosePrice);
+                openPosition.SetCumulatedCapitalForClose(cumulatedBudgetClosePrice);
+                openPosition.SetMaxDrawdownForClosePrice(_drawdown.TmpDrawDown, Budget);
             }
         }
 
         private void OpenPositionAndGenerateOrder(CalculatedStock generatedSignal)
         {
-            var generatedOrder = GeneratedOrder.OpenPosition(
-                generatedSignal.Symbol,
-                generatedSignal.Open,
-                generatedSignal.Date);
-            generatedOrder.PercentageForStocksFixedMM(Budget, 5);
-            GeneratedOrders.Add(generatedOrder);
+            // check if the position i want to open has some already opened position
+            // if has calculate average open price
+            // sum positions
+            // count number of ,,stack,, opend positions
+            // add dates
+            var currentOpenPosition = GetCurrentNotClosedPositionsFor(generatedSignal.Symbol);
+
+            if (currentOpenPosition != null)
+            {
+                var averageOpenPrice = (currentOpenPosition.OpenPrice + generatedSignal.Close) / 2;
+                currentOpenPosition.UpdatePosition(averageOpenPrice, generatedSignal.Date);
+                currentOpenPosition.PercentageForStocksFixedMM(Budget, 5);
+            }
+            else
+            {
+                var generatedOrder = GeneratedOrder.OpenPosition(
+                    generatedSignal.Symbol,
+                    generatedSignal.Open,
+                    generatedSignal.Date);
+                generatedOrder.PercentageForStocksFixedMM(Budget, 5);
+                GeneratedOrders.Add(generatedOrder);
+            }
         }
 
         private bool GenerateBuySignalForRsiIfCurrentStockLower(CalculatedStock? generatedSignal, CalculatedStock currentStock, int rsiThreshold)
@@ -216,9 +224,9 @@ namespace TradeBash.Core.Entities.Strategy
             return false;
         }
 
-        private IEnumerable<GeneratedOrder> GetCurrentNotClosedPositionsFor(CalculatedStock currentStock)
+        private GeneratedOrder? GetCurrentNotClosedPositionsFor(string symbol)
         {
-            return GeneratedOrders.Where(x => x.CloseDate == null && x.Symbol == currentStock.Symbol);
+            return GeneratedOrders.SingleOrDefault(x => x.CloseDate == null && x.Symbol == symbol);
         }
 
         private List<DateTime> GetHistoryInDates()
@@ -229,6 +237,11 @@ namespace TradeBash.Core.Entities.Strategy
         private int NumberOfCurrentOpenedPositions(CalculatedStock generatedSignal)
         {
             return GeneratedOrders.Count(x => x.CloseDate == null && x.Symbol == generatedSignal.Symbol);
+        }
+
+        private CalculatedStock? GetCurrentStockForDate(StrategyStock strategyStock, DateTime inDate)
+        {
+            return strategyStock.CalculatedOrderedStocksHistory.FirstOrDefault(x => x.Date == inDate);
         }
     }
 }
