@@ -24,7 +24,6 @@ namespace TradeBash.Infrastructure.Data.Repositories
             return _dbContext.Set<Strategy>()
                 .Include(x => x.StrategyStocksHistory)
                 .ThenInclude(xx => xx.CalculatedStocksHistory)
-                .Include(x => x.GeneratedOrders)
                 .SingleOrDefaultAsync(e => e.Name == name);
         }
 

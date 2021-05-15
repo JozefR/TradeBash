@@ -52,41 +52,56 @@ namespace TradeBash.Infrastructure.Services
                 ws.Row(1).Style.Font.Size = 18;
 
                 // aggregates
-                ws.Cells["A6"].Value = "Total Tested History";
-                ws.Cells["B6"].Value = testedHistory;
-                ws.Row(6).Style.Font.Bold = true;
 
                 ws.Cells["A2"].Value = "Initial Capital";
                 ws.Cells["B2"].Value = Math.Round(strategy.Budget);
-                ws.Row(2).Style.Font.Bold = true;
+                ws.Row(2).Style.Font.Size = 13;
+                ws.Row(2).Height = 15;
 
                 ws.Cells["A3"].Value = "Ending Capital";
                 ws.Cells["B3"].Value = Math.Round(endingCapital);
-                ws.Row(3).Style.Font.Bold = true;
+                ws.Row(3).Style.Font.Size = 13;
+                ws.Row(3).Height = 15;
 
                 ws.Cells["A4"].Value = "Total Net Profit";
                 ws.Cells["B4"].Value = Math.Round(nettProfit.Value);
-                ws.Row(4).Style.Font.Bold = true;
+                ws.Row(4).Style.Font.Size = 13;
+                ws.Row(4).Height = 15;
 
                 ws.Cells["A5"].Value = "Total N. of Trades";
                 ws.Cells["B5"].Value = numberOfTrades;
-                ws.Row(5).Style.Font.Bold = true;
+                ws.Row(5).Style.Font.Size = 13;
+                ws.Row(5).Height = 15;
+
+                ws.Cells["A6"].Value = "Total Tested History";
+                ws.Cells["B6"].Value = testedHistory;
+                ws.Row(6).Style.Font.Size = 13;
+                ws.Row(6).Height = 15;
 
                 ws.Cells["A7"].Value = "Percentage Winners";
                 ws.Cells["B7"].Value = Math.Round(winnersPercentage) + "%";
-                ws.Row(7).Style.Font.Bold = true;
+                ws.Row(7).Style.Font.Size = 13;
+                ws.Row(7).Height = 15;
 
                 ws.Cells["A8"].Value = "Profit Factor";
                 ws.Cells["B8"].Value = Math.Abs(Math.Round(profitFactor.Value, 2));
-                ws.Row(8).Style.Font.Bold = true;
+                ws.Row(8).Style.Font.Size = 13;
+                ws.Row(8).Height = 15;
 
                 ws.Cells["A9"].Value = "Max. Drawdown $";
                 ws.Cells["B9"].Value = Math.Round(_drawdown.GetMaxDrawdown());
-                ws.Row(9).Style.Font.Bold = true;
+                ws.Row(9).Style.Font.Size = 13;
+                ws.Row(9).Height = 15;
 
                 ws.Cells["A10"].Value = "Max. Drawdown %";
                 ws.Cells["B10"].Value = Math.Round(_drawdown.GetMaxDrawdownPercentage()) + "%";
-                ws.Row(10).Style.Font.Bold = true;
+                ws.Row(10).Style.Font.Size = 13;
+                ws.Row(10).Height = 15;
+
+                ws.Cells["A11"].Value = "Max. IntraDay Drawdown %";
+                ws.Cells["B11"].Value = Math.Round(strategy._intradayDrawdown.MaxDrawDown) + "%";
+                ws.Row(11).Style.Font.Size = 13;
+                ws.Row(11).Height = 15;
 
                 // Data
                 var orders = strategy.OrderedGeneratedOrdersHistory.Select(x => new
@@ -103,7 +118,7 @@ namespace TradeBash.Infrastructure.Services
                     x.DrawdownPercentage,
                 }).Where(x => x.CloseDate != null);
 
-                var range = ws.Cells["A12"].LoadFromCollection(orders, true);
+                var range = ws.Cells["A14"].LoadFromCollection(orders, true);
                 range.AutoFitColumns();
 
                 // format datetime
@@ -111,9 +126,9 @@ namespace TradeBash.Infrastructure.Services
                 ws.Column(5).Style.Numberformat.Format = "dd-mm-yyyy";
 
                 // formats the header
-                ws.Cells["A11"].Value = "Data";
-                ws.Cells["A11:G11"].Merge = true;
-                ws.Row(11).Style.Font.Size = 18;
+                ws.Cells["A13"].Value = "Data";
+                ws.Cells["A13:G13"].Merge = true;
+                ws.Row(13).Style.Font.Size = 18;
 
                 ws.Row(2).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                 ws.Column(1).Width = 15;
