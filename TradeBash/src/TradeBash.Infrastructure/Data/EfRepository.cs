@@ -33,6 +33,13 @@ namespace TradeBash.Infrastructure.Data
             return _dbContext.Set<T>().ToListAsync();
         }
 
+        public Task<List<T>> ListNoTrackingAsync<T>() where T : BaseEntity
+        {
+            return _dbContext.Set<T>()
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
         public async Task<T> AddAsync<T>(T entity) where T : BaseEntity
         {
             await _dbContext.Set<T>().AddAsync(entity);

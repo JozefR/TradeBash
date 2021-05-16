@@ -133,17 +133,16 @@ namespace TradeBash.Web.Api
         }
 
         [HttpGet("InMemoryBacktestWithExport/{strategyType}/{budget}/{smaShort}/{smaLong}/{rsi}")]
-        public async Task<IActionResult> InMemoryBacktestWithExport(StrategyType strategyType, int budget, int smaShort, int smaLong, int rsi)
+        public async Task<IActionResult> InMemoryBacktestWithExport(StrategyType strategyType, IndexVersion indexVersion, int budget, int smaShort, int smaLong, int rsi)
         {
             try
             {
-                var strategyName = $"{strategyType.ToString()}-Budget-{budget}-SMAShort-{smaShort}-SMALong-{smaLong}-RSI-{rsi}";
+                var strategyName = $"{strategyType.ToString()}-{indexVersion.ToString()}-Budget-{budget}-SMAShort-{smaShort}-SMALong-{smaLong}-RSI-{rsi}";
                 var strategy = Strategy.From(strategyName, budget, smaShort, smaLong, rsi);
 
-                var stocks = await _repository.ListAsync<Stock>();
-                var stocksToCalculate = _csvReader.LoadFile(IndexVersion.Spy100);
-
-                foreach (var (symbol, name) in stocksToCalculate)
+                var stocks = await _repository.ListNoTrackingAsync<Stock>();
+                var stocksToCalculate = _csvReader.LoadFile(indexVersion);
+                foreach (var (symbol, _) in stocksToCalculate)
                 {
                     var stock = stocks.First(x => x.Symbol == symbol);
 

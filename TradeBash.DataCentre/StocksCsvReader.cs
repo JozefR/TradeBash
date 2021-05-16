@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using Microsoft.VisualBasic.FileIO;
 
 namespace TradeBash.DataCentre
@@ -39,17 +40,29 @@ namespace TradeBash.DataCentre
 
             return _stocksToUpdate;
         }
+
+        public IList<(string symbol, string name)> GetAllToUpdate()
+        {
+            var stocksToUpdate = _stocksToUpdate.GroupBy(x => x.symbol)
+                .Select(x => x.First())
+                .OrderBy(x => x.symbol)
+                .ToList();
+
+            return stocksToUpdate;
+        }
     }
 
     public interface IStocksCsvReader
     {
         IList<(string symbol, string name)> LoadFile(IndexVersion version);
+        IList<(string symbol, string name)> GetAllToUpdate();
     }
 
     public enum IndexVersion
     {
         Spy100,
         Spy500,
-        SPY
+        QQQ,
+        VTV
     }
 }

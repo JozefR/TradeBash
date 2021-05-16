@@ -19,9 +19,6 @@ namespace TradeBash.Core.Entities.Strategy
 
         private double cumulatedBudgetClosePrice;
 
-        private DateTime? _buyDate;
-        private DateTime? _sellDate;
-
         private int? _smaShortParameter;
         private int? _smaLongParameter;
         private int? _rsiParameter;
@@ -39,23 +36,6 @@ namespace TradeBash.Core.Entities.Strategy
             StrategyStocksHistory = new List<StrategyStock>();
             GeneratedOrders = new List<GeneratedOrder>();
             _drawdown = new Drawdown();
-        }
-
-        public static Strategy FromIndex(
-            string name,
-            double budget,
-            DateTime buyDate,
-            DateTime sellDate)
-        {
-            var strategy = new Strategy
-            {
-                Name = name,
-                Budget = budget,
-                _buyDate = buyDate,
-                _sellDate = sellDate
-            };
-
-            return strategy;
         }
 
         public static Strategy From(
@@ -114,34 +94,6 @@ namespace TradeBash.Core.Entities.Strategy
             }
 
             StrategyStocksHistory.Add(strategyStock);
-        }
-
-        public void RunSimpleBuySellForDate()
-        {
-            CalculatedStock? generatedSignal = null;
-            cumulatedBudgetClosePrice = Budget;
-            foreach (var inDate in GetHistoryInDates())
-            {
-                foreach (var stock in StrategyStocksHistory)
-                {
-                    var currentStock = GetCurrentStockForDate(stock, inDate);
-                    if (currentStock == null) continue;
-
-                    if (currentStock.Date == _buyDate)
-                    {
-                        OpenPositionAndGenerateOrder(currentStock, 100);
-                    }
-
-                    if (inDate == _sellDate)
-                    {
-                        var openPosition = GetCurrentNotClosedPositionsFor(currentStock.Symbol);
-                        if (openPosition != null)
-                        {
-                            ClosePosition(openPosition, currentStock);
-                        }
-                    }
-                }
-            }
         }
 
         public void RunShortSmaRsi()
@@ -211,9 +163,14 @@ namespace TradeBash.Core.Entities.Strategy
                     if (StrategyGuard.LongSmaIsGreaterThenPrice(currentStock)) continue;
                     if (StrategyGuard.RsiNotCalculated(currentStock)) continue;
 
-                    if (GenerateBuySignalForRsiIfCurrentStockLower(generatedSignal, currentStock, 10))
+                    if (openPosition == null)
                     {
-                        generatedSignal = currentStock;
+                        if (IsNumberOfAllowedSlotsReached(20)) continue;
+
+                        if (GenerateBuySignalForRsiIfCurrentStockLower(generatedSignal, currentStock, 10))
+                        {
+                            generatedSignal = currentStock;
+                        }
                     }
                 }
 

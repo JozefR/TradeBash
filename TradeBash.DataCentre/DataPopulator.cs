@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.SymbolStore;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -56,8 +57,12 @@ namespace TradeBash.DataCentre
                 _stockRepository = scope.ServiceProvider.GetRequiredService<IStockRepository>();
                 _dataProvider = scope.ServiceProvider.GetRequiredService<IDataProvider>();
 
-                var stocksToUpdate = _stocksCsvReader.LoadFile(IndexVersion.Spy100);
+                _stocksCsvReader.LoadFile(IndexVersion.Spy100);
+                _stocksCsvReader.LoadFile(IndexVersion.Spy500);
+                _stocksCsvReader.LoadFile(IndexVersion.QQQ);
+                _stocksCsvReader.LoadFile(IndexVersion.VTV);
 
+                var stocksToUpdate = _stocksCsvReader.GetAllToUpdate();
                 foreach (var (symbol, name) in stocksToUpdate)
                 {
                     _logger.LogInformation($"Populating data for {symbol}");

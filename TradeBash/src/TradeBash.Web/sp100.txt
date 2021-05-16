@@ -4,7 +4,6 @@ ABBV,AbbVie Inc.
 ABT,Abbott Laboratories
 ACN,Accenture
 ADBE,Adobe Inc.
-AIG,American International Group
 ALL,Allstate
 AMGN,Amgen Inc.
 AMT,American Tower
