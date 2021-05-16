@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using TradeBash.Core.Entities.Warehouse;
 using TradeBash.SharedKernel;
 
 namespace TradeBash.Core.Entities.Strategy

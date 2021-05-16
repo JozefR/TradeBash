@@ -46,5 +46,10 @@ namespace TradeBash.Core.Entities.Strategy
             SMALong = smaLong;
             RSI = rsi;
         }
+
+        public string GetIndicatorValues()
+        {
+            return $"ShortSma_{SMAShort}_LongSma_{SMALong}_Rsi_{RSI}";
+        }
     }
 }

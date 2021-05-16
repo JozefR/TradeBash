@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using JetBrains.Annotations;
 using TradeBash.SharedKernel;
 
 namespace TradeBash.Core.Entities.Strategy
@@ -10,7 +10,11 @@ namespace TradeBash.Core.Entities.Strategy
 
         public double OpenPrice { get; private set; }
 
+        public string OpenIndicators { get; private set; }
+
         public double? ClosePrice { get; private set; }
+
+        public string? CloseIndicators { get; private set; }
 
         public DateTime OpenDate { get; private set; }
 
@@ -31,13 +35,15 @@ namespace TradeBash.Core.Entities.Strategy
         public static GeneratedOrder OpenPosition(
             string symbol,
             double openPrice,
-            DateTime openDate)
+            DateTime openDate,
+            string openIndicators)
         {
             var entity = new GeneratedOrder
             {
                 Symbol = symbol,
                 OpenPrice = openPrice,
                 OpenDate = openDate,
+                OpenIndicators = openIndicators
             };
 
             return entity;
@@ -72,10 +78,11 @@ namespace TradeBash.Core.Entities.Strategy
             Position = numberOfStocks;
         }
 
-        public double ClosePosition(double closePrice, DateTime closeDate)
+        public double ClosePosition(double closePrice, DateTime closeDate, string indicatorValues)
         {
             ClosePrice = closePrice;
             CloseDate = closeDate;
+            CloseIndicators = indicatorValues;
 
             var priceDifference = (ClosePrice - OpenPrice) * Position;
             var roundTwoDecimalPoints = Math.Round((decimal)priceDifference!, 2);

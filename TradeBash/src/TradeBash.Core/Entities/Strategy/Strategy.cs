@@ -189,7 +189,7 @@ namespace TradeBash.Core.Entities.Strategy
         {
             if (currentStock.SMAShort < currentStock.Close)
             {
-                var profitLoss = openPosition.ClosePosition(currentStock.Close, currentStock.Date);
+                var profitLoss = openPosition.ClosePosition(currentStock.Close, currentStock.Date, currentStock.GetIndicatorValues());
                 cumulatedBudgetClosePrice += profitLoss;
                 _drawdown.Calculate(cumulatedBudgetClosePrice);
                 openPosition.SetCumulatedCapitalForClose(cumulatedBudgetClosePrice);
@@ -199,7 +199,7 @@ namespace TradeBash.Core.Entities.Strategy
 
         private void ClosePosition(GeneratedOrder openPosition, CalculatedStock currentStock)
         {
-            var profitLoss = openPosition.ClosePosition(currentStock.Close, currentStock.Date);
+            var profitLoss = openPosition.ClosePosition(currentStock.Close, currentStock.Date, currentStock.GetIndicatorValues());
             cumulatedBudgetClosePrice += profitLoss;
             _drawdown.Calculate(cumulatedBudgetClosePrice);
             openPosition.SetCumulatedCapitalForClose(cumulatedBudgetClosePrice);
@@ -221,7 +221,8 @@ namespace TradeBash.Core.Entities.Strategy
                 var generatedOrder = GeneratedOrder.OpenPosition(
                     generatedSignal.Symbol,
                     generatedSignal.Open,
-                    generatedSignal.Date);
+                    generatedSignal.Date,
+                    generatedSignal.GetIndicatorValues());
                 generatedOrder.PercentageForStocksFixedMM(Budget, budgetPercentage);
                 GeneratedOrders.Add(generatedOrder);
             }
