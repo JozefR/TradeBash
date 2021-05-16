@@ -1,0 +1,103 @@
+AAPL, Apple Inc
+MSFT, Microsoft Corp
+AMZN, Amazon.com Inc
+TSLA, Tesla Inc
+GOOG, Alphabet Inc
+FB,	Facebook  Inc.
+GOOGL, Alphabet Inc
+NVDA, NVIDIA Corp
+PYPL, PayPal Holdings Inc
+CMCSA,	Comcast Corp
+ADBE,	Adobe Inc
+INTC,	Intel Corp
+NFLX,	Netflix Inc
+CSCO,	Cisco Systems Inc
+PEP,	PepsiCo Inc
+AVGO,	BROADCOM INC
+TXN,	TEXAS INSTRUME
+TMUS,	T-Mobile US Inc
+COST,	Costco Wholesale Corp
+QCOM,	QUALCOMM Inc
+AMGN,	Amgen Inc
+SBUX,	SBUX
+CHTR,	Charter Communications Inc
+AMAT,	Applied Materials Inc
+INTU,	Intuit Inc
+BKNG,	BOOKING HOLDIN
+ISRG,	Intuitive Surgic
+AMD,	Advanced Micro Devices
+MU,	MICRON TECH
+LRCX,	Lam Research Corp
+MDLZ,	MONDELEZ INT C
+FISV,	Fiserv  Inc.
+GILD,	GILEAD SCI
+MELI,	MercadoLibre Inc
+ADP,	Automatic Data Processing Inc
+ZM,	Zoom Video Communications Inc
+CSX,	CSX Corp
+MRNA,	Moderna Inc
+ATVI,	Activision Blizzard Inc
+ADSK,	Autodesk Inc
+JD,	JD.com Inc ADR
+ILMN,	ILLUMINA INC
+BIDU,	Baidu Inc
+ADI,	Analog Devices Inc
+VRTX,	Vertex Pharmaceuticals Inc
+NXPI,	NXP Semiconductor NV
+ASML,	ASML Holding NV
+REGN,	Regeneron Pharmaceuticals Inc
+MNST,	Monster Beverage Corp
+KLAC,	KLA Corp
+KDP,	Keurig Dr Pepper Inc
+PDD,	Pinduoduo Inc
+KHC,	Kraft Heinz Co/The
+ALGN,	ALIGN TECHNOLOGY INC
+MAR,	Marriott International Inc
+IDXX,	IDEXX Laboratories Inc
+WDAY,	Workday Inc
+ROST,	Ross Stores Inc
+WBA,	Walgreens Boots Alliance Inc
+EXC,	EXELON CORP
+DOCU,	DocuSign Inc
+AEP,	American Electric Power Co Inc
+MTCH,	Match Group Inc
+CTSH,	Cognizant Technology Solutions Corp
+EBAY,	EBAY INC
+LULU,	Lululemon Athletica Inc
+MCHP,	MICROCHIP TECH
+EA,	ELECTRONIC ART
+DXCM,	DEXCOM
+BIIB,	BIOGEN INC
+SNPS,	SYNOPSYS INC
+XEL,	Xcel Energy Inc
+CDNS,	CADENCE DESIGN SYS INC COMMON STOCK USD.01
+ORLY,	OReilly Automotive Inc
+ALXN,	Alexion Pharmaceuticals
+CTAS,	Cintas Corp
+PAYX,	Paychex Inc
+NTES,	NetEase Inc
+OKTA,	Okta Inc
+ANSS,	ANSYS Inc
+SWKS,	Skyworks Solutions Inc
+XLNX,	Xilinx Inc
+PCAR,	PACCAR Inc
+MRVL,	Marvell Technology Group Ltd
+TEAM,	Atlassian Corp PLC
+VRSK,	Verisk Analytics Inc
+FAST,	FASTENAL
+CPRT,	Copart Inc
+PTON,	Peloton Interactive Inc
+DLTR,	DOLLAR TREE IN
+SGEN,	Seattle Genetics Inc
+CDW,	CDW Corp
+MXIM,	MAXIM INTEGRATED PRODUCTS
+SIRI,	SIRI
+VRSN,	VeriSign Inc
+CERN,	Cerner Corp
+TCOM,	Trip.com Group Ltd ADR
+SPLK,	Splunk Inc
+INCY,	INCYTE CORP
+CHKP,	Check Point Software Technologies Ltd
+FOXA,	Fox Corp
+FOX,	Fox Corp
+QQQ,	Invesco QQQ

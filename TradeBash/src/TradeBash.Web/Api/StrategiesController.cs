@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using TradeBash.Core.Entities.Strategy;
 using TradeBash.Core.Entities.Warehouse;
+using TradeBash.DataCentre;
 using TradeBash.Infrastructure.Data.Repositories;
 using TradeBash.Infrastructure.Services;
 using TradeBash.SharedKernel.Interfaces;
@@ -18,17 +19,20 @@ namespace TradeBash.Web.Api
         private readonly IRepository _repository;
         private readonly IStrategyRepository _strategyRepository;
         private readonly IExcelReporting _excelReporting;
+        private readonly IStocksCsvReader _csvReader;
 
         public StrategiesController(
             IRepository repository,
             IStrategyRepository strategyRepository,
             ILogger<StrategiesController> logger,
-            IExcelReporting excelReporting)
+            IExcelReporting excelReporting,
+            IStocksCsvReader csvReader)
         {
             _repository = repository;
             _strategyRepository = strategyRepository;
             _logger = logger;
             _excelReporting = excelReporting;
+            _csvReader = csvReader;
         }
 
         [HttpGet("calculateStrategy/{sma}/{rsi}")]
@@ -86,7 +90,7 @@ namespace TradeBash.Web.Api
 
         public enum StrategyType
         {
-            ShortSmaRsi,
+            Short_SMA_Fixed_MM,
             ShortSmaLongSmaRsi
         }
 
@@ -97,7 +101,7 @@ namespace TradeBash.Web.Api
 
             _logger.LogInformation($"Started backtest for strategy {strategyName}");
 
-            if (strategyType == StrategyType.ShortSmaRsi)
+            if (strategyType == StrategyType.Short_SMA_Fixed_MM)
             {
                 strategy.RunShortSmaRsi();
             }
@@ -133,12 +137,16 @@ namespace TradeBash.Web.Api
         {
             try
             {
-                var strategyName = $"Budget-{budget}-SMAShort-{smaShort}-SMALong-{smaLong}-RSI-{rsi}";
+                var strategyName = $"{strategyType.ToString()}-Budget-{budget}-SMAShort-{smaShort}-SMALong-{smaLong}-RSI-{rsi}";
                 var strategy = Strategy.From(strategyName, budget, smaShort, smaLong, rsi);
 
                 var stocks = await _repository.ListAsync<Stock>();
-                foreach (var stock in stocks)
+                var stocksToCalculate = _csvReader.LoadFile(IndexVersion.Spy100);
+
+                foreach (var (symbol, name) in stocksToCalculate)
                 {
+                    var stock = stocks.First(x => x.Symbol == symbol);
+
                     _logger.LogInformation($"Start indicators calculation for stock {stock.Name}");
 
                     strategy.RunCalculationFor(stock);
@@ -148,7 +156,7 @@ namespace TradeBash.Web.Api
 
                 _logger.LogInformation($"Started in memory backtest for strategy {strategyName}");
 
-                if (strategyType == StrategyType.ShortSmaRsi)
+                if (strategyType == StrategyType.Short_SMA_Fixed_MM)
                 {
                     strategy.RunShortSmaRsi();
                 }

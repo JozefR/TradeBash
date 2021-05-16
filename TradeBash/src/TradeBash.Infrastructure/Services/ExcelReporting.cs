@@ -70,40 +70,40 @@ namespace TradeBash.Infrastructure.Services
                 ws.Row(4).Style.Font.Size = 12;
                 ws.Row(4).Height = 15;
 
-                ws.Cells["A4"].Value = "Ending Capital";
-                ws.Cells["B4"].Value = Math.Round(endingCapital);
-                ws.Row(4).Style.Font.Size = 12;
-                ws.Row(4).Height = 15;
-
-                ws.Cells["A5"].Value = "Total Net Profit";
-                ws.Cells["B5"].Value = Math.Round(nettProfit.Value);
+                ws.Cells["A5"].Value = "Ending Capital";
+                ws.Cells["B5"].Value = Math.Round(endingCapital);
                 ws.Row(5).Style.Font.Size = 12;
                 ws.Row(5).Height = 15;
 
-                ws.Cells["A6"].Value = "Total N. of Trades";
-                ws.Cells["B6"].Value = numberOfTrades;
+                ws.Cells["A6"].Value = "Total Net Profit";
+                ws.Cells["B6"].Value = Math.Round(nettProfit.Value);
                 ws.Row(6).Style.Font.Size = 12;
                 ws.Row(6).Height = 15;
 
-                ws.Cells["A7"].Value = "Percentage Winners";
-                ws.Cells["B7"].Value = Math.Round(winnersPercentage);
+                ws.Cells["A7"].Value = "Total N. of Trades";
+                ws.Cells["B7"].Value = numberOfTrades;
                 ws.Row(7).Style.Font.Size = 12;
                 ws.Row(7).Height = 15;
 
-                ws.Cells["A8"].Value = "Profit Factor";
-                ws.Cells["B8"].Value = Math.Abs(Math.Round(profitFactor.Value, 2));
+                ws.Cells["A8"].Value = "Percentage Winners";
+                ws.Cells["B8"].Value = Math.Round(winnersPercentage);
                 ws.Row(8).Style.Font.Size = 12;
                 ws.Row(8).Height = 15;
 
-                ws.Cells["A9"].Value = "Max. Drawdown $";
-                ws.Cells["B9"].Value = Math.Round(_drawdown.GetMaxDrawdown());
+                ws.Cells["A9"].Value = "Profit Factor";
+                ws.Cells["B9"].Value = Math.Abs(Math.Round(profitFactor.Value, 2));
                 ws.Row(9).Style.Font.Size = 12;
                 ws.Row(9).Height = 15;
 
-                ws.Cells["A10"].Value = "Max. Drawdown %";
-                ws.Cells["B10"].Value = Math.Round(_drawdown.GetMaxDrawdownPercentage());
+                ws.Cells["A10"].Value = "Max. Drawdown $";
+                ws.Cells["B10"].Value = Math.Round(_drawdown.GetMaxDrawdown());
                 ws.Row(10).Style.Font.Size = 12;
                 ws.Row(10).Height = 15;
+
+                ws.Cells["A11"].Value = "Max. Drawdown %";
+                ws.Cells["B11"].Value = Math.Round(_drawdown.GetMaxDrawdownPercentage());
+                ws.Row(11).Style.Font.Size = 12;
+                ws.Row(11).Height = 15;
 
                 // Data
                 var orders = strategy.OrderedGeneratedOrdersHistory.Select(x => new

@@ -78,8 +78,8 @@ namespace TradeBash.Core.Entities.Strategy
         public static Strategy From(
             string name,
             int budget,
-            int smaShort,
-            int smaLong,
+            int? smaShort,
+            int? smaLong,
             int rsiParameter)
         {
             var strategy = new Strategy
@@ -165,9 +165,14 @@ namespace TradeBash.Core.Entities.Strategy
 
                     if (StrategyGuard.RsiNotCalculated(currentStock)) continue;
 
-                    if (GenerateBuySignalForRsiIfCurrentStockLower(generatedSignal, currentStock, 10))
+                    if (openPosition == null)
                     {
-                        generatedSignal = currentStock;
+                        if (IsNumberOfAllowedSlotsReached(20)) continue;
+
+                        if (GenerateBuySignalForRsiIfCurrentStockLower(generatedSignal, currentStock, 10))
+                        {
+                            generatedSignal = currentStock;
+                        }
                     }
                 }
 
@@ -246,11 +251,6 @@ namespace TradeBash.Core.Entities.Strategy
 
         private void OpenPositionAndGenerateOrder(CalculatedStock generatedSignal, int budgetPercentage)
         {
-            // check if the position i want to open has some already opened position
-            // if has calculate average open price
-            // sum positions
-            // count number of ,,stack,, opend positions
-            // add dates
             var currentOpenPosition = GetCurrentNotClosedPositionsFor(generatedSignal.Symbol);
 
             if (currentOpenPosition != null)
@@ -299,6 +299,11 @@ namespace TradeBash.Core.Entities.Strategy
         private CalculatedStock? GetCurrentStockForDate(StrategyStock strategyStock, DateTime inDate)
         {
             return strategyStock.CalculatedOrderedStocksHistory.FirstOrDefault(x => x.Date == inDate);
+        }
+
+        private bool IsNumberOfAllowedSlotsReached(int slots)
+        {
+            return GeneratedOrders.Count(x => x.CloseDate == null) >= slots;
         }
     }
 }

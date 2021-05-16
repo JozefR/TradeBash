@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using TradeBash.Core.Report;
+using TradeBash.DataCentre;
 using TradeBash.Infrastructure.Data;
 using TradeBash.Infrastructure.Data.Repositories;
 using TradeBash.Infrastructure.Services;
@@ -37,6 +38,7 @@ namespace TradeBash.Web
             services.AddScoped<IStockRepository, StockRepository>();
             services.AddScoped<IStrategyRepository, StrategyRepository>();
             services.AddScoped<IExcelReporting, ExcelReporting>();
+            services.AddScoped<IStocksCsvReader, StocksCsvReader>();
             services.AddScoped<IDrawdown, Drawdown>();
 
             services.AddDbContext(Configuration);
