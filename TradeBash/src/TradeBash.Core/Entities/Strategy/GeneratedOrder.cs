@@ -22,8 +22,6 @@ namespace TradeBash.Core.Entities.Strategy
 
         public double DrawdownPercentage { get; private set; }
 
-        public double DrawdownFromLowPricePercentage { get; private set; }
-
         public int BudgetInvestedPercentage { get; private set; }
 
         public int Position { get; private set; }
@@ -101,11 +99,6 @@ namespace TradeBash.Core.Entities.Strategy
         public void SetMaxDrawdownForClosePrice(double drawdown, double strategyBudget)
         {
             DrawdownPercentage = -Math.Round((drawdown / strategyBudget) * 100, 2);
-        }
-
-        public void SetMaxDrawdownForLowPrice(double drawdownIntraDay, double strategyBudget)
-        {
-            DrawdownFromLowPricePercentage = -Math.Round((drawdownIntraDay / strategyBudget) * 100, 2);
         }
 
         private int CalculateNumberOfStocksForOpenPrice(double budget, int percentage)
