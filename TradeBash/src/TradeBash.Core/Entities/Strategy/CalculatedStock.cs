@@ -49,7 +49,23 @@ namespace TradeBash.Core.Entities.Strategy
 
         public string GetIndicatorValues()
         {
-            return $"ShortSma_{SMAShort}_LongSma_{SMALong}_Rsi_{RSI}";
+            var value = string.Empty;
+            if (SMAShort.HasValue)
+            {
+                value += $"SSma_{SMAShort.Value.ToString("N2")}";
+            }
+
+            if (SMALong.HasValue)
+            {
+                value += $"_LSma_{SMALong.Value.ToString("N2")}";
+            }
+
+            if (RSI.HasValue)
+            {
+                value += $"_Rsi_{RSI.Value.ToString("N2")}";
+            }
+
+            return value;
         }
     }
 }

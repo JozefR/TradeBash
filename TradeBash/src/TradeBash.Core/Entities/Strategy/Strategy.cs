@@ -104,6 +104,8 @@ namespace TradeBash.Core.Entities.Strategy
             cumulatedBudgetClosePrice = Budget;
             foreach (var inDate in GetHistoryInDates())
             {
+                if (!IsCumulatedCapitalGreaterThen(0)) { break; }
+
                 foreach (var stock in StrategyStocksHistory)
                 {
                     var currentStock = GetCurrentStockForDate(stock, inDate);
@@ -147,6 +149,8 @@ namespace TradeBash.Core.Entities.Strategy
             cumulatedBudgetClosePrice = Budget;
             foreach (var inDate in GetHistoryInDates())
             {
+                if (!IsCumulatedCapitalGreaterThen(0)) { break; }
+
                 foreach (var stock in StrategyStocksHistory)
                 {
                     var currentStock = GetCurrentStockForDate(stock, inDate);
@@ -262,6 +266,11 @@ namespace TradeBash.Core.Entities.Strategy
         private bool IsNumberOfAllowedSlotsReached(int slots)
         {
             return GeneratedOrders.Count(x => x.CloseDate == null) >= slots;
+        }
+
+        private bool IsCumulatedCapitalGreaterThen(int budget)
+        {
+            return cumulatedBudgetClosePrice >= budget;
         }
     }
 }

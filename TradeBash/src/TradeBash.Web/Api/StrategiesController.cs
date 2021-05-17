@@ -90,8 +90,8 @@ namespace TradeBash.Web.Api
 
         public enum StrategyType
         {
-            Short_SMA_Fixed_MM,
-            ShortSmaLongSmaRsi
+            TestCase1,
+            TestCase2
         }
 
         [HttpGet("Backtest/shortSmaRsi/{strategyType}/{strategyName}")]
@@ -101,11 +101,11 @@ namespace TradeBash.Web.Api
 
             _logger.LogInformation($"Started backtest for strategy {strategyName}");
 
-            if (strategyType == StrategyType.Short_SMA_Fixed_MM)
+            if (strategyType == StrategyType.TestCase1)
             {
                 strategy.RunShortSmaRsi();
             }
-            if (strategyType == StrategyType.ShortSmaLongSmaRsi)
+            if (strategyType == StrategyType.TestCase2)
             {
                 strategy.RunShortSmaLongSmaRsi();
             }
@@ -144,22 +144,25 @@ namespace TradeBash.Web.Api
                 var stocksToCalculate = _csvReader.LoadFile(indexVersion);
                 foreach (var (symbol, _) in stocksToCalculate)
                 {
-                    var stock = stocks.First(x => x.Symbol == symbol);
+                    var stock = stocks.FirstOrDefault(x => x.Symbol == symbol);
 
-                    _logger.LogInformation($"Start indicators calculation for stock {stock.Name}");
+                    if (stock != null)
+                    {
+                        _logger.LogInformation($"Start indicators calculation for stock {stock.Name}");
 
-                    strategy.RunCalculationFor(stock);
+                        strategy.RunCalculationFor(stock);
 
-                    _logger.LogInformation($"calculation for stock {stock.Name} finished");
+                        _logger.LogInformation($"calculation for stock {stock.Name} finished");
+                    }
                 }
 
                 _logger.LogInformation($"Started in memory backtest for strategy {strategyName}");
 
-                if (strategyType == StrategyType.Short_SMA_Fixed_MM)
+                if (strategyType == StrategyType.TestCase1)
                 {
                     strategy.RunShortSmaRsi();
                 }
-                if (strategyType == StrategyType.ShortSmaLongSmaRsi)
+                if (strategyType == StrategyType.TestCase2)
                 {
                     strategy.RunShortSmaLongSmaRsi();
                 }

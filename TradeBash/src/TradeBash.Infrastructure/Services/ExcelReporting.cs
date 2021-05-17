@@ -45,6 +45,7 @@ namespace TradeBash.Infrastructure.Services
                 var strategyName = $"{strategy.Name}";
                 var ws = package.Workbook.Worksheets.Add(strategyName);
 
+                package.Workbook.Worksheets.Add("IgnoreErrors");
                 // Results
                 // header
                 ws.Cells["A1"].Value = strategyName;
@@ -66,17 +67,18 @@ namespace TradeBash.Infrastructure.Services
                 ws.Row(3).Height = 15;
 
                 ws.Cells["A4"].Value = "Initial Capital";
-                ws.Cells["B4"].Value = Math.Round(strategy.Budget);
+                ws.Cells["B4"].Value = Math.Round(strategy.Budget) + " $";
                 ws.Row(4).Style.Font.Size = 12;
                 ws.Row(4).Height = 15;
 
                 ws.Cells["A5"].Value = "Ending Capital";
-                ws.Cells["B5"].Value = Math.Round(endingCapital);
+                ws.Cells["B5"].Value = Math.Round(endingCapital) + " $";
                 ws.Row(5).Style.Font.Size = 12;
                 ws.Row(5).Height = 15;
 
                 ws.Cells["A6"].Value = "Total Net Profit";
-                ws.Cells["B6"].Value = Math.Round(nettProfit.Value);
+                ws.Cells["B6"].Value = Math.Round(nettProfit.Value) + " $";
+                ws.Row(6).Style.Numberformat.Format = "@";
                 ws.Row(6).Style.Font.Size = 12;
                 ws.Row(6).Height = 15;
 
@@ -86,7 +88,7 @@ namespace TradeBash.Infrastructure.Services
                 ws.Row(7).Height = 15;
 
                 ws.Cells["A8"].Value = "Percentage Winners";
-                ws.Cells["B8"].Value = Math.Round(winnersPercentage);
+                ws.Cells["B8"].Value = Math.Round(winnersPercentage) + " %";
                 ws.Row(8).Style.Font.Size = 12;
                 ws.Row(8).Height = 15;
 
@@ -96,14 +98,18 @@ namespace TradeBash.Infrastructure.Services
                 ws.Row(9).Height = 15;
 
                 ws.Cells["A10"].Value = "Max. Drawdown $";
-                ws.Cells["B10"].Value = Math.Round(_drawdown.GetMaxDrawdown());
+                ws.Cells["B10"].Value = Math.Round(_drawdown.GetMaxDrawdown()) + " $";
                 ws.Row(10).Style.Font.Size = 12;
                 ws.Row(10).Height = 15;
 
                 ws.Cells["A11"].Value = "Max. Drawdown %";
-                ws.Cells["B11"].Value = Math.Round(_drawdown.GetMaxDrawdownPercentage());
+                ws.Cells["B11"].Value = Math.Round(_drawdown.GetMaxDrawdownPercentage()) + " %";
                 ws.Row(11).Style.Font.Size = 12;
                 ws.Row(11).Height = 15;
+                var ieb11 = ws.IgnoredErrors.Add(ws.Cells["B11"]);
+                var ieb8 = ws.IgnoredErrors.Add(ws.Cells["B8"]);
+                ieb11.NumberStoredAsText = true;
+                ieb8.NumberStoredAsText = true;
 
                 // Data
                 var orders = strategy.OrderedGeneratedOrdersHistory.Select(x => new
@@ -111,8 +117,10 @@ namespace TradeBash.Infrastructure.Services
                     x.Symbol,
                     x.OpenPrice,
                     x.OpenDate,
+                    x.OpenIndicators,
                     x.ClosePrice,
                     x.CloseDate,
+                    x.CloseIndicators,
                     x.Position,
                     x.BudgetInvestedPercentage,
                     x.ProfitLoss,
@@ -124,7 +132,7 @@ namespace TradeBash.Infrastructure.Services
 
                 // format datetime
                 ws.Column(3).Style.Numberformat.Format = "dd-mm-yyyy";
-                ws.Column(5).Style.Numberformat.Format = "dd-mm-yyyy";
+                ws.Column(6).Style.Numberformat.Format = "dd-mm-yyyy";
 
                 // formats the header
                 ws.Cells["A24"].Value = "Data";
