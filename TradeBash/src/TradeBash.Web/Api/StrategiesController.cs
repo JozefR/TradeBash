@@ -91,7 +91,8 @@ namespace TradeBash.Web.Api
         public enum StrategyType
         {
             TestCase1,
-            TestCase2
+            TestCase2,
+            TestCase3
         }
 
         [HttpGet("Backtest/shortSmaRsi/{strategyType}/{strategyName}")]
@@ -107,7 +108,7 @@ namespace TradeBash.Web.Api
             }
             if (strategyType == StrategyType.TestCase2)
             {
-                strategy.RunShortSmaLongSmaRsi();
+                strategy.RunShortSmaLongSmaRsi(10);
             }
 
             _logger.LogInformation($"Backtest for strategy {strategyName} finished");
@@ -132,13 +133,27 @@ namespace TradeBash.Web.Api
             return Ok();
         }
 
-        [HttpGet("InMemoryBacktestWithExport/{strategyType}/{budget}/{smaShort}/{smaLong}/{rsi}")]
-        public async Task<IActionResult> InMemoryBacktestWithExport(StrategyType strategyType, IndexVersion indexVersion, int budget, int smaShort, int smaLong, int rsi)
+        [HttpGet("InMemoryBacktestWithExport/{strategyType}/{budget}/{smaShortParameter}/{smaLongParameter}/{rsiParameter}")]
+        public async Task<IActionResult> InMemoryBacktestWithExport(
+            StrategyType strategyType,
+            IndexVersion indexVersion,
+            int budget,
+            int smaShortParameter,
+            int smaLongParameter,
+            int rsiParameter,
+            int rsiValue)
         {
             try
             {
-                var strategyName = $"{strategyType.ToString()}-{indexVersion.ToString()}-Budget-{budget}-SMAShort-{smaShort}-SMALong-{smaLong}-RSI-{rsi}";
-                var strategy = Strategy.From(strategyName, budget, smaShort, smaLong, rsi);
+                var strategyName = $"{strategyType.ToString()}" +
+                                   $"-{indexVersion.ToString()}" +
+                                   $"-Budget-{budget}" +
+                                   $"-SMAShort-{smaShortParameter}" +
+                                   $"-SMALong-{smaLongParameter}" +
+                                   $"-RSI-{rsiParameter}" +
+                                   $"-RSIValue-{rsiValue}";
+
+                var strategy = Strategy.From(strategyName, budget, smaShortParameter, smaLongParameter, rsiParameter);
 
                 var stocks = await _repository.ListNoTrackingAsync<Stock>();
                 var stocksToCalculate = _csvReader.LoadFile(indexVersion);
@@ -164,7 +179,11 @@ namespace TradeBash.Web.Api
                 }
                 if (strategyType == StrategyType.TestCase2)
                 {
-                    strategy.RunShortSmaLongSmaRsi();
+                    strategy.RunShortSmaLongSmaRsi(rsiValue);
+                }
+                if (strategyType == StrategyType.TestCase3)
+                {
+                    strategy.RunShortSmaLongSmaRsi(rsiValue);
                 }
 
                 _logger.LogInformation($"Started export to excel for strategy {strategyName}");

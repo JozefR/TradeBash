@@ -98,7 +98,7 @@ namespace TradeBash.Core.Entities.Strategy
 
         public void RunShortSmaRsi()
         {
-            // buy if rsi < 2;
+            // buy if rsi < 10;
             // sell if sma > 10
             CalculatedStock? generatedSignal = null;
             cumulatedBudgetClosePrice = Budget;
@@ -141,10 +141,11 @@ namespace TradeBash.Core.Entities.Strategy
             }
         }
 
-        public void RunShortSmaLongSmaRsi()
+        public void RunShortSmaLongSmaRsi(int rsiValue)
         {
-            // buy if rsi < 2;
+            // buy if rsi < 10;
             // sell if sma > 10
+            // only buy when sma long > 200
             CalculatedStock? generatedSignal = null;
             cumulatedBudgetClosePrice = Budget;
             foreach (var inDate in GetHistoryInDates())
@@ -171,7 +172,7 @@ namespace TradeBash.Core.Entities.Strategy
                     {
                         if (IsNumberOfAllowedSlotsReached(20)) continue;
 
-                        if (GenerateBuySignalForRsiIfCurrentStockLower(generatedSignal, currentStock, 10))
+                        if (GenerateBuySignalForRsiIfCurrentStockLower(generatedSignal, currentStock, rsiValue))
                         {
                             generatedSignal = currentStock;
                         }
@@ -189,15 +190,15 @@ namespace TradeBash.Core.Entities.Strategy
             }
         }
 
-        private void ClosePositionForSma(GeneratedOrder openPosition, CalculatedStock currentStock)
+        private void ClosePositionForSma(GeneratedOrder position, CalculatedStock currentStock)
         {
             if (currentStock.SMAShort < currentStock.Close)
             {
-                var profitLoss = openPosition.ClosePosition(currentStock.Close, currentStock.Date, currentStock.GetIndicatorValues());
+                var profitLoss = position.ClosePosition(currentStock.Close, currentStock.Date, currentStock.GetIndicatorValues());
                 cumulatedBudgetClosePrice += profitLoss;
                 _drawdown.Calculate(cumulatedBudgetClosePrice);
-                openPosition.SetCumulatedCapitalForClose(cumulatedBudgetClosePrice);
-                openPosition.SetMaxDrawdownForClosePrice(_drawdown.TmpDrawDown, Budget);
+                position.SetCumulatedCapitalForClose(cumulatedBudgetClosePrice);
+                position.SetMaxDrawdownForClosePrice(_drawdown.TmpDrawDown, Budget);
             }
         }
 
@@ -232,8 +233,7 @@ namespace TradeBash.Core.Entities.Strategy
             }
         }
 
-        private bool GenerateBuySignalForRsiIfCurrentStockLower(CalculatedStock? generatedSignal,
-            CalculatedStock currentStock, int rsiThreshold)
+        private bool GenerateBuySignalForRsiIfCurrentStockLower(CalculatedStock? generatedSignal, CalculatedStock currentStock, int rsiThreshold)
         {
             if (currentStock.RSI < rsiThreshold || (generatedSignal != null && currentStock.RSI < generatedSignal.RSI))
             {
