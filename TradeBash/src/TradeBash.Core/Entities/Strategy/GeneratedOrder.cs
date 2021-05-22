@@ -1,5 +1,4 @@
 ﻿using System;
-using JetBrains.Annotations;
 using TradeBash.SharedKernel;
 
 namespace TradeBash.Core.Entities.Strategy

@@ -7,6 +7,6 @@ namespace TradeBash.Infrastructure.Data.Repositories
 {
     public interface IStockRepository : IRepository
     {
-        [ItemCanBeNull] Task<Stock> GetBySymbolAsync(string symbol);
+        Task<Stock> GetBySymbolAsync(string symbol);
     }
 }

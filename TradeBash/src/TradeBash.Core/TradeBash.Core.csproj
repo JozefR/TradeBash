@@ -5,16 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Ardalis.GuardClauses" Version="1.4.2" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\TradeBash.SharedKernel\TradeBash.SharedKernel.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Events" />
-    <Folder Include="Handlers" />
   </ItemGroup>
 
 </Project>

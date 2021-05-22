@@ -24,9 +24,5 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\TradeBash.Web\TradeBash.Web.csproj" />
   </ItemGroup>
-  
-  <ItemGroup>
-    <Folder Include="Core\Handlers" />
-  </ItemGroup>
 
 </Project>

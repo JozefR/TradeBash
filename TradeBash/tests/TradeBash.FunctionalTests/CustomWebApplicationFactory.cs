@@ -68,7 +68,7 @@ namespace TradeBash.FunctionalTests
 
                     try
                     {
-                        SeedData.PopulateTestData(db);
+                        //SeedData.PopulateTestData(db);
                     }
                     catch (Exception ex)
                     {

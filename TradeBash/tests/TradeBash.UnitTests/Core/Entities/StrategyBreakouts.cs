@@ -3,7 +3,6 @@ using System.Linq;
 using FluentAssertions;
 using TradeBash.Core.Entities;
 using TradeBash.Core.Entities.Strategy;
-using TradeBash.Core.Events;
 using Xunit;
 
 namespace TradeBash.UnitTests.Core.Entities
