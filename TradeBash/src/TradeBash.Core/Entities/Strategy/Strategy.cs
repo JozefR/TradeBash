@@ -217,9 +217,8 @@ namespace TradeBash.Core.Entities.Strategy
 
             if (currentOpenPosition != null)
             {
-                var averageOpenPrice = (currentOpenPosition.OpenPrice + generatedSignal.Close) / 2;
-                currentOpenPosition.UpdatePosition(averageOpenPrice, generatedSignal.Date);
-                currentOpenPosition.PercentageForStocksFixedMM(Budget, 5);
+                currentOpenPosition.UpdateOpenPrice(currentOpenPosition, generatedSignal);
+                currentOpenPosition.UpdateCurrentPositions(Budget, budgetPercentage);
             }
             else
             {
@@ -228,7 +227,7 @@ namespace TradeBash.Core.Entities.Strategy
                     generatedSignal.Open,
                     generatedSignal.Date,
                     generatedSignal.GetIndicatorValues());
-                generatedOrder.PercentageForStocksFixedMM(Budget, budgetPercentage);
+                generatedOrder.UpdateCurrentPositions(Budget, budgetPercentage);
                 GeneratedOrders.Add(generatedOrder);
             }
         }

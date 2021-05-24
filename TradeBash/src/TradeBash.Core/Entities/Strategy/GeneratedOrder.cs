@@ -48,13 +48,14 @@ namespace TradeBash.Core.Entities.Strategy
             return entity;
         }
 
-        public void UpdatePosition(double averageOpenPrice, DateTime generatedSignalDate)
+        public void UpdateOpenPrice(GeneratedOrder currentOpenPosition, CalculatedStock generatedSignal)
         {
+            var averageOpenPrice = (currentOpenPosition.OpenPrice + generatedSignal.Close) / 2;
             OpenPrice = averageOpenPrice;
-            AdditionallyBoughtPositions += generatedSignalDate.ToShortDateString() + ", ";
+            AdditionallyBoughtPositions += generatedSignal.Date.ToShortDateString() + ", ";
         }
 
-        public void PercentageForStocksFixedMM(double budget, int percentage)
+        public void UpdateCurrentPositions(double budget, int percentage)
         {
             BudgetInvestedPercentage += percentage;
 

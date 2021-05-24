@@ -37,7 +37,7 @@ namespace TradeBash.DataCentre
             {
                 await DataPopulatorEngine();
 
-                await Task.Delay(10000, stoppingToken);
+                await Task.Delay(TimeSpan.FromDays(1), stoppingToken);
             }
         }
 
@@ -69,14 +69,16 @@ namespace TradeBash.DataCentre
                     var existingStock = await _stockRepository.GetBySymbolAsync(symbol);
                     if (existingStock == null)
                     {
-                        var stocks = await _dataProvider.GetSerializedStocksFromDataProviderAsync(symbol, HistoryRange.Max);
+                        var stocks = await _dataProvider
+                            .GetSerializedStocksFromDataProviderAsync(symbol, HistoryRange.Max);
                         await AddHistoryToDb(symbol, name, stocks);
                     }
                     else
                     {
                         var lastDateDifference = GetDateDifferenceFromStockLastDate(existingStock);
                         var historyRange = _dataProvider.GetRangeForHistoricalData(lastDateDifference);
-                        var stocks = await _dataProvider.GetSerializedStocksFromDataProviderAsync(symbol, historyRange);
+                        var stocks = await _dataProvider
+                            .GetSerializedStocksFromDataProviderAsync(symbol, historyRange);
                         RemoveExistingHistory(existingStock, stocks);
                         await AddHistoryToDb(existingStock, stocks);
                     }
