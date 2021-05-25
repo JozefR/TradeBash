@@ -141,7 +141,7 @@ namespace TradeBash.Core.Entities.Strategy
             }
         }
 
-        public void RunShortSmaLongSmaRsi(int rsiValue)
+        public void RunShortSmaLongSmaRsi(int rsiValue, int allowedSlots)
         {
             // buy if rsi < 10;
             // sell if sma > 10
@@ -170,7 +170,7 @@ namespace TradeBash.Core.Entities.Strategy
 
                     if (openPosition == null)
                     {
-                        if (IsNumberOfAllowedSlotsReached(20)) continue;
+                        if (IsNumberOfAllowedSlotsReached(allowedSlots)) continue;
 
                         if (GenerateBuySignalForRsiIfCurrentStockLower(generatedSignal, currentStock, rsiValue))
                         {
@@ -188,6 +188,58 @@ namespace TradeBash.Core.Entities.Strategy
 
                 Console.WriteLine($"Generate orders for date: {inDate}");
             }
+        }
+
+        public void RunShortSmaLongSmaRsiWithSlots(int rsiValue, int allowedSlots)
+        {
+            // buy if rsi < rsiValue;
+            // sell if sma > smaParameter
+            // only buy when sma long > 200
+            // slots experimentation
+            CalculatedStock? generatedSignal = null;
+            cumulatedBudgetClosePrice = Budget;
+            foreach (var inDate in GetHistoryInDates())
+            {
+                if (!IsCumulatedCapitalGreaterThen(0)) { break; }
+
+                foreach (var stock in StrategyStocksHistory)
+                {
+                    var currentStock = GetCurrentStockForDate(stock, inDate);
+
+                    if (currentStock == null) continue;
+
+                    var openPosition = GetCurrentNotClosedPositionsFor(currentStock.Symbol);
+                    if (openPosition != null)
+                    {
+                        ClosePositionForSma(openPosition, currentStock);
+                    }
+
+                    if (StrategyGuard.LongSmaIsNotCalculated(currentStock)) continue;
+                    if (StrategyGuard.LongSmaIsGreaterThenPrice(currentStock)) continue;
+                    if (StrategyGuard.RsiNotCalculated(currentStock)) continue;
+
+                    if (IsNumberOfAllowedSlotsReached(allowedSlots)) continue;
+
+                    if (GenerateBuySignalForRsiIfCurrentStockLower(generatedSignal, currentStock, rsiValue))
+                    {
+                        generatedSignal = currentStock;
+                    }
+                }
+
+                if (generatedSignal != null)
+                {
+                    OpenPositionAndGenerateOrder(generatedSignal, 5);
+
+                    generatedSignal = null;
+                }
+
+                Console.WriteLine($"Generate orders for date: {inDate}");
+            }
+        }
+
+        private void OpenPositionsForExistingOrders()
+        {
+            throw new NotImplementedException();
         }
 
         private void ClosePositionForSma(GeneratedOrder position, CalculatedStock currentStock)

@@ -122,6 +122,7 @@ namespace TradeBash.Infrastructure.Services
                     x.CloseDate,
                     x.CloseIndicators,
                     x.Position,
+                    x.AdditionallyBoughtPositions,
                     x.BudgetInvestedPercentage,
                     x.ProfitLoss,
                     x.CumulatedCapital,

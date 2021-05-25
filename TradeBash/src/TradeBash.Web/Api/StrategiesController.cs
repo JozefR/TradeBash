@@ -92,7 +92,8 @@ namespace TradeBash.Web.Api
         {
             TestCase1,
             TestCase2,
-            TestCase3
+            TestCase3,
+            TestCase4
         }
 
         [HttpGet("Backtest/shortSmaRsi/{strategyType}/{strategyName}")]
@@ -108,7 +109,7 @@ namespace TradeBash.Web.Api
             }
             if (strategyType == StrategyType.TestCase2)
             {
-                strategy.RunShortSmaLongSmaRsi(10);
+                strategy.RunShortSmaLongSmaRsi(10, 20);
             }
 
             _logger.LogInformation($"Backtest for strategy {strategyName} finished");
@@ -141,7 +142,8 @@ namespace TradeBash.Web.Api
             int smaShortParameter,
             int smaLongParameter,
             int rsiParameter,
-            int rsiValue)
+            int rsiValue,
+            int allowedSlots)
         {
             try
             {
@@ -151,7 +153,8 @@ namespace TradeBash.Web.Api
                                    $"-SMAShort-{smaShortParameter}" +
                                    $"-SMALong-{smaLongParameter}" +
                                    $"-RSI-{rsiParameter}" +
-                                   $"-RSIValue-{rsiValue}";
+                                   $"-RSIValue-{rsiValue}" +
+                                   $"-AllowedSlots-{allowedSlots}";
 
                 var strategy = Strategy.From(strategyName, budget, smaShortParameter, smaLongParameter, rsiParameter);
 
@@ -179,11 +182,19 @@ namespace TradeBash.Web.Api
                 }
                 if (strategyType == StrategyType.TestCase2)
                 {
-                    strategy.RunShortSmaLongSmaRsi(rsiValue);
+                    strategy.RunShortSmaLongSmaRsi(rsiValue, 20);
                 }
                 if (strategyType == StrategyType.TestCase3)
                 {
-                    strategy.RunShortSmaLongSmaRsi(rsiValue);
+                    strategy.RunShortSmaLongSmaRsi(rsiValue, allowedSlots);
+                }
+                if (strategyType == StrategyType.TestCase3)
+                {
+                    strategy.RunShortSmaLongSmaRsi(rsiValue, allowedSlots);
+                }
+                if (strategyType == StrategyType.TestCase4)
+                {
+                    strategy.RunShortSmaLongSmaRsiWithSlots(rsiValue, allowedSlots);
                 }
 
                 _logger.LogInformation($"Started export to excel for strategy {strategyName}");

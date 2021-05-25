@@ -145,193 +145,189 @@ ADI,	Analog Devices Inc.
 STT,	State Street Corp
 LYB,	LYONDELLBASEL
 AWK,	American Water Works Co. Inc.
-AMP	Ameriprise Financial Inc.
-DLTR	DOLLAR TREE IN
-KKR	KKR & Co. Inc.
-BBY	BEST BUY CO INC
-EQR	EQ RESIDENT
-FITB	FIFTH THIRD BANC
-WY	WEYERHAEUSER C
-AVB	AvalonBay Communities Inc.
-ED	Consolidated Edison Inc.
-DTE	DTE ENERGY
-CBRE	CBRE Group Inc. Class A
-VFC	VF Corp
-LH	Laboratory Corp Of Amer
-OXY	OCCIDENTAL PET
-KHC	Kraft Heinz Co.
-VIAC	ViacomCBS Inc. Class B
-NUE	NUCOR
-HIG	Hartford Financial Services Group Inc
-URI	United Rentals Inc
-CDW	CDW Corp
-LVS	Las Vegas Sands Corp
-FTV	Fortive Corp
-OKE	ONEOK Inc
-SYF	SYNCHRONY FIN
-PPL	Pakistan Petroleum Ltd.
-EIX	Edison International
-DELL	Dell Technologies Inc
-TSN	Tyson Foods Inc
-CCL	Carnival Corp
-KDP	Keurig Dr Pepper Inc.
-KMX	Carmax Inc
-BAX	BAXTER INTERNATIONAL INC
-IP	International Pa
-KR	Kroger Co.
-NTRS	NORTHERN TRUST
-QRVO	Qorvo Inc
-RSG	Republic Services Inc
-HPE	Hewlett Packard Ent
-GRMN	Garmin Ltd
-AEE	Ameren Corp.
-VTR	Ventas Inc
-RF	Regions Financial Corp
-ETR	Entergy Corp
-DOV	Dover Corp
-MTB	M&T Bank Corp
-WDC	WESTERN DGTL C
-KEY	KeyCorp
-HOLX	Hologic Inc
-	Vanguard Market Liquidity Fund
-XYL	Xylem Inc.
-FE	FIRSTENERGY
-CFG	Citizens Financial Group Inc
-APTV	Aptiv plc
-RCL	Royal Caribbean Cruises Ltd
-DRI	DARDEN REST
-IR	INGER RAND
-HAL	Halliburton Co
-UAL	United Continental Holdings Inc
-GWW	W W Grainger Inc
-CAH	Cardinal Health Inc
-AES	Aes Corp
-ESS	ESSEX PROP TR
-CMS	CMS Energy Corp.
-CAG	Conagra Brands Inc.
-PCG	PG&E Corp
-EXR	EXTRA SPACE ST
-	Vanguard Market Liquidity Fund
-DGX	QUEST DIAG
-CE	Celanese Corp
-PEAK	Healthpeak Properties Inc.
-NDAQ	NASDAQ INC
-VTRS	Viatris Inc.
-ALLY	Ally Financial Inc
-ABC	AmerisourceBergen Corp. Class A
-J	Jacobs Engineering Group Inc
-GPC	GENUINE PARTS
-MAA	Mid-America Apartment Communities Inc
-STX	Seagate Technology PLC
-PFG	Pioneer Foods Group Ltd.
-K	Kellogg Co.
-NTAP	net SE
-HBAN	Huntington Bancshares
-ALXN	Alexion Pharmaceuticals
-OMC	OMNICOM GP INC
-MSI	MOTOROLA SOL
-CINF	Cincinnati Financial Corp
-DRE	DUKE REALTY
-AVY	Avery Dennison Corp.
-RJF	Raymond James Financial Inc
-EMN	EASTMAN CHEM
-BKR	Baker Hughes a GE Co. Class A
-MGM	MGM RESORTS IN
-AME	AMETEK Inc.
-ACGL	Arch Capital Group Ltd.
-LUMN	Lumen Technologies Inc.
-EQH	EQUITABLE HOLDINGS INC
-BXP	Boston Properties Inc
-XRAY	Dentsply Sirona Inc.
-BLL	Ball Corp
-ELAN	Elanco Animal Health Inc
-WHR	Whirlpool Corp
-SJM	J.M. Smucker Company
-WRK	Westrock Co
-LNT	ALLIANT ENERGY
-EVRG	EVERGY INC
-PHM	PulteGroup Inc
-FBHS	Fortune Brands Home & Security Inc.
-CCK	Crown Holdings Inc.
-HRL	Hormel Foods Corp
-NWSA	News Corp
-CHRW	C.H. Robinson Worldwide Inc
-PKG	Packaging Corp of America
-RPRX	Royalty Pharma plc Class A
-TXT	Textron Inc
-SNA	SNAP-ON INC
-HAS	Hasbro Inc
-WPC	WP Carey Inc
-CNP	CenterPoint Energy Inc
-FOXA	Fox Corp
-AJG	Arthur J Gallagher & Co.
-CLX	Clorox Co
-NLY	Annaly Capital Management Inc.
-AAP	ADV AUTO PARTS
-O	Realty Income Corp.
-NLOK	NortonLifeLock Inc.
-LBRDK	Liberty Broadband Cl C
-L	Loews Corp
-FNF	FIDELITY NATIONAL FINANCIAL INC
-DISCK	Discovery Communications Inc.
-BWA	BorgWarner Inc
-CPT	Camden Property Trust
-IRM	IRON MOUNTAIN
-MLM	Martin Marietta Materials Inc
-WU	WESTERN UNION
-WRB	W. R. Berkley Corp
-HSIC	Henry Schein Inc
-RE	EVEREST RE GP
-CPB	Campbell Soup Co
-UHS	Universal Health Services Inc
-HES	Hess Corp
-NI	NiSource Inc
-GL	Globe Life Inc
-BEN	FRANKLIN RES INC
-DISH	DISH NETWORK A
-VST	Vistra Energy Corp
-ON	ON Semiconductor Corp
-ALB	ALBEMARLE CORP
-DKNG	DraftKings Inc. Class A
-MKL	Markel Corp
-MAS	Masco Corp
-DVA	DAVITA HEALTHCARE PARTNE 5.75 08/15/2022
-AAL	American Airlines Group Inc.
-LSXMK	LIBERTY MEDIA COR SIRIUSXM C TRACKING STK USD.01
-WAB	Wabtec Corp.
-LDOS	Leidos Holdings Inc
-DISCA	Discovery Communications Inc. Class A
-UDR	UDR Inc
-FFIV	F5 NETWORKS
-HST	Host Hotels & Resorts
-IPG	INTERPBLIC GRP
-LNC	Lincoln National Corp
-LKQ	LKQ Corp
-LEA	Lear Corp
-MHK	Mohawk Industries Inc
-CBOE	CBOE GLOBAL MARKETS INC COMMON STOCK
-FOX	Fox Corp
-HUBB	Hubbell Inc
-XPO	XPO LOGISTICS
-CF	CF INDUSTRIES
-ARMK	Aramark
-NRG	NRG ENERGY
-TAP	MOLSN COORS BR
-PNW	PINNACL WEST C
-AGNC	Agnc Investment
-VER	VEREIT Inc.
-Y	Alleghany Corp
-JNPR	Juniper Networks Inc
-OPEN	Opendoor Technologies Inc.
-LSXMA	LIBERTY MEDIA COR SIRIUSXM A TRACKING STK USD.01
-AGR	Avangrid Inc.
-QS	QuantumScape Corp. Class A
-IBKR	Interactive Brokers Group Inc
-RKT	ROCKET COMPANIES INC
-LBRDA	Liberty Broadband Cl A
-WLK	Westlake Chemical Corp
-BRK.A	BERKSHIRE HATH-A
-VIACA	ViacomCBS Inc. Class A
-LEN.B	Lennar Corp. Class B
-NWS	News Corp
-VTV	Vanguard Value ETF
+AMP,	Ameriprise Financial Inc.
+DLTR,	DOLLAR TREE IN
+KKR,	KKR & Co. Inc.
+BBY,	BEST BUY CO INC
+EQR,	EQ RESIDENT
+FITB,	FIFTH THIRD BANC
+WY,	WEYERHAEUSER C
+AVB,	AvalonBay Communities Inc.
+ED,	Consolidated Edison Inc.
+DTE,	DTE ENERGY
+CBRE,	CBRE Group Inc. Class A
+VFC,	VF Corp
+LH,	Laboratory Corp Of Amer
+OXY,	OCCIDENTAL PET
+KHC,	Kraft Heinz Co.
+VIAC,	ViacomCBS Inc. Class B
+NUE,	NUCOR
+HIG,	Hartford Financial Services Group Inc
+URI,	United Rentals Inc
+CDW,	CDW Corp
+LVS,	Las Vegas Sands Corp
+FTV,	Fortive Corp
+OKE,	ONEOK Inc
+SYF,	SYNCHRONY FIN
+PPL,	Pakistan Petroleum Ltd.
+EIX,	Edison International
+DELL,	Dell Technologies Inc
+TSN,	Tyson Foods Inc
+CCL,	Carnival Corp
+KDP,	Keurig Dr Pepper Inc.
+KMX,	Carmax Inc
+BAX,	BAXTER INTERNATIONAL INC
+IP,	International Pa
+KR,	Kroger Co.
+NTRS,	NORTHERN TRUST
+QRVO,	Qorvo Inc
+RSG,	Republic Services Inc
+HPE,	Hewlett Packard Ent
+GRMN,	Garmin Ltd
+AEE,	Ameren Corp.
+VTR,	Ventas Inc
+RF,	Regions Financial Corp
+ETR,	Entergy Corp
+DOV,	Dover Corp
+MTB,	M&T Bank Corp
+WDC,	WESTERN DGTL C
+KEY,	KeyCorp
+HOLX,	Hologic Inc
+FE,	FIRSTENERGY
+CFG,	Citizens Financial Group Inc
+APTV,	Aptiv plc
+RCL,	Royal Caribbean Cruises Ltd
+DRI,	DARDEN REST
+IR,	INGER RAND
+HAL,	Halliburton Co
+UAL,	United Continental Holdings Inc
+GWW,	W W Grainger Inc
+CAH,	Cardinal Health Inc
+AES,	Aes Corp
+ESS,	ESSEX PROP TR
+CMS,	CMS Energy Corp.
+CAG,	Conagra Brands Inc.
+PCG,	PG&E Corp
+EXR,	EXTRA SPACE ST
+CE,	Celanese Corp
+PEAK,	Healthpeak Properties Inc.
+NDAQ,	NASDAQ INC
+VTRS,	Viatris Inc.
+ALLY,	Ally Financial Inc
+ABC,	AmerisourceBergen Corp. Class A
+J,	Jacobs Engineering Group Inc
+GPC,	GENUINE PARTS
+MAA,	Mid-America Apartment Communities Inc
+STX,	Seagate Technology PLC
+PFG,	Pioneer Foods Group Ltd.
+K,	Kellogg Co.
+NTAP,	net SE
+HBAN,	Huntington Bancshares
+ALXN,	Alexion Pharmaceuticals
+OMC,	OMNICOM GP INC
+MSI,	MOTOROLA SOL
+CINF,	Cincinnati Financial Corp
+DRE,	DUKE REALTY
+AVY,	Avery Dennison Corp.
+RJF,	Raymond James Financial Inc
+EMN,	EASTMAN CHEM
+BKR,	Baker Hughes a GE Co. Class A
+MGM,	MGM RESORTS IN
+AME,	AMETEK Inc.
+ACGL,	Arch Capital Group Ltd.
+LUMN,	Lumen Technologies Inc.
+EQH,	EQUITABLE HOLDINGS INC
+BXP,	Boston Properties Inc
+XRAY,	Dentsply Sirona Inc.
+BLL,	Ball Corp
+ELAN,	Elanco Animal Health Inc
+WHR,	Whirlpool Corp
+SJM,	J.M. Smucker Company
+WRK,	Westrock Co
+LNT,	ALLIANT ENERGY
+EVRG,	EVERGY INC
+PHM,	PulteGroup Inc
+FBHS,	Fortune Brands Home & Security Inc.
+CCK,	Crown Holdings Inc.
+HRL,	Hormel Foods Corp
+NWSA,	News Corp
+CHRW,	C.H. Robinson Worldwide Inc
+PKG,	Packaging Corp of America
+RPRX,	Royalty Pharma plc Class A
+TXT,	Textron Inc
+SNA,	SNAP-ON INC
+HAS,	Hasbro Inc
+WPC,	WP Carey Inc
+CNP,	CenterPoint Energy Inc
+FOXA,	Fox Corp
+AJG,	Arthur J Gallagher & Co.
+CLX,	Clorox Co
+NLY,	Annaly Capital Management Inc.
+AAP,	ADV AUTO PARTS
+O,	Realty Income Corp.
+NLOK,	NortonLifeLock Inc.
+LBRDK,	Liberty Broadband Cl C
+L,	Loews Corp
+FNF,	FIDELITY NATIONAL FINANCIAL INC
+DISCK,	Discovery Communications Inc.
+BWA,	BorgWarner Inc
+CPT,	Camden Property Trust
+IRM,	IRON MOUNTAIN
+MLM,	Martin Marietta Materials Inc
+WU,	WESTERN UNION
+WRB,	W. R. Berkley Corp
+HSIC,	Henry Schein Inc
+RE,	EVEREST RE GP
+CPB,	Campbell Soup Co
+UHS,	Universal Health Services Inc
+HES,	Hess Corp
+NI,	NiSource Inc
+GL,	Globe Life Inc
+BEN,	FRANKLIN RES INC
+DISH,	DISH NETWORK A
+VST,	Vistra Energy Corp
+ON,	ON Semiconductor Corp
+ALB,	ALBEMARLE CORP
+DKNG,	DraftKings Inc. Class A
+MKL,	Markel Corp
+MAS,	Masco Corp
+DVA,	DAVITA HEALTHCARE PARTNE 5.75 08/15/2022
+AAL,	American Airlines Group Inc.
+LSXMK,	LIBERTY MEDIA COR SIRIUSXM C TRACKING STK USD.01
+WAB,	Wabtec Corp.
+LDOS,	Leidos Holdings Inc
+DISCA,	Discovery Communications Inc. Class A
+UDR,	UDR Inc
+FFIV,	F5 NETWORKS
+HST,	Host Hotels & Resorts
+IPG,	INTERPBLIC GRP
+LNC,	Lincoln National Corp
+LKQ,	LKQ Corp
+LEA,	Lear Corp
+MHK,	Mohawk Industries Inc
+CBOE,	CBOE GLOBAL MARKETS INC COMMON STOCK
+FOX,	Fox Corp
+HUBB,	Hubbell Inc
+XPO,	XPO LOGISTICS
+CF,	CF INDUSTRIES
+ARMK,	Aramark
+NRG,	NRG ENERGY
+TAP,	MOLSN COORS BR
+PNW,	PINNACL WEST C
+AGNC,	Agnc Investment
+VER,	VEREIT Inc.
+Y,	Alleghany Corp
+JNPR,	Juniper Networks Inc
+OPEN,	Opendoor Technologies Inc.
+LSXMA,	LIBERTY MEDIA COR SIRIUSXM A TRACKING STK USD.01
+AGR,	Avangrid Inc.
+QS,	QuantumScape Corp. Class A
+IBKR,	Interactive Brokers Group Inc
+RKT,	ROCKET COMPANIES INC
+LBRDA,	Liberty Broadband Cl A
+WLK,	Westlake Chemical Corp
+BRK.A,	BERKSHIRE HATH-A
+VIACA,	ViacomCBS Inc. Class A
+LEN.B,	Lennar Corp. Class B
+NWS,	News Corp
+VTV,	Vanguard Value ETF
