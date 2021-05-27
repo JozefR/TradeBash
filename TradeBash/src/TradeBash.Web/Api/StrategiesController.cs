@@ -93,7 +93,8 @@ namespace TradeBash.Web.Api
             TestCase1,
             TestCase2,
             TestCase3,
-            TestCase4
+            TestCase4,
+            TestCase5
         }
 
         [HttpGet("Backtest/shortSmaRsi/{strategyType}/{strategyName}")]
@@ -105,11 +106,11 @@ namespace TradeBash.Web.Api
 
             if (strategyType == StrategyType.TestCase1)
             {
-                strategy.RunShortSmaRsi();
+                strategy.RunTestCase1();
             }
             if (strategyType == StrategyType.TestCase2)
             {
-                strategy.RunShortSmaLongSmaRsi(10, 20);
+                strategy.RunTestCase2(10, 20);
             }
 
             _logger.LogInformation($"Backtest for strategy {strategyName} finished");
@@ -178,23 +179,23 @@ namespace TradeBash.Web.Api
 
                 if (strategyType == StrategyType.TestCase1)
                 {
-                    strategy.RunShortSmaRsi();
+                    strategy.RunTestCase1();
                 }
                 if (strategyType == StrategyType.TestCase2)
                 {
-                    strategy.RunShortSmaLongSmaRsi(rsiValue, 20);
+                    strategy.RunTestCase2(rsiValue, allowedSlots);
                 }
                 if (strategyType == StrategyType.TestCase3)
                 {
-                    strategy.RunShortSmaLongSmaRsi(rsiValue, allowedSlots);
-                }
-                if (strategyType == StrategyType.TestCase3)
-                {
-                    strategy.RunShortSmaLongSmaRsi(rsiValue, allowedSlots);
+                    strategy.RunTestCase3(rsiValue, allowedSlots);
                 }
                 if (strategyType == StrategyType.TestCase4)
                 {
-                    strategy.RunShortSmaLongSmaRsiWithSlots(rsiValue, allowedSlots);
+                    strategy.RunTestCase3(rsiValue, allowedSlots);
+                }
+                if (strategyType == StrategyType.TestCase5)
+                {
+                    strategy.RunTestCase5(rsiValue, allowedSlots);
                 }
 
                 _logger.LogInformation($"Started export to excel for strategy {strategyName}");

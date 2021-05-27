@@ -96,7 +96,7 @@ namespace TradeBash.Core.Entities.Strategy
             StrategyStocksHistory.Add(strategyStock);
         }
 
-        public void RunShortSmaRsi()
+        public void RunTestCase1()
         {
             // buy if rsi < 10;
             // sell if sma > 10
@@ -141,7 +141,7 @@ namespace TradeBash.Core.Entities.Strategy
             }
         }
 
-        public void RunShortSmaLongSmaRsi(int rsiValue, int allowedSlots)
+        public void RunTestCase2(int rsiValue, int allowedSlots)
         {
             // buy if rsi < 10;
             // sell if sma > 10
@@ -190,7 +190,7 @@ namespace TradeBash.Core.Entities.Strategy
             }
         }
 
-        public void RunShortSmaLongSmaRsiWithSlots(int rsiValue, int allowedSlots)
+        public void RunTestCase3(int rsiValue, int allowedSlots)
         {
             // buy if rsi < rsiValue;
             // sell if sma > smaParameter
@@ -237,30 +237,66 @@ namespace TradeBash.Core.Entities.Strategy
             }
         }
 
-        private void OpenPositionsForExistingOrders()
+        public void RunTestCase5(int rsiValue, int allowedSlots)
         {
-            throw new NotImplementedException();
-        }
-
-        private void ClosePositionForSma(GeneratedOrder position, CalculatedStock currentStock)
-        {
-            if (currentStock.SMAShort < currentStock.Close)
+            // buy if rsi < rsiValue;
+            // sell if sma > smaParameter
+            // only buy when sma long > 200
+            // slots experimentation with risk management
+            CalculatedStock? generatedSignal = null;
+            cumulatedBudgetClosePrice = Budget;
+            foreach (var inDate in GetHistoryInDates())
             {
-                var profitLoss = position.ClosePosition(currentStock.Close, currentStock.Date, currentStock.GetIndicatorValues());
-                cumulatedBudgetClosePrice += profitLoss;
-                _drawdown.Calculate(cumulatedBudgetClosePrice);
-                position.SetCumulatedCapitalForClose(cumulatedBudgetClosePrice);
-                position.SetMaxDrawdownForClosePrice(_drawdown.TmpDrawDown, Budget);
+                if (!IsCumulatedCapitalGreaterThen(0)) { break; }
+
+                foreach (var stock in StrategyStocksHistory)
+                {
+                    var currentStock = GetCurrentStockForDate(stock, inDate);
+
+                    if (currentStock == null) continue;
+
+                    var openPosition = GetCurrentNotClosedPositionsFor(currentStock.Symbol);
+                    if (openPosition != null)
+                    {
+                        ClosePositionForSma(openPosition, currentStock);
+                    }
+
+                    if (StrategyGuard.LongSmaIsNotCalculated(currentStock)) continue;
+                    if (StrategyGuard.LongSmaIsGreaterThenPrice(currentStock)) continue;
+                    if (StrategyGuard.RsiNotCalculated(currentStock)) continue;
+
+                    if (IsNumberOfAllowedSlotsReached(allowedSlots)) continue;
+
+                    if (GenerateBuySignalForRsiIfCurrentStockLower(generatedSignal, currentStock, rsiValue))
+                    {
+                        generatedSignal = currentStock;
+                    }
+
+                    OpenPositionIfCurrentPriceLowerFor(currentStock);
+                }
+
+                if (generatedSignal != null)
+                {
+                    OpenPositionAndGenerateOrder(generatedSignal, 5);
+
+                    generatedSignal = null;
+                }
+
+                Console.WriteLine($"Generate orders for date: {inDate}");
             }
         }
 
-        private void ClosePosition(GeneratedOrder openPosition, CalculatedStock currentStock)
+        private void OpenPositionIfCurrentPriceLowerFor(CalculatedStock currentStock)
         {
-            var profitLoss = openPosition.ClosePosition(currentStock.Close, currentStock.Date, currentStock.GetIndicatorValues());
-            cumulatedBudgetClosePrice += profitLoss;
-            _drawdown.Calculate(cumulatedBudgetClosePrice);
-            openPosition.SetCumulatedCapitalForClose(cumulatedBudgetClosePrice);
-            openPosition.SetMaxDrawdownForClosePrice(_drawdown.TmpDrawDown, Budget);
+            var currentOpenPosition = GetCurrentNotClosedPositionsFor(currentStock.Symbol);
+
+            if (currentOpenPosition == null) return;
+
+            if (currentOpenPosition.OpenPrice > currentStock.Open)
+            {
+                currentOpenPosition.UpdateOpenPrice(currentOpenPosition, currentStock);
+                currentOpenPosition.UpdateCurrentPositions(Budget, 5);
+            }
         }
 
         private void OpenPositionAndGenerateOrder(CalculatedStock generatedSignal, int budgetPercentage)
@@ -281,6 +317,18 @@ namespace TradeBash.Core.Entities.Strategy
                     generatedSignal.GetIndicatorValues());
                 generatedOrder.UpdateCurrentPositions(Budget, budgetPercentage);
                 GeneratedOrders.Add(generatedOrder);
+            }
+        }
+
+        private void ClosePositionForSma(GeneratedOrder position, CalculatedStock currentStock)
+        {
+            if (currentStock.SMAShort < currentStock.Close)
+            {
+                var profitLoss = position.ClosePosition(currentStock.Close, currentStock.Date, currentStock.GetIndicatorValues());
+                cumulatedBudgetClosePrice += profitLoss;
+                _drawdown.Calculate(cumulatedBudgetClosePrice);
+                position.SetCumulatedCapitalForClose(cumulatedBudgetClosePrice);
+                position.SetMaxDrawdownForClosePrice(_drawdown.TmpDrawDown, Budget);
             }
         }
 
@@ -316,7 +364,9 @@ namespace TradeBash.Core.Entities.Strategy
 
         private bool IsNumberOfAllowedSlotsReached(int slots)
         {
-            return GeneratedOrders.Count(x => x.CloseDate == null) >= slots;
+            var orders = GeneratedOrders.Where(x => x.CloseDate == null);
+            var sum = orders.Sum(x => x.NumberOfAdditionallyBoughtPositions);
+            return sum >= slots;
         }
 
         private bool IsCumulatedCapitalGreaterThen(int budget)

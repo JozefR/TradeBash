@@ -123,6 +123,7 @@ namespace TradeBash.Infrastructure.Services
                     x.CloseIndicators,
                     x.Position,
                     x.AdditionallyBoughtPositions,
+                    x.NumberOfAdditionallyBoughtPositions,
                     x.BudgetInvestedPercentage,
                     x.ProfitLoss,
                     x.CumulatedCapital,

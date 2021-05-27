@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using TradeBash.SharedKernel;
 
 namespace TradeBash.Core.Entities.Strategy
@@ -30,6 +31,23 @@ namespace TradeBash.Core.Entities.Strategy
         public int Position { get; private set; }
 
         public string AdditionallyBoughtPositions { get; private set; }
+
+        public int NumberOfAdditionallyBoughtPositions => GetNumberOfBoughtPositions();
+
+        private int GetNumberOfBoughtPositions()
+        {
+            if (AdditionallyBoughtPositions != null)
+            {
+                var positions = AdditionallyBoughtPositions.Split(",").ToList();
+
+                if (positions.Any())
+                {
+                    return positions.Count;
+                }
+            }
+
+            return 1;
+        }
 
         public static GeneratedOrder OpenPosition(
             string symbol,

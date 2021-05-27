@@ -66,9 +66,9 @@ namespace TradeBash.Core.Entities.Strategy
         {
             if (!smaParameter.HasValue) return null;
 
-            if (CalculatedOrderedStocksHistory.Count < smaParameter) return null;
+            if (CalculatedStocksHistory.Count < smaParameter) return null;
 
-            var average = CalculatedOrderedStocksHistory
+            var average = CalculatedStocksHistory
                 .TakeLast(smaParameter.Value)
                 .Select(x => x.Close)
                 .Average();
@@ -80,9 +80,9 @@ namespace TradeBash.Core.Entities.Strategy
         {
             if (!_relativeStrengthIndexParameter.HasValue) return null;
 
-            if (CalculatedOrderedStocksHistory.Count <= _relativeStrengthIndexParameter + 15) return null;
+            if (CalculatedStocksHistory.Count <= _relativeStrengthIndexParameter + 15) return null;
 
-            var price = CalculatedOrderedStocksHistory.Select(x => x.Close).ToArray();
+            var price = CalculatedStocksHistory.Select(x => x.Close).ToArray();
             var rsi = new double[price.Length];
 
             double gain = 0.0;
@@ -140,7 +140,7 @@ namespace TradeBash.Core.Entities.Strategy
                 rsi[i] = 100 - (100 / (1 + rs));
             }
 
-            return rsi[CalculatedOrderedStocksHistory.Count - 1];
+            return rsi[CalculatedStocksHistory.Count - 1];
         }
     }
 }
