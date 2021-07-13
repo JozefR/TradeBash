@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using TradeBash.SharedKernel;
 
@@ -34,21 +35,6 @@ namespace TradeBash.Core.Entities.Strategy
 
         public int NumberOfAdditionallyBoughtPositions => GetNumberOfBoughtPositions();
 
-        private int GetNumberOfBoughtPositions()
-        {
-            if (AdditionallyBoughtPositions != null)
-            {
-                var positions = AdditionallyBoughtPositions.Split(",").ToList();
-
-                if (positions.Any())
-                {
-                    return positions.Count;
-                }
-            }
-
-            return 1;
-        }
-
         public static GeneratedOrder OpenPosition(
             string symbol,
             double openPrice,
@@ -70,7 +56,14 @@ namespace TradeBash.Core.Entities.Strategy
         {
             var averageOpenPrice = (currentOpenPosition.OpenPrice + generatedSignal.Close) / 2;
             OpenPrice = averageOpenPrice;
-            AdditionallyBoughtPositions += generatedSignal.Date.ToShortDateString() + ", ";
+            if (string.IsNullOrWhiteSpace(AdditionallyBoughtPositions))
+            {
+                AdditionallyBoughtPositions += generatedSignal.Date.ToShortDateString();
+            }
+            else
+            {
+                AdditionallyBoughtPositions += ", " + generatedSignal.Date.ToShortDateString();
+            }
         }
 
         public void UpdateCurrentPositions(double budget, int percentage)
@@ -132,6 +125,38 @@ namespace TradeBash.Core.Entities.Strategy
             var investment = budget * percentageDivider;
             var numberOfStocks = (int)(investment / OpenPrice);
             return numberOfStocks;
+        }
+
+        private int GetNumberOfBoughtPositions()
+        {
+            if (AdditionallyBoughtPositions != null)
+            {
+                var positions = AdditionallyBoughtPositions.Split(",").ToList();
+
+                if (positions.Any())
+                {
+                    return positions.Count;
+                }
+            }
+
+            return 1;
+        }
+
+        public List<DateTime> GetOpenPositionDates()
+        {
+            if (AdditionallyBoughtPositions != null)
+            {
+                var positions = AdditionallyBoughtPositions.Split(",").Select(DateTime.Parse).ToList();
+
+                return positions;
+            }
+
+            return new List<DateTime>();
+        }
+
+        public bool NumberOfOpenPositionsReachedLimit(int maxAllowedPositions)
+        {
+            return NumberOfAdditionallyBoughtPositions >= maxAllowedPositions;
         }
     }
 }

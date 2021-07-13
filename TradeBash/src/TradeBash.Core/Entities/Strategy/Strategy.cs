@@ -96,6 +96,35 @@ namespace TradeBash.Core.Entities.Strategy
             StrategyStocksHistory.Add(strategyStock);
         }
 
+        public void RunSpyCalculation()
+        {
+            CalculatedStock? generatedSignal = null;
+            cumulatedBudgetClosePrice = Budget;
+            foreach (var inDate in GetHistoryInDates())
+            {
+                foreach (var stock in StrategyStocksHistory)
+                {
+                    if (inDate == DateTime.Parse("13.3.2007"))
+                    {
+                        var currentStock = GetCurrentStockForDate(stock, inDate);
+
+                        generatedSignal = currentStock;
+
+                        OpenPositionAndGenerateOrder(generatedSignal, 100);
+                    }
+
+                    if (inDate == DateTime.Parse("30.04.2021"))
+                    {
+                        var currentStock = GetCurrentStockForDate(stock, inDate);
+                        var openPosition = GetCurrentNotClosedPositionsFor("SPY");
+                        ClosePosition(openPosition, currentStock);
+                    }
+                }
+
+                Console.WriteLine($"Generate orders for date: {inDate}");
+            }
+        }
+
         public void RunTestCase1()
         {
             // buy if rsi < 10;
@@ -291,6 +320,7 @@ namespace TradeBash.Core.Entities.Strategy
             var currentOpenPosition = GetCurrentNotClosedPositionsFor(currentStock.Symbol);
 
             if (currentOpenPosition == null) return;
+            if (currentOpenPosition.NumberOfOpenPositionsReachedLimit(5)) return;
 
             if (currentOpenPosition.OpenPrice > currentStock.Open)
             {
@@ -303,8 +333,12 @@ namespace TradeBash.Core.Entities.Strategy
         {
             var currentOpenPosition = GetCurrentNotClosedPositionsFor(generatedSignal.Symbol);
 
+
             if (currentOpenPosition != null)
             {
+                if (currentOpenPosition.NumberOfOpenPositionsReachedLimit(5)) return;
+                if (currentOpenPosition.Symbol == generatedSignal.Symbol && currentOpenPosition.GetOpenPositionDates().Contains(generatedSignal.Date)) return;
+
                 currentOpenPosition.UpdateOpenPrice(currentOpenPosition, generatedSignal);
                 currentOpenPosition.UpdateCurrentPositions(Budget, budgetPercentage);
             }
@@ -324,12 +358,17 @@ namespace TradeBash.Core.Entities.Strategy
         {
             if (currentStock.SMAShort < currentStock.Close)
             {
-                var profitLoss = position.ClosePosition(currentStock.Close, currentStock.Date, currentStock.GetIndicatorValues());
-                cumulatedBudgetClosePrice += profitLoss;
-                _drawdown.Calculate(cumulatedBudgetClosePrice);
-                position.SetCumulatedCapitalForClose(cumulatedBudgetClosePrice);
-                position.SetMaxDrawdownForClosePrice(_drawdown.TmpDrawDown, Budget);
+                ClosePosition(position, currentStock);
             }
+        }
+
+        private void ClosePosition(GeneratedOrder position, CalculatedStock currentStock)
+        {
+            var profitLoss = position.ClosePosition(currentStock.Close, currentStock.Date, currentStock.GetIndicatorValues());
+            cumulatedBudgetClosePrice += profitLoss;
+            _drawdown.Calculate(cumulatedBudgetClosePrice);
+            position.SetCumulatedCapitalForClose(cumulatedBudgetClosePrice);
+            position.SetMaxDrawdownForClosePrice(_drawdown.TmpDrawDown, Budget);
         }
 
         private bool GenerateBuySignalForRsiIfCurrentStockLower(CalculatedStock? generatedSignal, CalculatedStock currentStock, int rsiThreshold)
