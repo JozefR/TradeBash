@@ -51,18 +51,4 @@ namespace TradeBash.DataCentre
             return stocksToUpdate;
         }
     }
-
-    public interface IStocksCsvReader
-    {
-        IList<(string symbol, string name)> LoadFile(IndexVersion version);
-        IList<(string symbol, string name)> GetAllToUpdate();
-    }
-
-    public enum IndexVersion
-    {
-        Spy100,
-        Spy500,
-        QQQ,
-        VTV
-    }
 }

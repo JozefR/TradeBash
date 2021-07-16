@@ -18,6 +18,7 @@ namespace TradeBash.Web.Api
         private readonly ILogger<StrategiesController> _logger;
         private readonly IRepository _repository;
         private readonly IStrategyRepository _strategyRepository;
+        private readonly IStockRepository _stockRepository;
         private readonly IExcelReporting _excelReporting;
         private readonly IStocksCsvReader _csvReader;
 
@@ -26,60 +27,26 @@ namespace TradeBash.Web.Api
             IStrategyRepository strategyRepository,
             ILogger<StrategiesController> logger,
             IExcelReporting excelReporting,
-            IStocksCsvReader csvReader)
+            IStocksCsvReader csvReader,
+            IStockRepository stockRepository)
         {
             _repository = repository;
             _strategyRepository = strategyRepository;
             _logger = logger;
             _excelReporting = excelReporting;
             _csvReader = csvReader;
+            _stockRepository = stockRepository;
         }
 
-        [HttpGet("calculateStrategy/{sma}/{rsi}")]
-        public async Task<IActionResult> calculateStrategy(int sma, int rsi)
-        {
-            var strategyName = $"SMA-{sma}-RSI-{rsi}";
-            var strategy = Strategy.From(strategyName, 50000, sma, rsi);
-
-            try
-            {
-                await CalculateAsync(strategy);
-
-                return Ok();
-            }
-            catch (Exception e)
-            {
-                return UnprocessableEntity(e);
-            }
-        }
-
-        [HttpGet("calculateStrategy/{smaShort}/{smaLong}/{rsi}")]
-        public async Task<IActionResult> calculateStrategy(int smaShort, int smaLong, int rsi)
-        {
-            var strategyName = $"SMA-{smaShort}-SMA-{smaLong}-RSI-{rsi}";
-            var strategy = Strategy.From(strategyName, 50000, smaShort, smaLong, rsi);
-
-            try
-            {
-                await CalculateAsync(strategy);
-
-                return Ok();
-            }
-            catch (Exception e)
-            {
-                return UnprocessableEntity(e);
-            }
-        }
-
-        [HttpGet("calculateStrategy/{budget}/{smaShort}/{smaLong}/{rsi}")]
-        public async Task<IActionResult> CalculateStrategy(int budget, int smaShort, int smaLong, int rsi)
+        [HttpGet("calculateStrategy/{indexVersion}/{budget}/{smaShort}/{smaLong}/{rsi}")]
+        public async Task<IActionResult> CalculateStrategy(IndexVersion indexVersion, int budget, int smaShort, int smaLong, int rsi)
         {
             var strategyName = $"Budget-{budget}-SMA-{smaShort}-SMA-{smaLong}-RSI-{rsi}";
             var strategy = Strategy.From(strategyName, budget, smaShort, smaLong, rsi);
 
             try
             {
-                await CalculateAsync(strategy);
+                await CalculateAsync(strategy, indexVersion);
                 return Ok();
             }
             catch (Exception e)
@@ -88,17 +55,8 @@ namespace TradeBash.Web.Api
             }
         }
 
-        public enum StrategyType
-        {
-            TestCase1,
-            TestCase2,
-            TestCase3,
-            TestCase4,
-            TestCase5
-        }
-
-        [HttpGet("Backtest/shortSmaRsi/{strategyType}/{strategyName}")]
-        public async Task<List<GeneratedOrder>> Backtest(StrategyType strategyType, string strategyName)
+        [HttpGet("Backtest/{strategyType}/{strategyName}")]
+        public async Task<List<GeneratedOrder>> Backtest(StrategyType strategyType, string strategyName, int rsiValue, int allowedSlots)
         {
             var strategy = await _strategyRepository.GetByNameAsync(strategyName);
 
@@ -106,11 +64,19 @@ namespace TradeBash.Web.Api
 
             if (strategyType == StrategyType.TestCase1)
             {
-                strategy.RunTestCase1();
+                strategy.RunTestCase1(10);
             }
             if (strategyType == StrategyType.TestCase2)
             {
-                strategy.RunTestCase2(10, 20);
+                strategy.RunTestCase2(rsiValue, allowedSlots);
+            }
+            if (strategyType == StrategyType.TestCase3)
+            {
+                strategy.RunTestCase3(rsiValue, allowedSlots);
+            }
+            if (strategyType == StrategyType.TestCase4)
+            {
+                strategy.RunTestCase4(rsiValue, allowedSlots);
             }
 
             _logger.LogInformation($"Backtest for strategy {strategyName} finished");
@@ -120,6 +86,31 @@ namespace TradeBash.Web.Api
             _logger.LogInformation($"Backtest for strategy {strategyName} saved");
             
             return strategy.GeneratedOrders.ToList();
+        }
+
+        private async Task CalculateAsync(Strategy strategy, IndexVersion indexVersion)
+        {
+            await _repository.AddAsync(strategy);
+
+            var stocksToCalculate = _csvReader.LoadFile(indexVersion);
+
+            foreach (var (symbol, _) in stocksToCalculate)
+            {
+                var stock = await _stockRepository.GetBySymbolAsync(symbol);
+
+                if (stock != null)
+                {
+                    _logger.LogInformation($"Start indicators calculation for stock {stock.Name}");
+
+                    strategy.RunCalculationFor(stock);
+
+                    _logger.LogInformation($"calculation for stock {stock.Name} finished");
+                }
+            }
+
+            await _repository.UpdateAsync(strategy);
+
+            _logger.LogInformation("Saving Finished successfully");
         }
 
         [HttpGet("ExportToExcel")]
@@ -133,6 +124,243 @@ namespace TradeBash.Web.Api
             }
 
             return Ok();
+        }
+
+        [HttpGet("InMemoryBacktestWithExport/TestCase1/")]
+        public async Task<IActionResult> InMemoryBacktestWithExportTestCase1(
+            IndexVersion indexVersion,
+            int budget,
+            int smaShortParameter,
+            int rsiParameter,
+            int rsiValue)
+        {
+            try
+            {
+                var strategyName = $"{StrategyType.TestCase1.ToString()}" +
+                                   $"-{indexVersion.ToString()}" +
+                                   $"-Budget-{budget}" +
+                                   $"-SMAShort-{smaShortParameter}" +
+                                   $"-RSI-{rsiParameter}" +
+                                   $"-RSIValue-{rsiValue}";
+
+                var strategy = Strategy.From(strategyName, budget, smaShortParameter, rsiParameter);
+
+                var stocksToCalculate = _csvReader.LoadFile(indexVersion);
+                foreach (var (symbol, _) in stocksToCalculate)
+                {
+                    var stock = await _stockRepository.GetBySymbolAsync(symbol);
+
+                    if (stock != null)
+                    {
+                        _logger.LogInformation($"Start indicators calculation for stock {stock.Name}");
+
+                        strategy.RunCalculationFor(stock);
+
+                        _logger.LogInformation($"calculation for stock {stock.Name} finished");
+                    }
+                }
+
+                _logger.LogInformation($"Started in memory backtest for strategy {strategyName}");
+
+                strategy.RunTestCase1(rsiValue);
+
+                _logger.LogInformation($"Started export to excel for strategy {strategyName}");
+
+                if (!strategy.GeneratedOrders.Any())
+                {
+                    return Ok("No generated orders.");
+                }
+
+                await _excelReporting.GenerateAsync(strategy);
+
+                _logger.LogInformation($"Excel report finished");
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return UnprocessableEntity(e);
+            }
+        }
+
+        [HttpGet("InMemoryBacktestWithExport/TestCase2/")]
+        public async Task<IActionResult> InMemoryBacktestWithExportTestCase2(
+            IndexVersion indexVersion,
+            int budget,
+            int smaShortParameter,
+            int smaLongParameter,
+            int rsiParameter,
+            int rsiValue,
+            int allowedSlots)
+        {
+            try
+            {
+                var strategyName = $"{StrategyType.TestCase2.ToString()}" +
+                                   $"-{indexVersion.ToString()}" +
+                                   $"-Budget-{budget}" +
+                                   $"-SMAShort-{smaShortParameter}" +
+                                   $"-SMAShort-{smaLongParameter}" +
+                                   $"-RSI-{rsiParameter}" +
+                                   $"-RSIValue-{rsiValue}";
+
+                var strategy = Strategy.From(strategyName, budget, smaShortParameter, smaLongParameter, rsiParameter);
+
+                var stocksToCalculate = _csvReader.LoadFile(indexVersion);
+                foreach (var (symbol, _) in stocksToCalculate)
+                {
+                    var stock = await _stockRepository.GetBySymbolAsync(symbol);
+
+                    if (stock != null)
+                    {
+                        _logger.LogInformation($"Start indicators calculation for stock {stock.Name}");
+
+                        strategy.RunCalculationFor(stock);
+
+                        _logger.LogInformation($"calculation for stock {stock.Name} finished");
+                    }
+                }
+
+                _logger.LogInformation($"Started in memory backtest for strategy {strategyName}");
+
+                strategy.RunTestCase2(rsiValue, allowedSlots);
+
+                _logger.LogInformation($"Started export to excel for strategy {strategyName}");
+
+                if (!strategy.GeneratedOrders.Any())
+                {
+                    return Ok("No generated orders.");
+                }
+
+                await _excelReporting.GenerateAsync(strategy);
+
+                _logger.LogInformation($"Excel report finished");
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return UnprocessableEntity(e);
+            }
+        }
+
+        [HttpGet("InMemoryBacktestWithExport/TestCase3/")]
+        public async Task<IActionResult> InMemoryBacktestWithExportTestCase3(
+            IndexVersion indexVersion,
+            int budget,
+            int smaShortParameter,
+            int smaLongParameter,
+            int rsiParameter,
+            int rsiValue,
+            int allowedSlots)
+        {
+            try
+            {
+                var strategyName = $"{StrategyType.TestCase3.ToString()}" +
+                                   $"-{indexVersion.ToString()}" +
+                                   $"-Budget-{budget}" +
+                                   $"-SMAShort-{smaShortParameter}" +
+                                   $"-SMALong-{smaLongParameter}" +
+                                   $"-RSI-{rsiParameter}" +
+                                   $"-RSIValue-{rsiValue}";
+
+                var strategy = Strategy.From(strategyName, budget, smaShortParameter, smaLongParameter, rsiParameter);
+
+                var stocksToCalculate = _csvReader.LoadFile(indexVersion);
+                foreach (var (symbol, _) in stocksToCalculate)
+                {
+                    var stock = await _stockRepository.GetBySymbolAsync(symbol);
+
+                    if (stock != null)
+                    {
+                        _logger.LogInformation($"Start indicators calculation for stock {stock.Name}");
+
+                        strategy.RunCalculationFor(stock);
+
+                        _logger.LogInformation($"calculation for stock {stock.Name} finished");
+                    }
+                }
+
+                _logger.LogInformation($"Started in memory backtest for strategy {strategyName}");
+
+                strategy.RunTestCase3(rsiValue, allowedSlots);
+
+                _logger.LogInformation($"Started export to excel for strategy {strategyName}");
+
+                if (!strategy.GeneratedOrders.Any())
+                {
+                    return Ok("No generated orders.");
+                }
+
+                await _excelReporting.GenerateAsync(strategy);
+
+                _logger.LogInformation($"Excel report finished");
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return UnprocessableEntity(e);
+            }
+        }
+
+        [HttpGet("InMemoryBacktestWithExport/TestCase4/")]
+        public async Task<IActionResult> InMemoryBacktestWithExportTestCase4(
+            IndexVersion indexVersion,
+            int budget,
+            int smaShortParameter,
+            int smaLongParameter,
+            int rsiParameter,
+            int rsiValue,
+            int allowedSlots)
+        {
+            try
+            {
+                var strategyName = $"{StrategyType.TestCase4.ToString()}" +
+                                   $"-{indexVersion.ToString()}" +
+                                   $"-Budget-{budget}" +
+                                   $"-SMAShort-{smaShortParameter}" +
+                                   $"-SMALong-{smaLongParameter}" +
+                                   $"-RSI-{rsiParameter}" +
+                                   $"-RSIValue-{rsiValue}";
+
+                var strategy = Strategy.From(strategyName, budget, smaShortParameter, smaLongParameter, rsiParameter);
+
+                var stocksToCalculate = _csvReader.LoadFile(indexVersion);
+                foreach (var (symbol, _) in stocksToCalculate)
+                {
+                    var stock = await _stockRepository.GetBySymbolAsync(symbol);
+
+                    if (stock != null)
+                    {
+                        _logger.LogInformation($"Start indicators calculation for stock {stock.Name}");
+
+                        strategy.RunCalculationFor(stock);
+
+                        _logger.LogInformation($"calculation for stock {stock.Name} finished");
+                    }
+                }
+
+                _logger.LogInformation($"Started in memory backtest for strategy {strategyName}");
+
+                strategy.RunTestCase4(rsiValue, allowedSlots);
+
+                _logger.LogInformation($"Started export to excel for strategy {strategyName}");
+
+                if (!strategy.GeneratedOrders.Any())
+                {
+                    return Ok("No generated orders.");
+                }
+
+                await _excelReporting.GenerateAsync(strategy);
+
+                _logger.LogInformation($"Excel report finished");
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return UnprocessableEntity(e);
+            }
         }
 
         [HttpGet("InMemoryBacktestWithExport/{strategyType}/{budget}/{smaShortParameter}/{smaLongParameter}/{rsiParameter}")]
@@ -159,11 +387,10 @@ namespace TradeBash.Web.Api
 
                 var strategy = Strategy.From(strategyName, budget, smaShortParameter, smaLongParameter, rsiParameter);
 
-                var stocks = await _repository.ListNoTrackingAsync<Stock>();
                 var stocksToCalculate = _csvReader.LoadFile(indexVersion);
                 foreach (var (symbol, _) in stocksToCalculate)
                 {
-                    var stock = stocks.FirstOrDefault(x => x.Symbol == symbol);
+                    var stock = await _stockRepository.GetBySymbolAsync(symbol);
 
                     if (stock != null)
                     {
@@ -179,7 +406,7 @@ namespace TradeBash.Web.Api
 
                 if (strategyType == StrategyType.TestCase1)
                 {
-                    strategy.RunTestCase1();
+                    strategy.RunTestCase1(rsiValue);
                 }
                 if (strategyType == StrategyType.TestCase2)
                 {
@@ -191,14 +418,15 @@ namespace TradeBash.Web.Api
                 }
                 if (strategyType == StrategyType.TestCase4)
                 {
-                    strategy.RunTestCase3(rsiValue, allowedSlots);
-                }
-                if (strategyType == StrategyType.TestCase5)
-                {
-                    strategy.RunTestCase5(rsiValue, allowedSlots);
+                    strategy.RunTestCase4(rsiValue, allowedSlots);
                 }
 
                 _logger.LogInformation($"Started export to excel for strategy {strategyName}");
+
+                if (!strategy.GeneratedOrders.Any())
+                {
+                    return Ok("No generated orders.");
+                }
 
                 await _excelReporting.GenerateAsync(strategy);
 
@@ -210,25 +438,6 @@ namespace TradeBash.Web.Api
             {
                 return UnprocessableEntity(e);
             }
-        }
-
-        private async Task CalculateAsync(Strategy strategy)
-        {
-            var stocks = await _repository.ListAsync<Stock>();
-
-            await _repository.AddAsync(strategy);
-            foreach (var stock in stocks)
-            {
-                _logger.LogInformation($"Start indicators calculation for stock {stock.Name}");
-
-                strategy.RunCalculationFor(stock);
-
-                _logger.LogInformation($"Saving indicator calculations to database");
-
-                await _repository.UpdateAsync(strategy);
-            }
-
-            _logger.LogInformation("Saving Finished successfully");
         }
     }
 }

@@ -125,7 +125,7 @@ namespace TradeBash.Core.Entities.Strategy
             }
         }
 
-        public void RunTestCase1()
+        public void RunTestCase1(int rsiValue)
         {
             // buy if rsi < 10;
             // sell if sma > 10
@@ -152,7 +152,7 @@ namespace TradeBash.Core.Entities.Strategy
                     {
                         if (IsNumberOfAllowedSlotsReached(20)) continue;
 
-                        if (GenerateBuySignalForRsiIfCurrentStockLower(generatedSignal, currentStock, 10))
+                        if (GenerateBuySignalForRsiIfCurrentStockLower(generatedSignal, currentStock, rsiValue))
                         {
                             generatedSignal = currentStock;
                         }
@@ -266,7 +266,7 @@ namespace TradeBash.Core.Entities.Strategy
             }
         }
 
-        public void RunTestCase5(int rsiValue, int allowedSlots)
+        public void RunTestCase4(int rsiValue, int allowedSlots)
         {
             // buy if rsi < rsiValue;
             // sell if sma > smaParameter
