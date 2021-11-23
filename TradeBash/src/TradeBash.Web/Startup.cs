@@ -53,8 +53,17 @@ namespace TradeBash.Web
             });
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        void Test(string one, string? two, string? three)
         {
+            
+        }
+        
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        { 
+            Test("one", "two", null);
+            
+            // test(one,three)
+            // test(one, null, three)
             if (env.EnvironmentName == "Development")
             {
                 app.UseDeveloperExceptionPage();
